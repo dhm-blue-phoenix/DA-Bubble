@@ -1,0 +1,103 @@
+{
+    "users": [
+        {
+            "id": "userId1",
+            "name": "John Doe",
+            "email": "john.doe@example.com",
+            "password": "hashed_password",
+            "created_at": "2024-06-01T12:00:00Z",
+            "avatar": "",
+            "status": "online",
+            "channel_ids": ["channelId1"],
+            "chat_ids": ["chatId1"]
+        }
+    ],
+    "channels": [
+        {
+            "id": "channelId1",
+            "name": "Channel Name",
+            "description": "General discussion",
+            "created_at": "2024-06-01T12:00:00Z",
+            "edited_at": "2024-06-01T12:02:00Z",
+            "members": [
+                {
+                    "user_id": "userId1",
+                    "role": "admin"
+                },
+                {
+                    "user_id": "userId2",
+                    "role": "member"
+                }
+            ],
+            "messages": [
+                {
+                    "id": "msg1",
+                    "sender_id": "userId1",
+                    "content": "Hello, World!",
+                    "timestamp": "2024-06-01T12:01:00Z",
+                    "edited_at": "2024-06-01T12:02:00Z",
+                    "reactions": [
+                        {
+                            "emoji": "👍",
+                            "count": 1
+                        },
+                        {
+                            "emoji": "❤️",
+                            "count": 3
+                        }
+                    ],
+                    "threads_id": "threadId1"
+                }
+            ]
+        }
+    ],
+    "threads": [
+        {
+            "id": "threadId1",
+            "messages": [
+                {
+                    "id": "msg1",
+                    "sender_id": "userId1",
+                    "content": "Hello, World!",
+                    "timestamp": "2024-06-01T12:01:00Z",
+                    "edited_at": "2024-06-01T12:02:00Z",
+                    "reactions": [
+                        {
+                            "emoji": "👍",
+                            "count": 1
+                        },
+                        {
+                            "emoji": "❤️",
+                            "count": 3
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "chats": [
+        {
+            "id": "chatId1",
+            "user_ids": ["userId1", "userId2"],
+            "messages": [
+                {
+                    "id": "msg1",
+                    "sender_id": "userId1",
+                    "content": "Hello, World!",
+                    "timestamp": "2024-06-01T12:01:00Z",
+                    "edited_at": "2024-06-01T12:02:00Z",
+                    "reactions": [
+                        {
+                            "emoji": "👍",
+                            "count": 1
+                        },
+                        {
+                            "emoji": "❤️",
+                            "count": 3
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
