@@ -6,11 +6,15 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 @Injectable({
   providedIn: 'root',
 })
-export class Db {
-  private readonly supabase: SupabaseClient = createClient(environment.supabaseUrl, environment.supabaseKey);
+export class DataBase {
+  private readonly supabase: SupabaseClient = createClient(
+    environment.supabaseUrl,
+    environment.supabaseKey,
+  );
 
   constructor() {
-    this.signInWithEmail();
+    //this.signInWithEmail();
+    //this.signOut();
   }
 
   public async signUpNewUser() {
@@ -29,8 +33,14 @@ export class Db {
     const { data, error } = await this.supabase.auth.signInWithPassword({
       email: environment.debug_user_email,
       password: environment.debug_user_password,
-    })
+    });
     console.log('data', data);
     console.log('error', error);
+  }
+
+  public async resetPasswordForEmail() {}
+
+  public async signOut(): Promise<void> {
+    const { error } = await this.supabase.auth.signOut();
   }
 }

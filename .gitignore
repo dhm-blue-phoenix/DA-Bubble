@@ -44,4 +44,8 @@ __screenshots__/
 Thumbs.db
 
 # .env
-.env
+/src/environment/environment.ts
+
+# Editors
+.vscode
+.idea
