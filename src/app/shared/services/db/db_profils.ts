@@ -82,8 +82,7 @@ export class DatabaseProfils {
     //await this.signUpNewUser(environment.debug_user2_email, environment.debug_user2_password, environment.debug_user2_name);
     //await this.signInWithEmail(environment.debug_user_email, environment.debug_user_password);
     //await this.signOut();
-    //await this.getProfile(this.currentUserId);
-
+    //console.log(await this.getProfile('18290dd9-9a3a-4f0b-b74b-fa36e5b38ecd'));
   }
 
   private setLocalStorageCurrentProfileId(value: string): void {
@@ -142,7 +141,9 @@ export class DatabaseProfils {
     }
   }
 
-  public async resetPasswordForEmail() {}
+  public async resetPasswordForEmail() {
+    console.warn('Ist noch in der entwicklung');
+  }
 
   public async signOut(): Promise<void> {
     const { error } = await this.supabase.auth.signOut();
@@ -152,23 +153,18 @@ export class DatabaseProfils {
     this.deleteLocalStorageCurrentProfileId();
   }
 
-  // !!!!
-  public async getProfile(userId: string): Promise<void> {
-    if (userId) {
-      const { data: profiles, error } = await this.supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId);
+  public async getProfile(userId: string): Promise<Profile> {
+    const { data: profiles, error } = await this.supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId);
 
-      if (this.debug_logs) {
-        if (error) console.error('getProfile_error', error);
-        console.log('profiles', profiles);
-      }
-
-      if (!profiles) return;
-      return profiles[0];
+    if (this.debug_logs) {
+      if (error) console.error('getProfile_error', error);
+      console.log('profiles', profiles);
     }
-    console.warn('Es ist eine User Id erforderlich!');
+
+    return profiles ? profiles[0] : emptyProfile;
   }
 
   public async getProfiles(): Promise<void> {
