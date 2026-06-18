@@ -1,8 +1,0 @@
-import { Environment } from '../app/shared/interfaces/environment';
-
-export const environment: Environment = {
-  supabaseUrl: '',
-  supabaseKey: '',
-  debug_user_email: '',
-  debug_user_password: '',
-};
