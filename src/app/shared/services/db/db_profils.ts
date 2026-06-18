@@ -3,7 +3,6 @@ import { environment } from '../../../../environment/environment';
 
 import {
   createClient,
-  PostgrestResponse,
   RealtimeChannel, RealtimePostgresInsertPayload, RealtimePostgresUpdatePayload,
   SupabaseClient,
   User,
@@ -83,6 +82,7 @@ export class DatabaseProfils {
     //await this.signInWithEmail(environment.debug_user_email, environment.debug_user_password);
     //await this.signOut();
     //console.log(await this.getProfile('18290dd9-9a3a-4f0b-b74b-fa36e5b38ecd'));
+    //this.updateProfileName(this.getLocalStorageCurrentProfileId(), 'Richert Stark');
   }
 
   private setLocalStorageCurrentProfileId(value: string): void {
@@ -125,7 +125,7 @@ export class DatabaseProfils {
   }
 
   public async signInWithEmail(user_email: string, user_password: string): Promise<void> {
-    if (user_email.length > 5  && user_password.length > 5) {
+    if (user_email.length > 5 && user_password.length > 5) {
       const { data, error } = await this.supabase.auth.signInWithPassword({
         email: user_email,
         password: user_password,
@@ -153,11 +153,11 @@ export class DatabaseProfils {
     this.deleteLocalStorageCurrentProfileId();
   }
 
-  public async getProfile(userId: string): Promise<Profile> {
+  public async getProfile(profileId: string): Promise<Profile> {
     const { data: profiles, error } = await this.supabase
       .from('profiles')
       .select('*')
-      .eq('id', userId);
+      .eq('id', profileId);
 
     if (this.debug_logs) {
       if (error) console.error('getProfile_error', error);
@@ -178,5 +178,13 @@ export class DatabaseProfils {
     if (profiles) this.profiles.set(profiles);
   }
 
-  public async updateProfileName(): Promise<void> {}
+  public async updateProfileName(profileId: string, value: string): Promise<void> {
+    if (profileId.length > 5 && value.length > 1) {
+      const { data, error } = await this.supabase
+        .from('profiles')
+        .update({ name: value })
+        .eq('id', profileId)
+        .select();
+    }
+  }
 }
