@@ -9,7 +9,8 @@
     ]
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/environment/environment.ts"
   ],
   "exclude": [
     "src/**/*.spec.ts"

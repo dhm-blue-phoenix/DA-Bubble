@@ -3,4 +3,5 @@ export interface Environment {
   supabaseKey: string;
   debug_user_email: string;
   debug_user_password: string;
+  debug_logs: boolean;
 }

@@ -43,9 +43,8 @@ __screenshots__/
 .DS_Store
 Thumbs.db
 
-# .env
-/src/environment/environment.ts
-
 # Editors
 .vscode
 .idea
+
+src/environment/environment.ts
