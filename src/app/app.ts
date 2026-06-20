@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
-import { DatabaseProfils } from './shared/services/db/db_profils';
+import { Database } from './shared/services/db';
 
 
 @Component({
@@ -13,8 +13,7 @@ import { DatabaseProfils } from './shared/services/db/db_profils';
 export class App {
   protected readonly title = signal('da_bubble');
 
-  private readonly db = inject(DatabaseProfils);
-  public readonly profiles = this.db.profiles;
+  private readonly db: Database = inject(Database);
 
   constructor() {}
 }
