@@ -12,6 +12,10 @@ export class Database {
   public readonly profiles: Signal<Profiles> = this.db_profiles.profiles;
 
   /*
+  * Notiz: Eventuelle anpassung bei den funktionen für zusetzliches return error handlieng!
+  * */
+
+  /*
    * Login und Registrierung
    * */
   public register(user_email: string, user_password: string, user_name: string): void {
@@ -29,7 +33,7 @@ export class Database {
   /*
    * Profile Verwaltung
    * */
-  public async getProfile(profileId: string): Promise<Profile> {
+  public async getProfile(profileId: string): Promise<Profile | null> {
     return this.db_profiles.getProfile(profileId);
   }
 
