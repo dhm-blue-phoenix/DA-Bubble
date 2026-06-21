@@ -32,7 +32,6 @@ export class DatabaseAuth {
     if(isPlatformBrowser(this.platformId)) {
       this.setupAuthListener();
     }
-
     if (this.debug_logs) {
       this.debugging();
     }
@@ -43,35 +42,52 @@ export class DatabaseAuth {
     //await this.signUpNewUser(environment.debug_user_email, environment.debug_user_password, environment.debug_user_name);
     //await this.signUpNewUser(environment.debug_user2_email, environment.debug_user2_password, environment.debug_user2_name);
     //await this.signInWithEmail(environment.debug_user_email, environment.debug_user_password);
-    //await this.signOut();
+    await this.signOut();
     //console.log( await this.getAuthUser());
   }
 
+  private async setUserOnline(): Promise<void> {
+    await this.setStatus('online');
+    this._isUserLogin.set(true);
+  }
+
+  private async setUserOffline(): Promise<void> {
+    await this.setStatus('offline');
+    this._isUserLogin.set(false);
+  }
+
   private setupAuthListener(): void {
-    this.supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null): void => {
+    this.supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session: Session | null): Promise<void> => {
         if (this.debug_logs) {
           console.log('Auth state change:', event, session);
         }
         const userData: User | undefined = session?.user;
         if (userData) {
-          this.setStatus('online');
-          this._isUserLogin.set(true);
+          await this.setUserOnline();
         } else {
-          this.setStatus('offline');
-          this._isUserLogin.set(false);
-          this.db_profiles._profiles.set([]);
+          await this.setUserOffline();
+          //this.db_profiles._profiles.set([]);
         }
       }
     );
   }
 
   private async getAuthUser(): Promise<string> {
+    /**
+     * Notiz: Diesse Funktion ist fehlerhaft
+     * await this.supabase.auth.getUser() gibt keinen rückgabewert zurück
+     * und wenn man aus dem localstorage die token rauslöscht kommt als antwort null
+     * */
+    console.warn(await this.supabase.auth.getUser())
+
     const { data: { user } }: { data: { user: User | null } } = await this.supabase.auth.getUser();
+    console.warn('Auth state change:', user);
     return user?.id || '';
   }
 
   private async setStatus(status: 'offline' | 'online'): Promise<void> {
     const profileId: string = await this.getAuthUser();
+    console.warn(this.debug_logs)
     if (profileId) {
       const profile: Profile | null = await this.db_profiles.getProfile(profileId);
 
@@ -82,7 +98,7 @@ export class DatabaseAuth {
   }
 
   private async updateProfileStatus(profileId: string, value: 'offline' | 'online'): Promise<void> {
-    if (profileId.length > 5 && value.length > 1) {
+   if (profileId.length > 5 && value.length > 1) {
       const { data, error }: SupabaseResponseProfiles = await this.supabase
         .from('profiles')
         .update({ status: value })
@@ -128,7 +144,7 @@ export class DatabaseAuth {
   }
 
   public async signOut(): Promise<void> {
-    await this.setStatus('offline');
+    await this.setUserOffline();
     const { error } = await this.supabase.auth.signOut();
     if (this.debug_logs && error) {
       console.error('signOut_error', error);

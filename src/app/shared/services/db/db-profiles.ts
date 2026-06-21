@@ -2,8 +2,6 @@ import { Injectable, signal, WritableSignal, PLATFORM_ID, inject, Signal, OnDest
 import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../../../environment/environment';
 
-import { DatabaseAuth } from './db-auth';
-
 import {
   createClient,
   RealtimeChannel,
@@ -24,12 +22,11 @@ export class DatabaseProfiles implements OnDestroy {
   private readonly platformId: Object = inject(PLATFORM_ID);
   private readonly debug_logs: boolean = environment.debug_logs;
   private readonly supabase: SupabaseClient = createClient(environment.supabaseUrl, environment.supabaseKey);
-  private readonly db_auth: DatabaseAuth = inject(DatabaseAuth);
 
   private insertChannelProfiles!: RealtimeChannel;
   private updateChannelProfiles!: RealtimeChannel;
 
-  public readonly _profiles: WritableSignal<Profiles> = signal<Profiles>([]);
+  private readonly _profiles: WritableSignal<Profiles> = signal<Profiles>([]);
   public readonly profiles: Signal<Profiles> = this._profiles.asReadonly();
 
   constructor() {
@@ -97,7 +94,6 @@ export class DatabaseProfiles implements OnDestroy {
   }
 
   private async getProfiles(): Promise<void> {
-    if (this.db_auth.isUserLogin()) {
       const { data: profiles, error }: SupabaseResponseProfiles = await this.supabase
         .from('profiles')
         .select('id, name, email, avatar_url, status, created_at');
@@ -108,11 +104,9 @@ export class DatabaseProfiles implements OnDestroy {
       }
 
       if (profiles) this._profiles.set(profiles);
-    }
   }
 
   public async getProfile(profileId: string): Promise<Profile | null> {
-    if (this.db_auth.isUserLogin()) {
       const { data: profiles, error }: SupabaseResponseProfiles = await this.supabase
         .from('profiles')
         .select('id, name, email, avatar_url, status, created_at')
@@ -124,8 +118,6 @@ export class DatabaseProfiles implements OnDestroy {
       }
 
       return profiles ? profiles[0] : null;
-    }
-    return null;
   }
 
   public async updateProfileName(profileId: string, value: string): Promise<void> {
