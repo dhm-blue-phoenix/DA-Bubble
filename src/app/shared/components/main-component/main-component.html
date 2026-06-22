@@ -96,7 +96,48 @@
 
         <!-- chat history loop -->
             <div class="chat_history w-full flex-1 overflow-y-auto ">
-                <div class="chat_history flex-1 bg-sky-900"></div>
+                <div class="separator flex items-center justify-center"><span class="bg-white px-2 border border-black/20 rounded-full absolute">heute 27.10.2026</span></div>
+                
+                <!-- Member Text -->
+                <div class="flex py-6 gap-8">
+                    <img class="size-[70px]" src="assets/svg/avatar/avatar_small/1.svg" alt="">
+                    <div class="flex flex-col gap-2">
+                        <div class="flex items-center gap-6">
+                            <!-- Member Informations -->
+                            <span class="chat_name">Noah Braun</span>
+                            <span class="timestamp">14:25 Uhr</span>
+                        </div>
+                        <div class="message_member">
+                            <!-- Member text -->
+                            <span>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Omnis minus nihil sequi sed totam amet placeat officiis voluptatum excepturi obcaecati eveniet accusantium doloremque, autem id aperiam repudiandae fuga, sunt harum!</span>
+                        </div>
+                        <div class="flex gap-6 items-center">
+                            <!-- Member actions -->
+                            <span class="feedback">2 Antworten</span>
+                            <span class="timestamp">Letzte Antwort 14:56</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- user Text -->
+                <div class="flex flex-row-reverse py-6 gap-8">
+                    <img class="size-[70px]" src="assets/svg/avatar/avatar_small/1.svg" alt="">
+                    <div class="flex flex-col gap-2 items-end">
+                        <div class="flex items-center gap-6">
+                            <!-- user Informations -->
+                            <span class="timestamp">14:37 Uhr</span>
+                            <span class="chat_name">Frederik Beck</span>
+                        </div>
+                        <div class="message_user">
+                            <!-- user text -->
+                            <span>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Omnis minus nihil sequi sed totam amet placeat officiis voluptatum excepturi obcaecati eveniet accusantium doloremque, autem id aperiam repudiandae fuga, sunt harum!</span>
+                        </div>
+                        <div class="flex gap-6 items-center">
+                            <!-- user actions -->
+                            <button><img src="assets/svg/icons/icon_black/add_reaction.svg" alt=""></button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
         <!-- chat input -->

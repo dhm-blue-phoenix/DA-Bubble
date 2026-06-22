@@ -70,6 +70,44 @@
 
 .add_member{
 background-color: rgba(236, 238, 254, 1);
+}
 
+.separator{
+    height: 1px;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+}
 
+.message_member{
+    padding: 16px;
+    background-color: rgba(236, 238, 254, 1);
+    border-radius: 0 24px 24px 24px;
+}
+
+.message_user{
+    padding: 16px;
+    background-color: rgba(121, 126, 243, 1);
+    color: white;
+    border-radius: 24px 0 24px 24px;
+}
+
+.timestamp{
+font-size: 14px;
+color: rgba(104, 104, 104, 1);
+}
+
+.chat_name{
+    font-size: 18px;
+    font-weight: 700;
+    font-style: bold;
+}
+
+.feedback{
+    color: rgba(83, 90, 241, 1);
+    font-size: 18px;
+
+    &:hover{
+    text-decoration: underline;
+    cursor: pointer;
+    }
 }
