@@ -21,7 +21,7 @@
             <button><img class="size-24px" src="assets/svg/icons/icon_black/add_black.svg" alt="workspace"></button>
         </div>
 
-        <div class="w-full flex flex-col gap-8 p-6">
+        <div class="w-full flex flex-col gap-8 p-6 overflow-y-auto max-h-48">
             <!-- Channel Name Dynmaisch , loop for manny channels  -->
             <div>
                 <span class="single_channel aktiv_channel"># Entwicklerteam</span>
@@ -43,6 +43,28 @@
             </div>
         </div>
 
+        <!-- Dm Loop for chat  -->
+        <div class=" w-full flex items-start px-6 gap-4 flex-col overflow-y-auto flex-1">
+            <div class="justify-center  flex items-center justify-items-start gap-2 ">
+                <div class="relative size-[48px]">
+                    <img class="size-[48px]" src="assets/svg/avatar/avatar_small/1.svg" alt="avatar">
+                    <div class="status online"></div>
+                    <!-- status online/offline? -->
+                </div>
+                <span class="dm_user">Elias Neumann</span>
+            </div>
+
+            <div class="justify-center  flex items-center justify-items-start gap-2 ">
+                <div class="relative size-[48px]">
+                    <img class="size-[48px]" src="assets/svg/avatar/avatar_small/1.svg" alt="avatar">
+                    <div class="status offline"></div>
+                    <!-- status online/offline? -->
+                </div>
+                <span class="dm_user">Elias Neumann</span>
+            </div>
+
+        </div>
+        
     </section>
 
     <section class="chat bg-white flex-1"></section>
