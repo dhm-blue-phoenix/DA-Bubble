@@ -16,3 +16,16 @@
     border-radius: 30px;
 }
 
+.single_channel{
+    font-size: 18px;
+    line-height: 100%;
+    padding: 4px 20px;
+    border-radius: 20px;
+}
+
+.aktiv_channel{
+    background-color: rgba(236, 238, 254, 1);
+    color: rgba(83, 90, 241, 1);
+    font-style: bold !important;
+    font-weight: 800;
+}
