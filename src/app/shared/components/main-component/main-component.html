@@ -64,10 +64,56 @@
             </div>
 
         </div>
-        
     </section>
 
-    <section class="chat bg-white flex-1"></section>
+    <section class="chat bg-white flex-1">
+        <div class="chat_header flex justify-between px-[42px] py-[24px] border-b-2 border-black/10 shadow-sm">
+            <div class="flex items-center gap-2">
+                <h2># Entwicklerteam</h2>
+                <button><img class="size-24px" src="assets/svg/icons/icon_black/dropdown_black.svg" alt="dropdown-arrow"></button>
+            </div>
+
+            <!-- array of user -->
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <div class="flex ">
+                        <img class="size-[40px] -ml-3 border-2 rounded-full border-white" src="assets/svg/avatar/avatar_small/1.svg" alt="avatar">
+                        <img class="size-[40px] -ml-3 border-2 rounded-full border-white"src="assets/svg/avatar/avatar_small/1.svg" alt="avatar">
+                        <img class="size-[40px] -ml-3 border-2 rounded-full border-white" src="assets/svg/avatar/avatar_small/1.svg" alt="avatar">
+                    </div>
+                </div>
+            <!-- index of array of user -->
+                <div>
+                    <span class="text-xl">3</span>
+                </div>
+                <button class="add_member size-[40px] rounded-full">
+                    <img src="assets/svg/icons/icon_black/add_member_black.svg" alt="add_member">
+                </button>
+            </div>    
+        </div>
+
+        <div class="chat_container w-full p-[20px] flex flex-col ">
+
+        <!-- chat history loop -->
+            <div class="chat_history w-full flex-1 overflow-y-auto ">
+                <div class="chat_history flex-1 bg-sky-900"></div>
+            </div>
+
+        <!-- chat input -->
+            <div class="chat_input border-2 border-black/20 rounded-2xl flex flex-col p-4 gap-4">
+                <input type="text" placeholder="Nachricht an # Entwicklerteam" class="outline-none w-full bg-transparent">
+                <div class="flex justify-between items-center">
+                    <div class="flex gap-3 items-center">
+                        <button><img class="size-[20px]" src="assets/svg/icons/icon_grey/sentiment_satisfied_grey.svg" alt="emoji"></button>
+                        <button><img class="size-[20px]" src="assets/svg/icons/icon_grey/alternate_email_grey.svg" alt="mention"></button>
+                    </div>
+                    <button class="rounded-full p-1">
+                        <img class="size-[32px]" src="assets/svg/icons/icon_purple/Send icon.svg" alt="send">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <section class="thread bg-white"></section>
 </main>

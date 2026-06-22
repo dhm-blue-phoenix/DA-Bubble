@@ -8,6 +8,13 @@
 .chat{
     height: 900px;
     border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat_container{
+    flex: 1;
+    overflow: hidden;
 }
 
 .thread{
@@ -59,4 +66,10 @@
     color: rgba(83, 90, 241, 1);
     font-style: bold !important;
     font-weight: 800;
+}
+
+.add_member{
+background-color: rgba(236, 238, 254, 1);
+
+
 }
