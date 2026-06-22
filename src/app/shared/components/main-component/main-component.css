@@ -1,3 +1,18 @@
-p{
-    color: black;
+@import '../../../app.css';
+.channel{
+    width: 360px;
+    height: 900px;
+    border-radius: 30px;
 }
+
+.chat{
+    height: 900px;
+    border-radius: 30px;
+}
+
+.thread{
+    width: 420px;
+    height: 900px;
+    border-radius: 30px;
+}
+

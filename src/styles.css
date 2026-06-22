@@ -4,14 +4,18 @@
 
 @font-face {
     font-family: 'Nunito';
-    src: url('/public/assets/fonts/nunito/Nunito-VariableFont_wght.ttf') format('truetype');
+    src: url('/assets/fonts/nunito/Nunito-VariableFont_wght.ttf') format('truetype');
     font-weight: 100 900;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Nunito';
-    src: url('/public/assets/fonts/nunito/Nunito-Italic-VariableFont_wght.ttf') format('truetype');
+    src: url('/assets/fonts/nunito/Nunito-Italic-VariableFont_wght.ttf') format('truetype');
     font-weight: 100 900;
     font-style: italic;
+}
+
+*, *::before, *::after {
+    font-family: 'Nunito', sans-serif;
 }
