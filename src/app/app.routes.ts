@@ -1,8 +1,7 @@
 import { Routes } from '@angular/router';
-import { MainComponent } from './shared/components/main-component/main-component';
+import { LayoutComponent } from './shared/components/feature/layout-component';
 
 export const routes: Routes = [
-    { path: '', component: MainComponent },
-
+    { path: '', component: LayoutComponent },
     { path: '**', redirectTo: '' },
 ];
