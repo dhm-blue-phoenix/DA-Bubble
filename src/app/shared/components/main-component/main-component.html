@@ -1,16 +1,17 @@
 <main class="flex gap-8 px-8 py-4 justify-between bg-sky-900" >
 
-    <section class="channel flex-col bg-white flex items-center justify-between p-4">
+    <section class="channel flex-col bg-white flex items-center gap-8 p-4">
         <div class="flex justify-between w-full">
             <div class="flex items-center gap-4">
                 <img class="size-60px" src="assets/svg/devspace/Workspace logo.svg" alt="workspace">
+                <!-- Name Dynamisch and edeting -->
                 <h2>Devspace</h2>
             </div>
             <button><img src="assets/svg/icons/icon_black/edit_square_black.svg" alt="edit"></button>
         </div>
 
         <div class="flex justify-between w-full items-center">
-            <div class="flex gap-2">
+            <div class="flex gap-2 items-center">
                 <button><img class="size-24px" src="assets/svg/icons/icon_black/arrow_drop_down_black.svg" alt="dropdown-arrow"></button>
                 <div class="flex gap-2 items-center">
                     <img class="size-24px" src="assets/svg/icons/icon_black/workspaces_black.svg" alt="workspace">
@@ -18,6 +19,28 @@
                 </div>
             </div>
             <button><img class="size-24px" src="assets/svg/icons/icon_black/add_black.svg" alt="workspace"></button>
+        </div>
+
+        <div class="w-full flex flex-col gap-8 p-6">
+            <!-- Channel Name Dynmaisch , loop for manny channels  -->
+            <div>
+                <span class="single_channel aktiv_channel"># Entwicklerteam</span>
+            </div>
+
+            <div>
+                <button class="flex gap-2 px-3 items-center">
+                    <img class="size-24px" src="assets/svg/icons/icon_black/add_circle_black.svg" alt="add-channel">
+                    <span>Channel hinzufügen</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="flex w-full items-center gap-2 justify-start">
+            <button><img class="size-24px" src="assets/svg/icons/icon_black/arrow_drop_down_black.svg" alt="dropdown-arrow"></button>
+            <div class="flex gap-2 items-center">
+                <img class="size-24px" src="assets/svg/icons/icon_black/account_circle_black.svg" alt="add-channel">
+                <h3>Direktnachrichten</h3>
+            </div>
         </div>
 
     </section>
