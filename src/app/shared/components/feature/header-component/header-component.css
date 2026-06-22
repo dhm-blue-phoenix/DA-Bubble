@@ -1,0 +1,8 @@
+@import '../../../../app.css';
+
+.input_container{
+    width: calc(100vw / 2);
+    height: 70px;
+    border-radius: 42px;
+    background-color: rgb(42, 46, 46);
+}
