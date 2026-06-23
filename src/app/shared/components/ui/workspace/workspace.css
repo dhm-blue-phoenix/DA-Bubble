@@ -1,0 +1,17 @@
+@import '../../../../app.css';
+.status {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.online{
+    background-color: rgba(146, 200, 62, 1);
+}
+.offline{
+    background-color: rgba(104, 104, 104, 1);
+}
