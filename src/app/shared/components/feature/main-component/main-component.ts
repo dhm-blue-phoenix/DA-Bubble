@@ -45,6 +45,8 @@ user: Profile[] = [
 channel: ChannelInterface[] = [
   {  id: '1', name: 'Entwicklerteam', description:"", created_at: '01.01.1993', edited_at: '01.01.1994', members: [], messages: []},
   {  id: '2', name: 'Test', description:"", created_at: '01.01.1993', edited_at: '01.01.1994', members: [], messages: []},
+  {  id: '3', name: 'Figmateam', description:"", created_at: '01.01.1993', edited_at: '01.01.1994', members: [], messages: []},
+  {  id: '4', name: 'Codeanalyse', description:"", created_at: '01.01.1993', edited_at: '01.01.1994', members: [], messages: []},
 
 ]
 }
