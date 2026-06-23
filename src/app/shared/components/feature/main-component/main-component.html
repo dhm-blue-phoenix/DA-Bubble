@@ -1,6 +1,6 @@
 <main class="flex gap-8 px-8 py-4 justify-between" >
 
-    <section class="channel flex-col bg-white flex items-center gap-8 p-4">
+    <section class="channel flex-col bg-white flex items-center gap-4 p-4">
         <div class="flex justify-between w-full">
             <div class="flex items-center gap-4">
                 <img class="size-60px" src="assets/svg/devspace/Workspace logo.svg" alt="workspace">
@@ -11,7 +11,7 @@
         </div>
 
         <div class="flex justify-between w-full items-center">
-            <div class="flex gap-2 items-center">
+            <div class="flex gap-1 items-center">
                 <button><img class="size-24px" src="assets/svg/icons/icon_black/arrow_drop_down_black.svg" alt="dropdown-arrow"></button>
                 <div class="flex gap-2 items-center">
                     <img class="size-24px" src="assets/svg/icons/icon_black/workspaces_black.svg" alt="workspace">
@@ -21,13 +21,13 @@
             <button><img class="size-24px" src="assets/svg/icons/icon_black/add_black.svg" alt="workspace"></button>
         </div>
 
-        <div class="w-full flex flex-col gap-8 p-6 overflow-y-auto max-h-48">
+        <div class="w-full flex flex-col gap-2 p-2 overflow-y-auto max-h-48">
             @for (ch of channel; track $index) {
                 <app-channels [ch]="ch"></app-channels>
             }
 
             <div>
-                <button class="flex gap-2 px-3 items-center">
+                <button class="flex gap-2 px-3 py-2 items-center">
                     <img class="size-24px" src="assets/svg/icons/icon_black/add_circle_black.svg" alt="add-channel">
                     <span>Channel hinzufügen</span>
                 </button>

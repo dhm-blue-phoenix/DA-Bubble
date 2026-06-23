@@ -1,9 +1,22 @@
 @import '../../../../app.css';
+
+.channel_button{
+width: 100%;
+display: flex;
+justify-content: flex-start;
+}
 .single_channel{
+    display: flex;
+    justify-content: flex-start;
     font-size: 18px;
     line-height: 100%;
-    padding: 4px 20px;
+    padding: 8px 24px;
     border-radius: 20px;
+    width: 100%;
+
+    &:hover{
+        background-color: rgba(236, 238, 254, 0.8);
+    }
 }
 .aktiv_channel{
     background-color: rgba(236, 238, 254, 1);
