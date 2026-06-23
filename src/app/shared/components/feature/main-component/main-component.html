@@ -43,26 +43,11 @@
             </div>
         </div>
 
-        <!-- Dm Loop for chat  -->
+
         <div class=" w-full flex items-start px-6 gap-4 flex-col overflow-y-auto flex-1">
-            <div class="justify-center  flex items-center justify-items-start gap-2 ">
-                <div class="relative size-[48px]">
-                    <img class="size-[48px]" src="assets/svg/avatar/avatar_small/1.svg" alt="avatar">
-                    <div class="status online"></div>
-                    <!-- status online/offline? -->
-                </div>
-                <span class="dm_user">Elias Neumann</span>
-            </div>
-
-            <div class="justify-center  flex items-center justify-items-start gap-2 ">
-                <div class="relative size-[48px]">
-                    <img class="size-[48px]" src="assets/svg/avatar/avatar_small/1.svg" alt="avatar">
-                    <div class="status offline"></div>
-                    <!-- status online/offline? -->
-                </div>
-                <span class="dm_user">Elias Neumann</span>
-            </div>
-
+            @for (user of user; track $index) {
+            <app-workspace [user]="user"></app-workspace>
+            }
         </div>
     </section>
 

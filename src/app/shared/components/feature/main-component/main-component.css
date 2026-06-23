@@ -37,32 +37,6 @@ section{
     line-height: 100%;
 }
 
-.status {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 2px solid white;
-}
-
-.offline {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 2px solid white;
-}
-.online{
-    background-color: rgba(146, 200, 62, 1);
-}
-.offline{
-    background-color: rgba(104, 104, 104, 1);
-}
-
 .aktiv_channel{
     background-color: rgba(236, 238, 254, 1);
     color: rgba(83, 90, 241, 1);
