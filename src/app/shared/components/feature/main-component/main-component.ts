@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Workspace } from '../../ui/workspace/workspace'
 import { Channels } from '../../ui/channels/channels'
 import { Profile } from '../../../interfaces/profile';
-import { Interface } from 'readline';
+
 
 interface ChannelInterface{
     id: string;
@@ -35,6 +35,9 @@ interface Message{
 })
 export class MainComponent {
 
+channelOpen = true
+dmOpen = false
+
 user: Profile[] = [
 {  id: '1', email: 'EliasNeumann@web.de', name:"Elias Neumann", created_at: '01.01.1993', status: 'online', avatar_url: 'assets/svg/avatar/avatar_small/1.svg'},
 {  id: '2', email: 'EliasNeumann@web.de', name:"Fred Neumann", created_at: '01.01.1993', status: 'offline', avatar_url: 'assets/svg/avatar/avatar_small/2.svg'},
@@ -49,5 +52,13 @@ channel: ChannelInterface[] = [
   {  id: '4', name: 'Codeanalyse', description:"", created_at: '01.01.1993', edited_at: '01.01.1994', members: [], messages: []},
 
 ]
+
+toggleMenu(menu: 'dmOpen' | 'channelOpen') {
+    if (menu === 'dmOpen') this.dmOpen = !this.dmOpen;
+    if (menu === 'channelOpen') this.channelOpen = !this.channelOpen;
+}
+
+
 }
 export type Channel = ChannelInterface;
+
