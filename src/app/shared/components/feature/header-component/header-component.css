@@ -1,5 +1,9 @@
 @import '../../../../app.css';
 
+section{
+    background-color: rgba(236, 238, 254, 1);
+}
+
 .input_container{
     width: calc(100vw / 2);
     border-radius: 42px;

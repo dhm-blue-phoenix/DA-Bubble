@@ -1,5 +1,7 @@
 @import '../../../../app.css';
-
+main{
+    background-color: rgba(236, 238, 254, 1);
+}
 section{
     height: calc(100vh - 120px);
 }
@@ -77,3 +79,4 @@ color: rgba(104, 104, 104, 1);
     cursor: pointer;
     }
 }
+

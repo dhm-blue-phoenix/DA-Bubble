@@ -12,7 +12,7 @@
 
         <div class="flex justify-between w-full items-center">
             <div class="flex gap-1 items-center">
-                <button><img class="size-24px" src="assets/svg/icons/icon_black/arrow_drop_down_black.svg" alt="dropdown-arrow"></button>
+                <button (click)="toggleMenu('channelOpen')" id="channel"><img class="size-24px" src="assets/svg/icons/icon_black/arrow_drop_down_black.svg" alt="dropdown-arrow"></button>
                 <div class="flex gap-2 items-center">
                     <img class="size-24px" src="assets/svg/icons/icon_black/workspaces_black.svg" alt="workspace">
                     <h3>Channels</h3>
@@ -21,7 +21,7 @@
             <button><img class="size-24px" src="assets/svg/icons/icon_black/add_black.svg" alt="workspace"></button>
         </div>
 
-        <div class="w-full flex flex-col gap-2 p-2 overflow-y-auto max-h-48">
+        <div [style.display]="channelOpen ? 'flex' : 'none'" class="w-full flex flex-col gap-2 p-2 overflow-y-auto max-h-48">
             @for (ch of channel; track $index) {
                 <app-channels [ch]="ch"></app-channels>
             }
@@ -35,7 +35,7 @@
         </div>
 
         <div class="flex w-full items-center gap-2 justify-start">
-            <button><img class="size-24px" src="assets/svg/icons/icon_black/arrow_drop_down_black.svg" alt="dropdown-arrow"></button>
+            <button (click)="toggleMenu('dmOpen')" id="dm"><img class="size-24px" src="assets/svg/icons/icon_black/arrow_drop_down_black.svg" alt="dropdown-arrow"></button>
             <div class="flex gap-2 items-center">
                 <img class="size-24px" src="assets/svg/icons/icon_black/account_circle_black.svg" alt="add-channel">
                 <h3>Direktnachrichten</h3>
@@ -43,11 +43,12 @@
         </div>
 
 
-        <div class=" w-full flex items-start px-6 gap-4 flex-col overflow-y-auto flex-1">
-            @for (user of user; track $index) {
-            <app-workspace [user]="user"></app-workspace>
-            }
-        </div>
+            <div [style.display]="dmOpen ? 'flex' : 'none'" class=" w-full flex items-start px-6 gap-4 flex-col overflow-y-auto flex-1 ">
+                @for (user of user; track $index) {
+                <app-workspace [user]="user"></app-workspace>
+                }
+            </div>
+        
     </section>
 
     <section class="chat flex flex-col bg-white flex-1">
