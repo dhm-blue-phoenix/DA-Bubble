@@ -22,10 +22,9 @@
         </div>
 
         <div class="w-full flex flex-col gap-8 p-6 overflow-y-auto max-h-48">
-            <!-- Channel Name Dynmaisch , loop for manny channels  -->
-            <div>
-                <span class="single_channel aktiv_channel"># Entwicklerteam</span>
-            </div>
+            @for (ch of channel; track $index) {
+                <app-channels [ch]="ch"></app-channels>
+            }
 
             <div>
                 <button class="flex gap-2 px-3 items-center">
