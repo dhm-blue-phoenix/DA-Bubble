@@ -3,15 +3,13 @@ import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../../../environment/environment';
 
 import {
-  createClient,
   RealtimeChannel,
-  RealtimePostgresInsertPayload,
-  RealtimePostgresUpdatePayload,
   SupabaseClient,
   PostgrestError
 } from '@supabase/supabase-js';
 
 import { Profile, Profiles } from '../../interfaces/profile';
+import { Supabase } from './db-superbase';
 
 type SupabaseResponseProfiles = { data: Profiles | null; error: PostgrestError | null; };
 
@@ -21,19 +19,14 @@ type SupabaseResponseProfiles = { data: Profiles | null; error: PostgrestError |
 export class DatabaseProfiles implements OnDestroy {
   private readonly platformId: Object = inject(PLATFORM_ID);
   private readonly debug_logs: boolean = environment.debug_logs;
-  private readonly supabase: SupabaseClient = createClient(environment.supabaseUrl, environment.supabaseKey);
+  private readonly supabase: SupabaseClient = inject(Supabase).supabase;
+  private readonly channels?: RealtimeChannel;
 
-  private insertChannelProfiles!: RealtimeChannel;
-  private updateChannelProfiles!: RealtimeChannel;
-
-  private readonly _profiles: WritableSignal<Profiles> = signal<Profiles>([]);
-  public readonly profiles: Signal<Profiles> = this._profiles.asReadonly();
+  public readonly _profiles: WritableSignal<Profiles> = signal<Profiles>([]);
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
-      this.getProfiles();
-      this.insertChannelProfiles = this.subscribeInsertChannelProfiles();
-      this.updateChannelProfiles = this.subscribeUpdateChannelProfiles();
+      this.channels = this.subscribeProfiles();
     }
 
     if (this.debug_logs) {
@@ -41,59 +34,54 @@ export class DatabaseProfiles implements OnDestroy {
     }
   }
 
+  private subscribeProfiles(): RealtimeChannel {
+    return this.supabase
+      .channel('profiles')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'profiles' },
+        payload => this.handleProfileEvent(payload)
+      )
+      .subscribe();
+  }
+
+  private handleProfileEvent(payload: any): void {
+    if (payload.eventType === 'INSERT') this.insertProfile(payload);
+    if (payload.eventType === 'UPDATE') this.updateProfile(payload);
+  }
+
   public ngOnDestroy(): void {
-    if (this.insertChannelProfiles) {
-      this.supabase.removeChannel(this.insertChannelProfiles);
-    }
-    if (this.updateChannelProfiles) {
-      this.supabase.removeChannel(this.updateChannelProfiles);
+    if (this.channels) {
+      this.supabase.removeChannel(this.channels);
     }
   }
 
-  private subscribeInsertChannelProfiles(): RealtimeChannel {
-    return this.supabase
-      .channel('custom-insert-channel')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'profiles' },
-        (payload: RealtimePostgresInsertPayload<any>): void => {
-          const newProfile = payload['new'] as Profile;
-          this._profiles.update((list: Profiles): Profiles => {
-            if (list.some((p: Profile): boolean => p.id === newProfile.id)) {
-              return list;
-            }
-            return [...list, newProfile];
-          });
-        }
-      )
-      .subscribe();
+  private insertProfile(payload: any): void {
+    const profile = payload.new as Profile;
+
+    this._profiles.update(list =>
+      list.some(p => p.id === profile.id)
+        ? list
+        : [...list, profile]
+    );
   }
 
-  private subscribeUpdateChannelProfiles(): RealtimeChannel {
-    return this.supabase
-      .channel('custom-update-channel')
-      .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'profiles' },
-        (payload: RealtimePostgresUpdatePayload<any>): void => {
-          this._profiles.update(
-            (list: Profiles): Profiles =>
-              list.map(
-                (profile: Profile): Profile =>
-                  profile.id === payload.old['id'] ? (payload.new as Profile) : profile
-              )
-          );
-        }
+  private updateProfile(payload: any): void {
+    const profile = payload.new as Profile;
+
+    this._profiles.update(list =>
+      list.map(p =>
+        p.id === profile.id ? profile : p
       )
-      .subscribe();
+    );
   }
 
   private async debugging(): Promise<void> {
-    //console.log(await this.getProfile('18290dd9-9a3a-4f0b-b74b-fa36e5b38ecd'));
+    //console.warn(await this.getProfile('18290dd9-9a3a-4f0b-b74b-fa36e5b38ecd'));
     //this.updateProfileName(this.getLocalStorageCurrentProfileId(), 'Richert Stark');
   }
 
-  private async getProfiles(): Promise<void> {
+  public async getProfiles(): Promise<void> {
       const { data: profiles, error }: SupabaseResponseProfiles = await this.supabase
         .from('profiles')
         .select('id, name, email, avatar_url, status, created_at');

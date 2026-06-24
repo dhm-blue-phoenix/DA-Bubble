@@ -5,13 +5,18 @@ import { DatabaseAuth } from './db/db-auth';
 import { Profiles, Profile } from '../interfaces/profile';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class Database {
   private readonly db_profiles: DatabaseProfiles = inject(DatabaseProfiles);
   private readonly db_auth: DatabaseAuth = inject(DatabaseAuth);
 
-  public readonly profiles: Signal<Profiles> = this.db_profiles.profiles;
+  public readonly profiles: Signal<Profiles> = this.db_profiles._profiles.asReadonly();
+  public readonly isLogin: Signal<boolean> = this.db_auth._isUserLogin.asReadonly();
+
+  constructor() {
+      this.db_profiles.getProfiles();
+  }
 
   /*
   * Notiz: Eventuelle anpassung bei den funktionen für zusetzliches return error handlieng!
@@ -29,17 +34,18 @@ export class Database {
   }
 
   public logout(): void {
+    this.db_profiles._profiles.set([]);
     this.db_auth.signOut();
   }
 
   /*
-   * Profile Verwaltung
+   * Profil Verwaltung
    * */
   public async getProfile(profileId: string): Promise<Profile | null> {
     return this.db_profiles.getProfile(profileId);
   }
 
   public async updateProfileName(profileId: string, value: string): Promise<void> {
-    this.db_profiles.updateProfileName(profileId, value);
+      this.db_profiles.updateProfileName(profileId, value);
   }
 }

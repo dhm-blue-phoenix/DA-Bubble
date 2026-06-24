@@ -13,7 +13,7 @@ import { Database } from './shared/services/db';
 export class App {
   protected readonly title = signal('da_bubble');
 
-  private readonly db: Database = inject(Database);
+  public readonly db: Database = inject(Database);
 
   constructor() {}
 }
