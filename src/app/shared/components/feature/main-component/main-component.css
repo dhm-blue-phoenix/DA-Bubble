@@ -1,6 +1,6 @@
 @import '../../../../app.css';
 main{
-    background-color: rgba(236, 238, 254, 1);
+    background-color: var(--bg-color)
 }
 section{
     height: calc(100vh - 120px);
@@ -80,3 +80,6 @@ color: rgba(104, 104, 104, 1);
     }
 }
 
+button:hover img {
+    filter: invert(44%) sepia(69%) saturate(2878%) hue-rotate(225deg) brightness(99%) contrast(93%);
+}

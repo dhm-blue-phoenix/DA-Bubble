@@ -10,8 +10,8 @@
 }
 
 .online{
-    background-color: rgba(146, 200, 62, 1);
+    background-color: var(--status-online)
 }
 .offline{
-    background-color: rgba(104, 104, 104, 1);
+    background-color: var(--status-offline);
 }
