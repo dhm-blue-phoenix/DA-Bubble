@@ -36,22 +36,21 @@ interface Message{
 export class MainComponent {
 
 channelOpen = true
-dmOpen = false
+dmOpen = true
 
-user: Profile[] = [
-{  id: '1', email: 'EliasNeumann@web.de', name:"Elias Neumann", created_at: '01.01.1993', status: 'online', avatar_url: 'assets/svg/avatar/avatar_small/1.svg'},
-{  id: '2', email: 'EliasNeumann@web.de', name:"Fred Neumann", created_at: '01.01.1993', status: 'offline', avatar_url: 'assets/svg/avatar/avatar_small/2.svg'},
-{  id: '3', email: 'EliasNeumann@web.de', name:"Peter Lustig", created_at: '01.01.1993', status: 'offline', avatar_url: 'assets/svg/avatar/avatar_small/3.svg'},
-{  id: '4', email: 'EliasNeumann@web.de', name:"Anna Hansen", created_at: '01.01.1993', status: 'online', avatar_url: 'assets/svg/avatar/avatar_small/4.svg'},
-  ]
+users: Profile[] = [
+        {  id: '1', email: 'EliasNeumann@web.de', name:"Elias Neumann", created_at: '01.01.1993', status: 'online', avatar_url: 'assets/svg/avatar/avatar_small/1.svg'},
+        {  id: '2', email: 'EliasNeumann@web.de', name:"Fred Neumann", created_at: '01.01.1993', status: 'offline', avatar_url: 'assets/svg/avatar/avatar_small/2.svg'},
+        {  id: '3', email: 'EliasNeumann@web.de', name:"Peter Lustig", created_at: '01.01.1993', status: 'offline', avatar_url: 'assets/svg/avatar/avatar_small/3.svg'},
+        {  id: '4', email: 'EliasNeumann@web.de', name:"Anna Hansen", created_at: '01.01.1993', status: 'online', avatar_url: 'assets/svg/avatar/avatar_small/4.svg'},
+    ]
 
 channel: ChannelInterface[] = [
-  {  id: '1', name: 'Entwicklerteam', description:"", created_at: '01.01.1993', edited_at: '01.01.1994', members: [], messages: []},
-  {  id: '2', name: 'Test', description:"", created_at: '01.01.1993', edited_at: '01.01.1994', members: [], messages: []},
-  {  id: '3', name: 'Figmateam', description:"", created_at: '01.01.1993', edited_at: '01.01.1994', members: [], messages: []},
-  {  id: '4', name: 'Codeanalyse', description:"", created_at: '01.01.1993', edited_at: '01.01.1994', members: [], messages: []},
-
-]
+        {  id: '1', name: 'Entwicklerteam', description:"", created_at: '01.01.1993', edited_at: '01.01.1994', members: [], messages: []},
+        {  id: '2', name: 'Test', description:"", created_at: '01.01.1993', edited_at: '01.01.1994', members: [], messages: []},
+        {  id: '3', name: 'Figmateam', description:"", created_at: '01.01.1993', edited_at: '01.01.1994', members: [], messages: []},
+        {  id: '4', name: 'Codeanalyse', description:"", created_at: '01.01.1993', edited_at: '01.01.1994', members: [], messages: []},
+    ]
 
 toggleMenu(menu: 'dmOpen' | 'channelOpen') {
     if (menu === 'dmOpen') this.dmOpen = !this.dmOpen;

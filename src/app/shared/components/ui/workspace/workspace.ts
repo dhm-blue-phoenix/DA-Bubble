@@ -1,5 +1,9 @@
 import { Component, Input } from '@angular/core';
 import { Profile } from '../../../interfaces/profile';
+import { ActiveService } from '../../../services/set_aktiv_service';
+import { inject} from '@angular/core';
+
+
 
 
 @Component({
@@ -11,14 +15,7 @@ import { Profile } from '../../../interfaces/profile';
 export class Workspace {
 @Input() user!: Profile
 
-aktiv_DM : string | null = null; 
-
-setAktivDM(user_id: string) {
-    this.aktiv_DM = null;
-    this.aktiv_DM = user_id;
-
-    console.log(this.aktiv_DM)
-}
+active = inject(ActiveService);
 
 }
 
