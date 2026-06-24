@@ -1,6 +1,23 @@
 /* You can add global styles to this file, and also import other style files */
 @import 'tailwindcss';
 
+:root {
+    --bg-color:rgba(236, 238, 254, 1);
+
+    --border-aktiv:#535AF1;
+    --bg-input:#ECEEFE;
+    --hover-text: #535AF1;
+    --hover-bg: #ECEEFE;
+    --btn-hover: #797EF3;
+    
+    --btn:#444DF2;
+    --btn-disable: #686868;
+
+    --reaction-bubble:#444DF2;
+
+    --status-offline: rgba(104, 104, 104, 1);
+    --status-online: rgba(146, 200, 62, 1);
+}
 
 @font-face {
     font-family: 'Nunito';

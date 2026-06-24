@@ -1,7 +1,7 @@
 @import '../../../../app.css';
 
 section{
-    background-color: rgba(236, 238, 254, 1);
+    background-color: var(--bg-color)
 }
 
 .input_container{

@@ -12,11 +12,10 @@
 
         <div class="flex justify-between w-full items-center">
             <div class="flex gap-1 items-center">
-                <button (click)="toggleMenu('channelOpen')" id="channel"><img class="size-24px" src="assets/svg/icons/icon_black/arrow_drop_down_black.svg" alt="dropdown-arrow"></button>
-                <div class="flex gap-2 items-center">
+                <button class="flex gap-2 items-center hover:text-[var(--hover-text)] group " (click)="toggleMenu('channelOpen')" id="channel"><img class="size-24px" [class]="channelOpen ? 'rotated0' : 'rotated-90' " src="assets/svg/icons/icon_black/arrow_drop_down_black.svg" alt="dropdown-arrow">
                     <img class="size-24px" src="assets/svg/icons/icon_black/workspaces_black.svg" alt="workspace">
                     <h3>Channels</h3>
-                </div>
+                </button>
             </div>
             <button><img class="size-24px" src="assets/svg/icons/icon_black/add_black.svg" alt="workspace"></button>
         </div>
@@ -35,11 +34,10 @@
         </div>
 
         <div class="flex w-full items-center gap-2 justify-start">
-            <button (click)="toggleMenu('dmOpen')" id="dm"><img class="size-24px" src="assets/svg/icons/icon_black/arrow_drop_down_black.svg" alt="dropdown-arrow"></button>
-            <div class="flex gap-2 items-center">
+            <button class="flex gap-2 items-center hover:text-[var(--hover-text)]" (click)="toggleMenu('dmOpen')" id="dm"><img class="size-24px" [class]="dmOpen ? 'rotated0' : 'rotated-90' " src="assets/svg/icons/icon_black/arrow_drop_down_black.svg" alt="dropdown-arrow">
                 <img class="size-24px" src="assets/svg/icons/icon_black/account_circle_black.svg" alt="add-channel">
                 <h3>Direktnachrichten</h3>
-            </div>
+            </button>
         </div>
 
 
