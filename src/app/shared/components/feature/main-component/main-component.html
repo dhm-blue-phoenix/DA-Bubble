@@ -21,7 +21,7 @@
         </div>
 
         <div [style.display]="channelOpen ? 'flex' : 'none'" class="w-full flex flex-col gap-2 p-2 overflow-y-auto max-h-48">
-            @for (ch of channel; track $index) {
+            @for (ch of channel; track $index;) {
                 <app-channels [ch]="ch"></app-channels>
             }
 
@@ -42,7 +42,7 @@
 
 
             <div [style.display]="dmOpen ? 'flex' : 'none'" class=" w-full flex items-start px-6 gap-4 flex-col overflow-y-auto flex-1 ">
-                @for (user of user; track $index) {
+                @for (user of user; track $index;) {
                 <app-workspace [user]="user"></app-workspace>
                 }
             </div>

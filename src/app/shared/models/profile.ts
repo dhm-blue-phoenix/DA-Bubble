@@ -1,7 +1,7 @@
 import { Profile } from '../interfaces/profile';
 
 export const emptyProfile: Profile = {
-  id: 'n/a',
+  id: '',
   email: 'n/a',
   name: 'n/a',
   created_at: 'n/a',
