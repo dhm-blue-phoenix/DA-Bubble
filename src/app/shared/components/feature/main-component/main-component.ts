@@ -37,6 +37,7 @@ export class MainComponent {
 
 channelOpen = true
 dmOpen = true
+workspace_Open = true
 
 users: Profile[] = [
         {  id: '1', email: 'EliasNeumann@web.de', name:"Elias Neumann", created_at: '01.01.1993', status: 'online', avatar_url: 'assets/svg/avatar/avatar_small/1.svg'},
@@ -55,6 +56,10 @@ channel: ChannelInterface[] = [
 toggleMenu(menu: 'dmOpen' | 'channelOpen') {
     if (menu === 'dmOpen') this.dmOpen = !this.dmOpen;
     if (menu === 'channelOpen') this.channelOpen = !this.channelOpen;
+}
+
+togglewWorkspace () {
+        this.workspace_Open = !this.workspace_Open;
 }
 
 

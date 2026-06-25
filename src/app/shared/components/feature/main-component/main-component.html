@@ -1,58 +1,59 @@
 <main class="flex gap-8 px-8 py-4 justify-between" >
-
-    <section class="channel flex-col bg-white flex items-center gap-4 p-4">
-        <div class="flex justify-between w-full">
-            <div class="flex items-center gap-4">
-                <img class="size-60px" src="assets/svg/devspace/Workspace logo.svg" alt="workspace">
-                <!-- Name Dynamisch and edeting -->
-                <h2>Devspace</h2>
+    @if(workspace_Open){
+        <section class="channel flex-col bg-white flex items-center gap-4 p-4">
+            <div class="flex justify-between w-full">
+                <div class="flex items-center gap-4">
+                    <img class="size-60px" src="assets/svg/devspace/Workspace logo.svg" alt="workspace">
+                    <!-- Name Dynamisch and edeting -->
+                    <h2>Devspace</h2>
+                </div>
+                <button><img src="assets/svg/icons/icon_black/edit_square_black.svg" alt="edit"></button>
             </div>
-            <button><img src="assets/svg/icons/icon_black/edit_square_black.svg" alt="edit"></button>
-        </div>
-
-        <div class="flex justify-between w-full items-center">
-            <div class="flex gap-1 items-center">
-                <button class="flex gap-2 items-center hover:text-[var(--hover-text)] group " (click)="toggleMenu('channelOpen')" id="channel"><img class="size-24px" [class]="channelOpen ? 'rotated0' : 'rotated-90' " src="assets/svg/icons/icon_black/arrow_drop_down_black.svg" alt="dropdown-arrow">
-                    <img class="size-24px" src="assets/svg/icons/icon_black/workspaces_black.svg" alt="workspace">
-                    <h3>Channels</h3>
-                </button>
+    
+            <div class="flex justify-between w-full items-center">
+                <div class="flex gap-1 items-center">
+                    <button class="flex gap-2 items-center hover:text-[var(--hover-text)] group " (click)="toggleMenu('channelOpen')" id="channel"><img class="size-24px" [class]="channelOpen ? 'rotated0' : 'rotated-90' " src="assets/svg/icons/icon_black/arrow_drop_down_black.svg" alt="dropdown-arrow">
+                        <img class="size-24px" src="assets/svg/icons/icon_black/workspaces_black.svg" alt="workspace">
+                        <h3>Channels</h3>
+                    </button>
+                </div>
+                <button><img class="size-24px" src="assets/svg/icons/icon_black/add_black.svg" alt="workspace"></button>
             </div>
-            <button><img class="size-24px" src="assets/svg/icons/icon_black/add_black.svg" alt="workspace"></button>
-        </div>
-
-        <div [style.display]="channelOpen ? 'flex' : 'none'" class="w-full flex flex-col gap-2 p-2 overflow-y-auto max-h-48">
-            @for (ch of channel; track $index;) {
-                <app-channels [ch]="ch"></app-channels>
-            }
-
-            <div>
-                <button class="flex gap-2 px-3 py-2 items-center">
-                    <img class="size-24px" src="assets/svg/icons/icon_black/add_circle_black.svg" alt="add-channel">
-                    <span>Channel hinzufügen</span>
-                </button>
-            </div>
-        </div>
-
-        <div class="flex w-full items-center gap-2 justify-start">
-            <button class="flex gap-2 items-center hover:text-[var(--hover-text)]" (click)="toggleMenu('dmOpen')" id="dm"><img class="size-24px" [class]="dmOpen ? 'rotated0' : 'rotated-90' " src="assets/svg/icons/icon_black/arrow_drop_down_black.svg" alt="dropdown-arrow">
-                <img class="size-24px" src="assets/svg/icons/icon_black/account_circle_black.svg" alt="add-channel">
-                <h3>Direktnachrichten</h3>
-            </button>
-        </div>
-
-
-            <div [style.display]="dmOpen ? 'flex' : 'none'" class=" w-full flex items-start px-6 gap-4 flex-col overflow-y-auto flex-1 ">
-                @for (user of users; track $index;) {
-                <app-workspace [user]="user"></app-workspace>
+    
+            <div [style.display]="channelOpen ? 'flex' : 'none'" class="w-full flex flex-col gap-2 p-2 overflow-y-auto max-h-48">
+                @for (ch of channel; track $index;) {
+                    <app-channels [ch]="ch"></app-channels>
                 }
+    
+                <div>
+                    <button class="flex gap-2 px-3 py-2 items-center">
+                        <img class="size-24px" src="assets/svg/icons/icon_black/add_circle_black.svg" alt="add-channel">
+                        <span>Channel hinzufügen</span>
+                    </button>
+                </div>
             </div>
-
-        <button class="workspace_button flex items-center bg-color-white">
+    
+            <div class="flex w-full items-center gap-2 justify-start">
+                <button class="flex gap-2 items-center hover:text-[var(--hover-text)]" (click)="toggleMenu('dmOpen')" id="dm"><img class="size-24px" [class]="dmOpen ? 'rotated0' : 'rotated-90' " src="assets/svg/icons/icon_black/arrow_drop_down_black.svg" alt="dropdown-arrow">
+                    <img class="size-24px" src="assets/svg/icons/icon_black/account_circle_black.svg" alt="add-channel">
+                    <h3>Direktnachrichten</h3>
+                </button>
+            </div>
+    
+    
+                <div [style.display]="dmOpen ? 'flex' : 'none'" class=" w-full flex items-start px-6 gap-4 flex-col overflow-y-auto flex-1 ">
+                    @for (user of users; track $index;) {
+                    <app-workspace [user]="user"></app-workspace>
+                    }
+                </div>
+    
+                
+            </section>
+        } 
+        <button (click)="togglewWorkspace()" class="workspace_button flex items-center bg-color-white hover:text-[var(--hover-text)] group">
             <span>Workspace-Menü schließen</span>
             <img class="size-[32px]" src="assets/svg/icons/icon_black/hide_navigation_left_black.svg" alt="">
         </button>
-        
-    </section>
 
     <section class="chat flex flex-col bg-white flex-1">
         <div class="chat_header flex justify-between px-[42px] py-[24px] border-b-2 border-black/10 shadow-sm">
