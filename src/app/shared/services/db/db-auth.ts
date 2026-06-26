@@ -1,11 +1,13 @@
-import { Injectable, signal, WritableSignal, PLATFORM_ID, inject, Signal } from '@angular/core';
+import { Injectable, signal, WritableSignal, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../../../environment/environment';
 import { Supabase } from './db-superbase';
 
 import {
   SupabaseClient,
-  PostgrestError
+  PostgrestError,
+  AuthChangeEvent,
+  Session
 } from '@supabase/supabase-js';
 
 import { Profiles } from '../../interfaces/profile';
@@ -25,10 +27,10 @@ export class DatabaseAuth {
   constructor() {
     if(isPlatformBrowser(this.platformId)) {
       //this.setupAuthListener();
-    }
 
-    if (this.debug_logs) {
-      this.debugging();
+      if (this.debug_logs) {
+        this.debugging();
+      }
     }
   }
 
@@ -87,7 +89,6 @@ export class DatabaseAuth {
 
   private async setStatus(status: 'offline' | 'online'): Promise<void> {
     const profileId: string = this.getLocalStorageCurrentProfileId();
-    console.warn(this.debug_logs, 'pId', profileId);
     if (profileId) {
       await this.updateProfileStatus(profileId, status);
     }

@@ -3,24 +3,26 @@ import { inject, Injectable, Signal } from '@angular/core';
 import { DatabaseProfiles } from './db/db-profiles';
 import { DatabaseAuth } from './db/db-auth';
 import { Profiles, Profile } from '../interfaces/profile';
+import { DatabaseChats } from './db/db-chats';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class Database {
   private readonly db_profiles: DatabaseProfiles = inject(DatabaseProfiles);
   private readonly db_auth: DatabaseAuth = inject(DatabaseAuth);
+  private readonly db_chats: DatabaseChats = inject(DatabaseChats);
 
   public readonly profiles: Signal<Profiles> = this.db_profiles._profiles.asReadonly();
   public readonly isLogin: Signal<boolean> = this.db_auth._isUserLogin.asReadonly();
 
   constructor() {
-      this.db_profiles.getProfiles();
+    this.db_profiles.getProfiles();
   }
 
   /*
-  * Notiz: Eventuelle anpassung bei den funktionen für zusetzliches return error handlieng!
-  * */
+   * Notiz: Eventuelle anpassung bei den funktionen für zusetzliches return error handlieng!
+   * */
 
   /*
    * Login und Registrierung
@@ -46,6 +48,6 @@ export class Database {
   }
 
   public async updateProfileName(profileId: string, value: string): Promise<void> {
-      this.db_profiles.updateProfileName(profileId, value);
+    this.db_profiles.updateProfileName(profileId, value);
   }
 }

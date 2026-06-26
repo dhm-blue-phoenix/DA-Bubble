@@ -1,4 +1,4 @@
-import { Injectable, signal, WritableSignal, PLATFORM_ID, inject, Signal, OnDestroy } from '@angular/core';
+import { Injectable, signal, WritableSignal, PLATFORM_ID, inject, OnDestroy } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../../../environment/environment';
 
