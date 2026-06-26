@@ -7,7 +7,8 @@ import { RealtimeChannel, SupabaseClient, PostgrestError } from '@supabase/supab
 import { Supabase } from './db-superbase';
 import { Chat, Chats, ChatMember, ChatMembers } from '../../interfaces/chats';
 
-export type ExistChat = { success: boolean; chat_id: string | null };
+type ChatId = string | null;
+type ExistChat = { success: boolean; chat_id: ChatId };
 
 @Injectable({
   providedIn: 'root',
@@ -25,11 +26,13 @@ export class DatabaseChats {
     }
   }
 
-  private debugging(): void {
-    this.createNewChat(
+  private async debugging(): Promise<void> {
+    const chatId: string = (await this.getChatId(
       '4ad6fbcc-2628-4dc2-9e31-f16e0ff5ca77',
       '451c2bb9-c1ed-4292-af35-b5ea2a5da03b',
-    );
+    )) as string;
+    this.createNewMessage(chatId, '4ad6fbcc-2628-4dc2-9e31-f16e0ff5ca77', 'Hallo Welt 2!');
+    this.getChatMessages(chatId);
   }
 
   private async checkExistChat(currentUserId: string, otherUserId: string): Promise<ExistChat> {
@@ -64,24 +67,52 @@ export class DatabaseChats {
    *         .select('*, chats(*, messages(*))');
    * */
 
-  public async createNewChat(currentUserId: string, otherUserId: string): Promise<void> {
+  private async createNewChat(currentUserId: string, otherUserId: string): Promise<ChatId> {
+    const { data: newChat, error } = await this.supabase.from('chats').insert({}).select().single();
+    if (error || !newChat) throw error;
+    await this.supabase.from('chat_members').insert([
+      { chat_id: newChat['id'], user_id: currentUserId },
+      { chat_id: newChat['id'], user_id: otherUserId },
+    ]);
+    return newChat['id'];
+  }
+
+  public async getChatId(currentUserId: string, otherUserId: string): Promise<ChatId> {
     const existChat: ExistChat = await this.checkExistChat(currentUserId, otherUserId);
-    if (!existChat['success']) {
-      const { data: newChat, error } = await this.supabase
-        .from('chats')
-        .insert({})
-        .select()
-        .single();
-      console.warn('newChat', newChat);
+    if (!existChat['success']) return this.createNewChat(currentUserId, otherUserId);
+    return existChat['chat_id'];
+  }
 
-      if (error || !newChat) throw error;
+  public async getChatMessages(chatId: string): Promise<void> {
+    const data = await this.supabase
+      .from('messages')
+      .select(`
+        id,
+        content,
+        created_at,
+        edited_at,
+        sender_id,
+        reactions(emoji, user_id),
+        threads!threads_root_message_id_fkey(id)
+      `)
+      .eq('chat_id', chatId)
+      .is('thread_id', null)
+      .order('created_at', { ascending: true });
 
-      await this.supabase.from('chat_members').insert([
-        { chat_id: newChat['id'], user_id: currentUserId },
-        { chat_id: newChat['id'], user_id: otherUserId },
-      ]);
+    console.log('Messages', data);
+  }
 
-      console.log('newChat', newChat);
-    }
+  public async createNewMessage(chatId: string, senderId: string, content: string): Promise<void> {
+    const { data, error } = await this.supabase
+      .from('messages')
+      .insert({
+        chat_id: chatId,
+        sender_id: senderId,
+        content: content,
+      })
+      .select()
+      .single();
+
+    console.log(data);
   }
 }

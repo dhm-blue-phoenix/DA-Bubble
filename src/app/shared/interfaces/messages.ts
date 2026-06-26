@@ -2,11 +2,11 @@ export interface Message {
   readonly id: string;
   readonly sender_id: string;
   content: string;
-  readonly channel_id: string;
-  readonly chat_id: string;
-  readonly thread_id: string;
+  readonly channel_id: string | null;
+  readonly chat_id: string | null;
+  readonly thread_id: string | null;
   readonly created_at: string;
-  edited_at: string;
+  edited_at: string | null;
 }
 
 export interface Reaction {

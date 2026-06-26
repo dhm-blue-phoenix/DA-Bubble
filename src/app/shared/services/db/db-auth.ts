@@ -73,7 +73,7 @@ export class DatabaseAuth {
     }
   }
 
-  private getLocalStorageCurrentProfileId(): string {
+  public getLocalStorageCurrentProfileId(): string {
     if (isPlatformBrowser(this.platformId)) {
       const profileId: string | null = localStorage.getItem('currentProfileId');
       return profileId ? profileId : '';
