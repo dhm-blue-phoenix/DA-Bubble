@@ -25,3 +25,27 @@ button{
     transform: rotate(0deg);
     transition: transform 0.2s ease;
 }
+.status {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+.status_User {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+.online{
+    background-color: var(--status-online)
+}
+.offline{
+    background-color: var(--status-offline);
+}
