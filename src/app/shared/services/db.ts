@@ -3,7 +3,7 @@ import { inject, Injectable, Signal } from '@angular/core';
 import { DatabaseProfiles } from './db/db-profiles';
 import { DatabaseAuth } from './db/db-auth';
 import { DatabaseChats } from './db/db-chats';
-import { DatabaseMessages } from './db/db-messages';
+import { DatabaseMessages, ReactionResult } from './db/db-messages';
 
 import { Profiles, Profile } from '../interfaces/profile';
 
@@ -49,5 +49,25 @@ export class Database {
       this.db_auth.getLocalStorageCurrentProfileId(),
       otherUserId,
     );
+  }
+
+  public newMsg(chatId: string, senderId: string, content: string): void {
+    this.db_messages.createNewMessage(chatId, senderId, content);
+  }
+
+  public editMsg(msgId: string, newContent: string): void {
+    this.db_messages.updateMessage(msgId, newContent);
+  }
+
+  public loadMsg(chatId: string): void {
+    this.db_messages.getChatMessages(chatId);
+  }
+
+  public async toggleReaction(
+    msgId: string,
+    senderId: string,
+    emoji: string,
+  ): Promise<ReactionResult> {
+    return this.db_messages.toggleReaction(msgId, senderId, emoji);
   }
 }

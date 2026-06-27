@@ -12,9 +12,8 @@ import {
 import { Supabase } from './db-superbase';
 import { Chats } from '../../interfaces/chats';
 import { Message, Messages, Reaction, Reactions } from '../../interfaces/messages';
-import { Profiles } from '../../interfaces/profile';
 
-type ReactionResult = { action: 'added' | 'removed' };
+export type ReactionResult = { action: 'added' | 'removed' };
 type SupabaseResponseMessage = { data: Message; error: PostgrestError };
 
 @Injectable({
@@ -47,7 +46,7 @@ export class DatabaseMessages {
     );
   }
 
-  public async getChatMessages(chatId: string): Promise<Chats | null> {
+  public async getChatMessages(chatId: string): Promise<void> {
     const { data: messages }: PostgrestSingleResponse<Chats> = await this.supabase
       .from('messages')
       .select(`
@@ -62,7 +61,8 @@ export class DatabaseMessages {
       .eq('chat_id', chatId)
       .is('thread_id', null)
       .order('created_at', { ascending: true });
-    return messages;
+
+    // Austehende enderung zu einem signal
   }
 
   public async updateMessage(messageId: string, newContent: string): Promise<void> {
