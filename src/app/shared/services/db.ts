@@ -2,8 +2,10 @@ import { inject, Injectable, Signal } from '@angular/core';
 
 import { DatabaseProfiles } from './db/db-profiles';
 import { DatabaseAuth } from './db/db-auth';
-import { Profiles, Profile } from '../interfaces/profile';
 import { DatabaseChats } from './db/db-chats';
+import { DatabaseMessages } from './db/db-messages';
+
+import { Profiles, Profile } from '../interfaces/profile';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +14,7 @@ export class Database {
   private readonly db_profiles: DatabaseProfiles = inject(DatabaseProfiles);
   private readonly db_auth: DatabaseAuth = inject(DatabaseAuth);
   private readonly db_chats: DatabaseChats = inject(DatabaseChats);
+  private readonly db_messages: DatabaseMessages = inject(DatabaseMessages);
 
   public readonly profiles: Signal<Profiles> = this.db_profiles._profiles.asReadonly();
   public readonly isLogin: Signal<boolean> = this.db_auth._isUserLogin.asReadonly();
@@ -34,10 +37,10 @@ export class Database {
   }
 
   public async getProfile(profileId: string): Promise<Profile | null> {
-    return this.db_profiles.getProfile(profileId);
+    return await this.db_profiles.getProfile(profileId);
   }
 
-  public async updateProfileName(profileId: string, value: string): Promise<void> {
+  public editProfileName(profileId: string, value: string): void {
     this.db_profiles.updateProfileName(profileId, value);
   }
 
