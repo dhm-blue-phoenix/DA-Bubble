@@ -31,8 +31,9 @@ export class DatabaseChats {
       '4ad6fbcc-2628-4dc2-9e31-f16e0ff5ca77',
       '451c2bb9-c1ed-4292-af35-b5ea2a5da03b',
     )) as string;
-    this.createNewMessage(chatId, '4ad6fbcc-2628-4dc2-9e31-f16e0ff5ca77', 'Hallo Welt 2!');
-    this.getChatMessages(chatId);
+    //this.createNewMessage(chatId, '4ad6fbcc-2628-4dc2-9e31-f16e0ff5ca77', 'Hallo Welt 2!');
+    console.log(await this.getChatMessages(chatId));
+    await this.updateMessage('d3331d13-a4e9-412a-8316-773d8ef97ed5', 'BLanla');
   }
 
   private async checkExistChat(currentUserId: string, otherUserId: string): Promise<ExistChat> {
@@ -83,10 +84,11 @@ export class DatabaseChats {
     return existChat['chat_id'];
   }
 
-  public async getChatMessages(chatId: string): Promise<void> {
-    const data = await this.supabase
+  public async getChatMessages(chatId: string): Promise<Chats | null> {
+    const { data: messages } = await this.supabase
       .from('messages')
-      .select(`
+      .select(
+        `
         id,
         content,
         created_at,
@@ -94,12 +96,24 @@ export class DatabaseChats {
         sender_id,
         reactions(emoji, user_id),
         threads!threads_root_message_id_fkey(id)
-      `)
+      `,
+      )
       .eq('chat_id', chatId)
       .is('thread_id', null)
       .order('created_at', { ascending: true });
+    return messages;
+  }
 
-    console.log('Messages', data);
+  public async updateMessage(messageId: string, newContent: string) {
+    const { data, error } = await this.supabase
+      .from('messages')
+      .update({
+        content: newContent,
+        edited_at: new Date().toISOString(),
+      })
+      .eq('id', messageId)
+      .select()
+      .single();
   }
 
   public async createNewMessage(chatId: string, senderId: string, content: string): Promise<void> {
