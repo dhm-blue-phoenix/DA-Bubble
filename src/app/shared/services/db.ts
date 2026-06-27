@@ -6,6 +6,7 @@ import { DatabaseChats } from './db/db-chats';
 import { DatabaseMessages, ReactionResult } from './db/db-messages';
 
 import { Profiles, Profile } from '../interfaces/profile';
+import { Messages } from '../interfaces/messages';
 
 @Injectable({
   providedIn: 'root',
@@ -18,6 +19,7 @@ export class Database {
 
   public readonly profiles: Signal<Profiles> = this.db_profiles._profiles.asReadonly();
   public readonly isLogin: Signal<boolean> = this.db_auth._isUserLogin.asReadonly();
+  public readonly messages: Signal<Messages> = this.db_messages._messages.asReadonly();
 
   constructor() {
     this.db_profiles.getProfiles();

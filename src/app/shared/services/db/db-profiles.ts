@@ -2,19 +2,15 @@ import { Injectable, signal, WritableSignal, PLATFORM_ID, inject, OnDestroy } fr
 import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../../../environment/environment';
 
-import {
-  RealtimeChannel,
-  SupabaseClient,
-  PostgrestError
-} from '@supabase/supabase-js';
+import { RealtimeChannel, SupabaseClient, PostgrestError } from '@supabase/supabase-js';
 
 import { Profile, Profiles } from '../../interfaces/profile';
 import { Supabase } from './db-superbase';
 
-type SupabaseResponseProfiles = { data: Profiles | null; error: PostgrestError | null; };
+type SupabaseResponseProfiles = { data: Profiles | null; error: PostgrestError | null };
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DatabaseProfiles implements OnDestroy {
   private readonly platformId: Object = inject(PLATFORM_ID);
@@ -37,10 +33,8 @@ export class DatabaseProfiles implements OnDestroy {
   private subscribeProfiles(): RealtimeChannel {
     return this.supabase
       .channel('profiles')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'profiles' },
-        payload => this.handleProfileEvent(payload)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, (payload) =>
+        this.handleProfileEvent(payload),
       )
       .subscribe();
   }
@@ -51,28 +45,24 @@ export class DatabaseProfiles implements OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    if (this.channels) {
-      this.supabase.removeChannel(this.channels);
-    }
+    if (this.channels) this.supabase.removeChannel(this.channels);
   }
 
   private insertProfile(payload: any): void {
     const profile = payload.new as Profile;
 
-    this._profiles.update(list =>
-      list.some(p => p.id === profile.id)
-        ? list
-        : [...list, profile]
+    this._profiles.update(
+      (list: Profiles): Profiles =>
+        list.some((p: Profile): boolean => p.id === profile.id) ? list : [...list, profile],
     );
   }
 
   private updateProfile(payload: any): void {
     const profile = payload.new as Profile;
 
-    this._profiles.update(list =>
-      list.map(p =>
-        p.id === profile.id ? profile : p
-      )
+    this._profiles.update(
+      (list: Profiles): Profiles =>
+        list.map((p: Profile): Profile => (p.id === profile.id ? profile : p)),
     );
   }
 
@@ -82,30 +72,30 @@ export class DatabaseProfiles implements OnDestroy {
   }
 
   public async getProfiles(): Promise<void> {
-      const { data: profiles, error }: SupabaseResponseProfiles = await this.supabase
-        .from('profiles')
-        .select('id, name, email, avatar_url, status, created_at');
+    const { data: profiles, error }: SupabaseResponseProfiles = await this.supabase
+      .from('profiles')
+      .select('id, name, email, avatar_url, status, created_at');
 
-      if (this.debug_logs) {
-        if (error) console.error('getProfiles_error', error);
-        console.log('profiles', profiles);
-      }
+    if (this.debug_logs) {
+      if (error) console.error('getProfiles_error', error);
+      console.log('profiles', profiles);
+    }
 
-      if (profiles) this._profiles.set(profiles);
+    if (profiles) this._profiles.set(profiles);
   }
 
   public async getProfile(profileId: string): Promise<Profile | null> {
-      const { data: profiles, error }: SupabaseResponseProfiles = await this.supabase
-        .from('profiles')
-        .select('id, name, email, avatar_url, status, created_at')
-        .eq('id', profileId);
+    const { data: profiles, error }: SupabaseResponseProfiles = await this.supabase
+      .from('profiles')
+      .select('id, name, email, avatar_url, status, created_at')
+      .eq('id', profileId);
 
-      if (this.debug_logs) {
-        if (error) console.error('getProfile_error', error);
-        console.log('profiles', profiles);
-      }
+    if (this.debug_logs) {
+      if (error) console.error('getProfile_error', error);
+      console.log('profiles', profiles);
+    }
 
-      return profiles ? profiles[0] : null;
+    return profiles ? profiles[0] : null;
   }
 
   public async updateProfileName(profileId: string, value: string): Promise<void> {

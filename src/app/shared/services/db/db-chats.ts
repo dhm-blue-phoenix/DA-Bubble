@@ -2,10 +2,7 @@ import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../../../environment/environment';
 
-import {
-  SupabaseClient,
-  PostgrestSingleResponse,
-} from '@supabase/supabase-js';
+import { SupabaseClient, PostgrestSingleResponse } from '@supabase/supabase-js';
 
 import { Supabase } from './db-superbase';
 
@@ -22,6 +19,7 @@ export class DatabaseChats {
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
+
       if (this.debug_logs) {
         this.debugging();
       }
@@ -38,7 +36,7 @@ export class DatabaseChats {
   }
 
   private async checkExistChat(currentUserId: string, otherUserId: string): Promise<ExistChat> {
-    const { data: chats }: PostgrestSingleResponse<{ chat_id: string; }[]> = await this.supabase
+    const { data: chats }: PostgrestSingleResponse<{ chat_id: string }[]> = await this.supabase
       .from('chat_members')
       .select('chat_id')
       .eq('user_id', currentUserId);
@@ -46,11 +44,12 @@ export class DatabaseChats {
     if (chats && chats.length > 0) {
       const chatIds: string[] = chats.map((chat: { chat_id: string }): string => chat.chat_id);
 
-      const { data: sharedChats }: PostgrestSingleResponse<{ chat_id: string }[]> = await this.supabase
-        .from('chat_members')
-        .select('chat_id')
-        .eq('user_id', otherUserId)
-        .in('chat_id', chatIds);
+      const { data: sharedChats }: PostgrestSingleResponse<{ chat_id: string }[]> =
+        await this.supabase
+          .from('chat_members')
+          .select('chat_id')
+          .eq('user_id', otherUserId)
+          .in('chat_id', chatIds);
 
       if (this.debug_logs) {
         console.warn('sharedChats', sharedChats);
@@ -64,8 +63,11 @@ export class DatabaseChats {
   }
 
   private async createNewChat(currentUserId: string, otherUserId: string): Promise<ChatId> {
-    const { data: newChat, error }: PostgrestSingleResponse<any> =
-      await this.supabase.from('chats').insert({}).select().single();
+    const { data: newChat, error }: PostgrestSingleResponse<any> = await this.supabase
+      .from('chats')
+      .insert({})
+      .select()
+      .single();
     if (error || !newChat) throw error;
     await this.supabase.from('chat_members').insert([
       { chat_id: newChat['id'], user_id: currentUserId },

@@ -2,6 +2,7 @@ export interface Message {
   readonly id: string;
   readonly sender_id: string;
   content: string;
+  reactions: Reactions;
   readonly channel_id: string | null;
   readonly chat_id: string | null;
   readonly thread_id: string | null;
