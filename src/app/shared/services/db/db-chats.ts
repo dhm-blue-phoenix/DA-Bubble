@@ -2,13 +2,19 @@ import { Injectable, signal, WritableSignal, PLATFORM_ID, inject, OnDestroy } fr
 import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../../../environment/environment';
 
-import { RealtimeChannel, SupabaseClient, PostgrestError } from '@supabase/supabase-js';
+import {
+  RealtimeChannel,
+  SupabaseClient,
+  PostgrestError,
+  PostgrestSingleResponse,
+} from '@supabase/supabase-js';
 
 import { Supabase } from './db-superbase';
 import { Chat, Chats, ChatMember, ChatMembers } from '../../interfaces/chats';
 
 type ChatId = string | null;
 type ExistChat = { success: boolean; chat_id: ChatId };
+type ReactionResult = { action: string };
 
 @Injectable({
   providedIn: 'root',
@@ -33,7 +39,15 @@ export class DatabaseChats {
     )) as string;
     //this.createNewMessage(chatId, '4ad6fbcc-2628-4dc2-9e31-f16e0ff5ca77', 'Hallo Welt 2!');
     console.log(await this.getChatMessages(chatId));
-    await this.updateMessage('d3331d13-a4e9-412a-8316-773d8ef97ed5', 'BLanla');
+    //await this.updateMessage('d3331d13-a4e9-412a-8316-773d8ef97ed5', 'BLanla');
+    console.warn(
+      'Reaction:',
+      await this.toggleReaction(
+        'd3331d13-a4e9-412a-8316-773d8ef97ed5',
+        '451c2bb9-c1ed-4292-af35-b5ea2a5da03b',
+        'happy',
+      ),
+    );
   }
 
   private async checkExistChat(currentUserId: string, otherUserId: string): Promise<ExistChat> {
@@ -128,5 +142,63 @@ export class DatabaseChats {
       .single();
 
     console.log(data);
+  }
+
+  private async checkExistReaction(
+    messageId: string,
+    userId: string,
+    emoji: string,
+  ): Promise<boolean> {
+    const data: PostgrestSingleResponse<object | null> = await this.supabase
+      .from('reactions')
+      .select('*')
+      .eq('message_id', messageId)
+      .eq('user_id', userId)
+      .eq('emoji', emoji)
+      .maybeSingle();
+    return !!data['data'];
+  }
+
+  private async deleteReaction(
+    messageId: string,
+    userId: string,
+    emoji: string,
+  ): Promise<ReactionResult> {
+    const data: PostgrestSingleResponse<null> = await this.supabase
+      .from('reactions')
+      .delete()
+      .eq('message_id', messageId)
+      .eq('user_id', userId)
+      .eq('emoji', emoji);
+    return { action: 'removed' };
+  }
+
+  private async addReaction(
+    messageId: string,
+    userId: string,
+    emoji: string,
+  ): Promise<ReactionResult> {
+    const data: PostgrestSingleResponse<object> = await this.supabase
+      .from('reactions')
+      .insert({
+        message_id: messageId,
+        user_id: userId,
+        emoji: emoji,
+      })
+      .select()
+      .single();
+    return { action: 'added' };
+  }
+
+  public async toggleReaction(
+    messageId: string,
+    userId: string,
+    emoji: string,
+  ): Promise<ReactionResult> {
+    if (await this.checkExistReaction(messageId, userId, emoji)) {
+      return await this.deleteReaction(messageId, userId, emoji);
+    } else {
+      return await this.addReaction(messageId, userId, emoji);
+    }
   }
 }
