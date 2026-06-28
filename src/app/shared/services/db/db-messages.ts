@@ -1,6 +1,5 @@
 import { Injectable, signal, WritableSignal, PLATFORM_ID, inject, OnDestroy } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { environment } from '../../../../environment/environment';
 
 import {
   RealtimeChannel,
@@ -22,7 +21,6 @@ type SupabaseResponseMessage = { data: Message; error: PostgrestError };
 })
 export class DatabaseMessages implements OnDestroy {
   private readonly platformId: Object = inject(PLATFORM_ID);
-  private readonly debug_logs: boolean = environment.debug_logs;
   private readonly supabase: SupabaseClient = inject(Supabase).supabase;
   private readonly channels?: RealtimeChannel;
 
@@ -31,10 +29,6 @@ export class DatabaseMessages implements OnDestroy {
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
       this.channels = this.subscribeMessages();
-
-      if (this.debug_logs) {
-        this.debugging();
-      }
     }
   }
 
@@ -119,8 +113,6 @@ export class DatabaseMessages implements OnDestroy {
   public ngOnDestroy(): void {
     if (this.channels) this.supabase.removeChannel(this.channels);
   }
-
-  private async debugging(): Promise<void> {}
 
   public async getChatMessages(chatId: string): Promise<void> {
     const { data: messages }: PostgrestResponse<any> = await this.supabase

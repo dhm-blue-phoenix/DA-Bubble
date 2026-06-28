@@ -1,6 +1,4 @@
-import { Injectable, PLATFORM_ID, inject } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-import { environment } from '../../../../environment/environment';
+import { Injectable, inject } from '@angular/core';
 
 import { SupabaseClient, PostgrestSingleResponse } from '@supabase/supabase-js';
 
@@ -13,27 +11,7 @@ type ExistChat = { success: boolean; chat_id: ChatId };
   providedIn: 'root',
 })
 export class DatabaseChats {
-  private readonly platformId: Object = inject(PLATFORM_ID);
-  private readonly debug_logs: boolean = environment.debug_logs;
   private readonly supabase: SupabaseClient = inject(Supabase).supabase;
-
-  constructor() {
-    if (isPlatformBrowser(this.platformId)) {
-
-      if (this.debug_logs) {
-        this.debugging();
-      }
-    }
-  }
-
-  private async debugging(): Promise<void> {
-    /*
-    const chatId: string = (await this.getChatId(
-      '4ad6fbcc-2628-4dc2-9e31-f16e0ff5ca77',
-      '451c2bb9-c1ed-4292-af35-b5ea2a5da03b',
-    )) as string;
-     */
-  }
 
   private async checkExistChat(currentUserId: string, otherUserId: string): Promise<ExistChat> {
     const { data: chats }: PostgrestSingleResponse<{ chat_id: string }[]> = await this.supabase
@@ -50,10 +28,6 @@ export class DatabaseChats {
           .select('chat_id')
           .eq('user_id', otherUserId)
           .in('chat_id', chatIds);
-
-      if (this.debug_logs) {
-        console.warn('sharedChats', sharedChats);
-      }
 
       if (sharedChats && sharedChats.length > 0) {
         return { success: true, chat_id: sharedChats[0].chat_id };

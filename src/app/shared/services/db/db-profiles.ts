@@ -1,6 +1,5 @@
 import { Injectable, signal, WritableSignal, PLATFORM_ID, inject, OnDestroy } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { environment } from '../../../../environment/environment';
 
 import { RealtimeChannel, SupabaseClient, PostgrestError } from '@supabase/supabase-js';
 
@@ -14,7 +13,6 @@ type SupabaseResponseProfiles = { data: Profiles | null; error: PostgrestError |
 })
 export class DatabaseProfiles implements OnDestroy {
   private readonly platformId: Object = inject(PLATFORM_ID);
-  private readonly debug_logs: boolean = environment.debug_logs;
   private readonly supabase: SupabaseClient = inject(Supabase).supabase;
   private readonly channels?: RealtimeChannel;
 
@@ -23,10 +21,6 @@ export class DatabaseProfiles implements OnDestroy {
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
       this.channels = this.subscribeProfiles();
-    }
-
-    if (this.debug_logs) {
-      this.debugging();
     }
   }
 
@@ -66,36 +60,21 @@ export class DatabaseProfiles implements OnDestroy {
     );
   }
 
-  private async debugging(): Promise<void> {
-    //console.warn(await this.getProfile('18290dd9-9a3a-4f0b-b74b-fa36e5b38ecd'));
-    //this.updateProfileName(this.getLocalStorageCurrentProfileId(), 'Richert Stark');
-  }
-
   public async getProfiles(): Promise<void> {
-    const { data: profiles, error }: SupabaseResponseProfiles = await this.supabase
+    const { data: profiles }: SupabaseResponseProfiles = await this.supabase
       .from('profiles')
       .select('id, name, email, avatar_url, status, created_at');
-
-    if (this.debug_logs) {
-      if (error) console.error('getProfiles_error', error);
-      console.log('profiles', profiles);
-    }
 
     if (profiles) this._profiles.set(profiles);
   }
 
   public async getProfile(profileId: string): Promise<Profile | null> {
-    const { data: profiles, error }: SupabaseResponseProfiles = await this.supabase
+    const { data: profiles }: SupabaseResponseProfiles = await this.supabase
       .from('profiles')
       .select('id, name, email, avatar_url, status, created_at')
       .eq('id', profileId);
 
-    if (this.debug_logs) {
-      if (error) console.error('getProfile_error', error);
-      console.log('profiles', profiles);
-    }
-
-    return profiles ? profiles[0] : null;
+    return profiles && profiles.length > 0 ? profiles[0] : null;
   }
 
   public async updateProfileName(profileId: string, value: string): Promise<void> {
