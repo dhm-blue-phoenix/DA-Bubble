@@ -1,0 +1,47 @@
+section {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(1.46deg, #313AE6 1.22%, #797EF3 98.76%);
+  z-index: 10;
+}
+
+.logo-icon {
+  width: 18vw;
+  max-width: 180px;
+  min-width: 80px;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: logo-move 0.5s cubic-bezier(0.77, 0, 0.18, 1) 0.5s forwards;
+}
+
+.app-name {
+  font-size: 7vw;
+  color: white;
+  font-weight: 700;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 0;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 40%;
+  transform: translateY(-50%);
+  animation: text-typewriter 2s cubic-bezier(0.77, 0, 0.18, 1) 1s forwards;
+}
+
+@keyframes logo-move {
+  to {
+    left:40%;
+    transform: translate(-100%, -50%);
+  }
+}
+
+@keyframes text-typewriter {
+  to {
+    width: 40vw;
+  }
+}
