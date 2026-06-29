@@ -85,18 +85,19 @@ button:hover img {
 }
 
 .workspace_button{
-padding: 12px 20px;
-border-radius: 0px 00px 30px 30px;
+padding: 12px 8px;
+border-radius: 30px 00px 0px 30px;
 gap: 8px;
 background-color: white;
-position: absolute;
-left: -116px;
-bottom: 160px;
-transform: rotate(-90deg);
 box-shadow: 1px 2px 5px 2px rgba(0, 0, 0, 0.199);
-& img{
-    transform: rotate(90deg); 
-}
+position: absolute;
+display: flex;
+justify-content: center;
+left: 0;
+top: 80%;
+transform: translateY(-50%) rotate(180deg);
+writing-mode: vertical-rl;
+height: 280px;
 & span{
     font-weight: bolder;
 }

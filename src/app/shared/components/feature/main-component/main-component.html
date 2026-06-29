@@ -46,13 +46,11 @@
                     <app-workspace [user]="user"></app-workspace>
                     }
                 </div>
-    
-                
             </section>
         } 
         <button (click)="toggleMenu('workspace')" class="workspace_button flex items-center bg-color-white hover:text-[var(--hover-text)] group">
-            <span>Workspace-Menü schließen</span>
-            <img class="size-[32px]" src="assets/svg/icons/icon_black/hide_navigation_left_black.svg" alt="">
+            <span>{{workspace_Open ? 'Workspace-Menü schließen' : 'Workspace-Menü öffnen'}}</span>
+            <img class="size-[32px]" [src]="workspace_Open ? 'assets/svg/icons/icon_black/hide_navigation_left_black.svg' : 'assets/svg/icons/icon_black/hide_navigation_right_black.svg'" [alt]="workspace_Open ? 'close Icon' : 'open Icon'">
         </button>
 
     <section class="chat flex flex-col bg-white flex-1">
