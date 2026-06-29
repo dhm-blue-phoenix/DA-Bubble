@@ -9,3 +9,32 @@ section{
     border-radius: 42px;
     background-color: white;
 }
+
+.profil_overlay{
+position: absolute;
+background-color: rgba(0, 0, 0, 0.2);
+z-index: 1;
+height: 100vh;
+width: 100vw;
+top: 0px;
+left: 0px;
+}
+
+.profil_content{
+width: 280px;
+height: 180px;
+border-radius: 30px 0px 30px 30px;
+background-color: white;
+position: absolute;
+right: 32px;
+top: 96px;
+
+& button{
+    padding: 12px 24px;
+    border-radius: 100px;
+        &:hover{
+            background-color: var(--hover-bg);
+            color: var(--hover-text);
+        }
+    }
+}

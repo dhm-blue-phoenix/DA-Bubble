@@ -18,6 +18,18 @@
             <img class="size-[70px] " src="assets/svg/avatar/avatar_small/1.svg" alt="">
             <div class="status_User online"></div>
         </div>
-        <img class="size-[30px]" src="assets/svg/icons/icon_black/dropdown_black.svg" alt="">
+        <button (click)="toggle_Dialog()">
+            <img class="size-[30px]" src="assets/svg/icons/icon_black/dropdown_black.svg" alt="">
+        </button>
     </div>
+    
 </section>
+
+    @if (dialog_open) {
+        <div class="profil_overlay" (click)="toggle_Dialog()">
+            <div (click)="$event.stopPropagation()" class="flex flex-col items-center bg-color-white profil_content justify-center gap-4">
+                <button class="w-5/6"><span class="font-semibold text-2xl">Profil</span></button>
+                <button class="w-5/6"><span class="font-semibold text-2xl">Log out</span></button>
+            </div>
+        </div>
+    }
