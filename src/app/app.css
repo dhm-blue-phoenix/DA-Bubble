@@ -16,6 +16,12 @@ button{
     cursor: pointer;
 }
 
+.btn_raw{
+padding: 12px 24px;
+border-radius: 24px;
+font-size: 18px;
+}
+
 .rotated-90 {
     transform: rotate(-90deg);
     transition: transform 0.2s ease;

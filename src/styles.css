@@ -9,11 +9,11 @@
     --hover-text: #535AF1;
     --hover-bg: #ECEEFE;
     --btn-hover: #797EF3;
-    
     --btn:#444DF2;
     --btn-disable: #686868;
 
-    --reaction-bubble:#444DF2;
+    --link:#797EF3;
+    --highligh-color:#444DF2;
 
     --status-offline: rgba(104, 104, 104, 1);
     --status-online: rgba(146, 200, 62, 1);
