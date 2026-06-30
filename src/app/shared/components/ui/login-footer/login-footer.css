@@ -1,0 +1,7 @@
+@import '../../../../app.css';
+
+section{
+    background-color: var(--bg-color);
+    width: 100vw;
+    height: 64px;
+}
