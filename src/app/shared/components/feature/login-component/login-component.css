@@ -37,7 +37,7 @@
 section{
   background-color: var(--bg-color);
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh - 96px - 64px);
 }
 
 @keyframes logo-move {
@@ -58,7 +58,7 @@ h2{
 }
 
 .login_container{
-  height: 740px;
+  height: 720px;
   width: 600px;
   border-radius: 30px;
   gap: 30px;

@@ -1,0 +1,11 @@
+@import '../../../../app.css';
+
+section{
+    background-color: var(--bg-color);
+    width: 100vw;
+    padding: 24px 74px 0 74px;
+}
+
+h2{
+    font-size: 24px !important;
+}
