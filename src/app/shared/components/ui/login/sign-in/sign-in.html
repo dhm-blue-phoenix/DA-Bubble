@@ -1,0 +1,39 @@
+
+<div class="flex flex-col gap-[30px] items-center">
+    <h2 class="text-5xl text-[var(--highligh-color)]">Konto erstellen</h2>
+    <span class="text-xl text-center">Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.</span>
+
+    <form class="flex justify-center items-center flex-col w-full gap-[30px]" action="">
+        <div class="input_container flex items-center p-4 justify-between">
+            <img src="assets/svg/icons/icon_grey/person_grey.svg" alt="user-icon">
+            <input class="py-2" type="text" placeholder="Name und Nachname">
+        </div>
+
+        <div class="input_container flex items-center p-4 justify-between">
+            <img src="assets/svg/icons/icon_grey/mail_grey.svg" alt="mail-icon">
+            <input class="py-2" type="text" placeholder="beispielname@email.com">
+        </div>
+
+        <div class="input_container flex items-center p-4 justify-between">
+            <img src="assets/svg/icons/icon_grey/lock_grey.svg" alt="lock-icon">
+            <input class="py-2" type="text" placeholder="Passwort">
+        </div>
+
+        <div class="flex items-center w-full justify-start px-2 gap-2">
+            <input type="checkbox">
+            <div>
+                <span >Ich stimme der </span>
+                <a class="text-[var(--link)] text-l" routerLink="Datenschutzerklärung">Datenschutzerklärung </a>
+                <span>zu.</span>
+            </div>
+        </div>
+
+    </form>
+
+
+    <div class="flex justify-end">
+        <button class="btn_disable font-bold">Weiter</button>
+    </div>
+</div>
+
+

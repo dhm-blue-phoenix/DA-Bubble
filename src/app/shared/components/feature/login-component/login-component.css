@@ -87,7 +87,8 @@ border-radius: 30px;
 background-color: var(--bg-input);
 }
 
-input{
+input[type="text"],
+input[type="email"],
+input[type="password"] {
   width: 90%;
-  
 }
