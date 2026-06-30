@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-
+import { routes } from '../../../../../app.routes';
 @Component({
   selector: 'app-forgot-password',
   imports: [],
