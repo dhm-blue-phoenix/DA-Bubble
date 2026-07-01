@@ -6,5 +6,5 @@ export const emptyProfile: Profile = {
   name: 'n/a',
   created_at: 'n/a',
   status: 'offline',
-  avatar_url: 'n/a',
+  avatar: 'n/a',
 };

@@ -4,7 +4,7 @@ export interface Profile {
   name: string;
   readonly created_at: string;
   status: 'offline' | 'online' | 'away';
-  readonly avatar_url: string;
+  readonly avatar: string;
 }
 
 export type Profiles = Profile[];
