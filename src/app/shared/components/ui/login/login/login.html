@@ -6,12 +6,12 @@
     <form class="flex justify-center items-center flex-col w-full gap-[30px]" action="">
         <div class="input_container flex items-center p-4 justify-between">
             <img src="assets/svg/icons/icon_grey/mail_grey.svg" alt="mail-icon">
-            <input class="py-2" type="text" placeholder="beispielname@email.com">
+            <input name="email" class="py-2" [(ngModel)]="login_Data.email" type="text" placeholder="beispielname@email.com">
         </div>
 
         <div class="input_container flex items-center p-4 justify-between">
             <img src="assets/svg/icons/icon_grey/lock_grey.svg" alt="lock-icon">
-            <input class="py-2" type="text" placeholder="Passwort">
+            <input name="password" [(ngModel)]="login_Data.password" class="py-2" type="password" placeholder="Passwort">
         </div>
     </form>
     <a class="text-[var(--link)] text-l" routerLink="/login/forgot-password">Password vergessen?</a>
@@ -26,8 +26,8 @@
     </button>
 
     <div class="flex gap-[30px]">
-        <button class="btn_raw bg-[var(--highligh-color)] text-white font-bold">Anmelden</button>
-        <button class="btn_raw text-[var(--highligh-color)] border font-bold">Gäste-Login</button>
+        <button (click)="test()" class="btn_raw bg-[var(--highligh-color)] text-white font-bold">Anmelden</button>
+        <button (click)="testguest()" class="btn_raw text-[var(--highligh-color)] border font-bold">Gäste-Login</button>
     </div>
 </div>
 
