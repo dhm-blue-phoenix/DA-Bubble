@@ -22,12 +22,13 @@ border-radius: 24px;
 font-size: 18px;
 }
 
-.btn_disable{
+:disabled{
 padding: 12px 24px;
 border-radius: 24px;
 font-size: 18px;
 color: white;
 background-color: gray;
+cursor: not-allowed;
 }
 
 .rotated-90 {
@@ -57,6 +58,19 @@ background-color: gray;
     border-radius: 50%;
     border: 2px solid white;
 }
+
+.errorContainer {
+    height: 16px;
+    width: 100%;
+    margin-bottom: 16px;
+    margin-top: 4px;
+}
+
+.errorMassage {
+    color: red;
+    font-size: 1rem;
+}
+
 .online{
     background-color: var(--status-online)
 }

@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
-import { RouterLink } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 import { Database } from '../../../../services/db';
-import { FormsModule, NgModel } from '@angular/forms';
+import { FormsModule, NgForm, NgModel } from '@angular/forms';
 import { SignInService } from '../../../../services/singin_service'
 
 
@@ -14,6 +14,7 @@ import { SignInService } from '../../../../services/singin_service'
 export class SignIn {
   db = inject(Database)
   signin = inject(SignInService)
+  router = inject(Router)
 
   register_Data = {
     name :'',
@@ -21,12 +22,21 @@ export class SignIn {
     password:''
   }
 
-  setSignInData(){
-    this.signin.data.set({
-      email: this.register_Data.email,
-      password: this.register_Data.password,
-      name: this.register_Data.name,
-      avatar:""
-    })
-  }
+  checkbox = ""
+  submitted = false
+
+  setSignInData(ngForm: NgForm){
+    this.submitted = true
+    if(ngForm.form.valid){
+
+      this.signin.data.set({
+        email: this.register_Data.email,
+        password: this.register_Data.password,
+        name: this.register_Data.name,
+        avatar:""
+      })
+      this.router.navigate(['/login/select-avatar'])
+    }
+    return
+    }
 }
