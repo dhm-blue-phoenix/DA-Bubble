@@ -25,8 +25,13 @@ export class Database {
     this.db_profiles.getProfiles();
   }
 
-  public register(user_email: string, user_password: string, user_name: string): void {
-    this.db_auth.signUpNewUser(user_email, user_password, user_name);
+  public register(
+    user_email: string,
+    user_password: string,
+    user_name: string,
+    user_avatar: string,
+  ): void {
+    this.db_auth.signUpNewUser(user_email, user_password, user_name, user_avatar);
   }
 
   public login(user_email: string, user_password: string): void {
