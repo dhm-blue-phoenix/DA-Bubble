@@ -55,6 +55,7 @@ section{
 
 h2{
   font-size: 42px !important;
+  color: var(--highligh-color);
 }
 
 .login_container{
@@ -91,4 +92,14 @@ input[type="text"],
 input[type="email"],
 input[type="password"] {
   width: 90%;
+}
+
+.selecet_avatar{
+border-radius: 50%;
+border: solid 4px white;
+cursor: pointer;
+    &:hover{
+      border: solid 4px #E6E6E6;
+    }
+
 }
