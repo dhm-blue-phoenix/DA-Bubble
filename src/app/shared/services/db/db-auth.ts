@@ -25,7 +25,7 @@ export class DatabaseAuth {
   public readonly _isUserLogin: WritableSignal<boolean> = signal<boolean>(false);
 
   constructor() {
-    if(isPlatformBrowser(this.platformId)) {
+    if (isPlatformBrowser(this.platformId)) {
       //this.setupAuthListener();
 
       if (this.debug_logs) {
@@ -95,7 +95,7 @@ export class DatabaseAuth {
   }
 
   private async updateProfileStatus(profileId: string, value: 'offline' | 'online'): Promise<void> {
-   console.log('updateProfileStatus', profileId, value);
+    console.log('updateProfileStatus', profileId, value);
     if (profileId.length > 5 && value.length > 1) {
       const { data, error }: SupabaseResponseProfiles = await this.supabase
         .from('profiles')
@@ -106,7 +106,12 @@ export class DatabaseAuth {
   }
 
   // Funktion signUpNewUser error handlieng überarbeiten
-  public async signUpNewUser(user_email: string, user_password: string, user_name: string, user_avatar: string): Promise<void> {
+  public async signUpNewUser(
+    user_email: string,
+    user_password: string,
+    user_name: string,
+    user_avatar: string,
+  ): Promise<void> {
     if (user_email.length > 5 && user_password.length > 5 && user_name.length > 5) {
       const { data, error } = await this.supabase.auth.signUp({
         email: user_email,
@@ -131,7 +136,7 @@ export class DatabaseAuth {
     if (user_email.length > 5 && user_password.length > 5) {
       const { data, error } = await this.supabase.auth.signInWithPassword({
         email: user_email,
-        password: user_password
+        password: user_password,
       });
       if (this.debug_logs) {
         if (error) console.error('signInWithEmail_error', error);
@@ -144,14 +149,20 @@ export class DatabaseAuth {
     }
   }
 
-  // Funktion resetPasswordForEmail Muss noch geschrieben werden!
-  public async resetPasswordForEmail(): Promise<void> {
-    console.warn('Ist noch in der entwicklung');
+  // Wichtig: redirectTo die dort enthaltene url muss noch mit der richtigen url ausgetauscht werden!!!
+  public async resetPasswordForEmail(email: string): Promise<void> {
+    await this.supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: 'http://example.com/account/update-password',
+    });
+  }
+
+  public async changePassword(newPassword: string): Promise<void> {
+    await this.supabase.auth.updateUser({ password: newPassword });
   }
 
   public async signOut(): Promise<void> {
     await this.setUserOffline();
-    console.warn('Logout!!!')
+    console.warn('Logout!!!');
     const { error } = await this.supabase.auth.signOut();
     if (this.debug_logs && error) {
       console.error('signOut_error', error);

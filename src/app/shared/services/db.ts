@@ -34,6 +34,26 @@ export class Database {
     this.db_auth.signUpNewUser(user_email, user_password, user_name, user_avatar);
   }
 
+  public sendEmailForPasswordReset(email: string): void {
+    /*
+     * Wichtig: Bitte nicht verwenden diesse Funktion ist noch nicht fertig
+     *           und ist nicht auf funktionfehigkeit getestet!!!
+     * */
+    return;
+
+    this.db_auth.resetPasswordForEmail(email);
+  }
+
+  public updatePassword(newPassword: string): void {
+    /*
+     * Wichtig: Bitte nicht verwenden diesse Funktion ist noch nicht fertig
+     *           und ist nicht auf funktionfehigkeit getestet!!!
+     * */
+    return;
+
+    this.db_auth.changePassword(newPassword);
+  }
+
   public login(user_email: string, user_password: string): void {
     this.db_auth.signInWithEmail(user_email, user_password);
   }
