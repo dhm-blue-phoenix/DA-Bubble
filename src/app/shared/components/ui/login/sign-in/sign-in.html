@@ -6,17 +6,17 @@
     <form class="flex justify-center items-center flex-col w-full gap-[30px]" action="">
         <div class="input_container flex items-center p-4 justify-between">
             <img src="assets/svg/icons/icon_grey/person_grey.svg" alt="user-icon">
-            <input class="py-2" type="text" placeholder="Name und Nachname">
+            <input [(ngModel)]="this.register_Data.name" name="name" class="py-2" type="text" placeholder="Name und Nachname">
         </div>
 
         <div class="input_container flex items-center p-4 justify-between">
             <img src="assets/svg/icons/icon_grey/mail_grey.svg" alt="mail-icon">
-            <input class="py-2" type="text" placeholder="beispielname@email.com">
+            <input [(ngModel)]="this.register_Data.email" name="email" class="py-2" type="text" placeholder="beispielname@email.com">
         </div>
 
         <div class="input_container flex items-center p-4 justify-between">
             <img src="assets/svg/icons/icon_grey/lock_grey.svg" alt="lock-icon">
-            <input class="py-2" type="text" placeholder="Passwort">
+            <input [(ngModel)]="this.register_Data.password" name="password" class="py-2" type="password" placeholder="Passwort">
         </div>
 
         <div class="flex items-center w-full justify-start px-2 gap-2">
@@ -32,7 +32,7 @@
 
 
     <div class="flex justify-end">
-        <button class="btn_disable font-bold">Weiter</button>
+        <a (click)="setSignInData()" routerLink="/login/select-avatar" class="btn_disable font-bold">Weiter</a>
     </div>
 </div>
 

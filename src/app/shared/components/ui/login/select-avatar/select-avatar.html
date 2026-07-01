@@ -1,15 +1,18 @@
 <div class="flex flex-col gap-[30px] items-center">
         <div class="flex items-center justify-between w-full">
-        <a routerLink="/login">
+        <a routerLink="/login/sign-in">
             <img src="assets/svg/icons/icon_black/arrow_back_black.svg" alt="back_arrow">
         </a>
         <h2 >Wähle deinen Avatar</h2>
     </div>
 
     <div class="flex flex-col items-center text-center gap-[30px]">
-        <img src="assets/svg/avatar/avatar_default/default.svg" alt="default-avatar">
-        <!-- name from  singin -->
-        <h2> Frederik Beck</h2>
+        @if (sel_avatar === '') {
+            <img class="size-[168px]" src='assets/svg/avatar/avatar_default/default.svg' alt="default-avatar">
+        }@else {
+            <img class="size-[168px]" [src]="'assets/svg/avatar/avatar_small/' + sel_avatar + '.svg'" alt="select_avatar">
+        }
+        <h2>{{signin.data().name || 'Unbekannt'}}</h2>
     </div>
 
     <div class="flex w-full gap-[8px] flex-col" action="">
@@ -17,17 +20,16 @@
             <span class="text-xl">Aus der Liste wählen</span>
         </div>
         <div class="flex w-full items-center justify-between">
-            <button class="selecet_avatar"><img src="assets/svg/avatar/avatar_small/1.svg" alt="avatar"></button>
-            <button class="selecet_avatar"><img src="assets/svg/avatar/avatar_small/2.svg" alt="avatar"></button>
-            <button class="selecet_avatar"><img src="assets/svg/avatar/avatar_small/3.svg" alt="avatar"></button>
-            <button class="selecet_avatar"><img src="assets/svg/avatar/avatar_small/4.svg" alt="avatar"></button>
-            <button class="selecet_avatar"><img src="assets/svg/avatar/avatar_small/5.svg" alt="avatar"></button>
-            <button class="selecet_avatar"><img src="assets/svg/avatar/avatar_small/6.svg" alt="avatar"></button>
+            @for (avatar of avatars; track avatar) {
+                <button class="selecet_avatar" (click)="select_Avatar(avatar)">
+                    <img [src]="'assets/svg/avatar/avatar_small/' + avatar + '.svg'" alt="avatar">
+                </button>
+            }
         </div>
     </div>
 
 
     <div class="flex w-full justify-end">
-        <button class="btn_disable font-bold">Weiter</button>
+        <button (click)="singin()" class="btn_disable font-bold">Weiter</button>
     </div>
 </div>
