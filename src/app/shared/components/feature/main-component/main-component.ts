@@ -41,10 +41,10 @@ workspace_Open = true
 thread_Open = true
 
 users: Profile[] = [
-        {  id: '1', email: 'EliasNeumann@web.de', name:"Elias Neumann", created_at: '01.01.1993', status: 'online', avatar_url: 'assets/svg/avatar/avatar_small/1.svg'},
-        {  id: '2', email: 'EliasNeumann@web.de', name:"Fred Neumann", created_at: '01.01.1993', status: 'offline', avatar_url: 'assets/svg/avatar/avatar_small/2.svg'},
-        {  id: '3', email: 'EliasNeumann@web.de', name:"Peter Lustig", created_at: '01.01.1993', status: 'offline', avatar_url: 'assets/svg/avatar/avatar_small/3.svg'},
-        {  id: '4', email: 'EliasNeumann@web.de', name:"Anna Hansen", created_at: '01.01.1993', status: 'online', avatar_url: 'assets/svg/avatar/avatar_small/4.svg'},
+        {  id: '1', email: 'EliasNeumann@web.de', name:"Elias Neumann", created_at: '01.01.1993', status: 'online', avatar: 'assets/svg/avatar/avatar_small/1.svg'},
+        {  id: '2', email: 'EliasNeumann@web.de', name:"Fred Neumann", created_at: '01.01.1993', status: 'offline', avatar: 'assets/svg/avatar/avatar_small/2.svg'},
+        {  id: '3', email: 'EliasNeumann@web.de', name:"Peter Lustig", created_at: '01.01.1993', status: 'offline', avatar: 'assets/svg/avatar/avatar_small/3.svg'},
+        {  id: '4', email: 'EliasNeumann@web.de', name:"Anna Hansen", created_at: '01.01.1993', status: 'online', avatar: 'assets/svg/avatar/avatar_small/4.svg'},
     ]
 
 channel: ChannelInterface[] = [

@@ -26,7 +26,7 @@ export class Login {
 
 test(){
   console.log('email: ' + this.login_Data.email,'password: ' + this.login_Data.password)
-  // this.db.login(this.login_Data.email, this.login_Data.password)
+  this.db.login(this.login_Data.email, this.login_Data.password)
 }
 testguest(){
   console.log('email: ' + this.guest_Data.email,'password: ' + this.guest_Data.password)

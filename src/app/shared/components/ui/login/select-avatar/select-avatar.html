@@ -21,7 +21,7 @@
         </div>
         <div class="flex w-full items-center justify-between">
             @for (avatar of avatars; track avatar) {
-                <button class="selecet_avatar" (click)="select_Avatar(avatar)">
+                <button class="selecet_avatar" [class.active]="sel_avatar === '' + avatar" (click)="select_Avatar(avatar)">
                     <img [src]="'assets/svg/avatar/avatar_small/' + avatar + '.svg'" alt="avatar">
                 </button>
             }
@@ -30,6 +30,6 @@
 
 
     <div class="flex w-full justify-end">
-        <button (click)="singin()" class="btn_disable font-bold">Weiter</button>
+        <button (click)="singin()" [disabled]="sel_avatar === ''" [class]="sel_avatar === '' ? 'btn_disable font-bold' : 'btn_raw bg-[var(--btn)] text-white font-bold'">Weiter</button>
     </div>
 </div>

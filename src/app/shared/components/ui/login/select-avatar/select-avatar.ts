@@ -30,7 +30,7 @@ export class SelectAvatar {
         this.signin.data().email,
         this.signin.data().password,
         this.signin.data().name,
-        // this.signin.data().avatar,
+        this.signin.data().avatar,
     )
     }
 }
