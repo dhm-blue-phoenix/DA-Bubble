@@ -36,9 +36,9 @@ export class DatabaseAuth {
 
   private async debugging(): Promise<void> {
     //console.log('environment', environment);
-    //await this.signUpNewUser(environment.debug_user_email, environment.debug_user_password, environment.debug_user_name);
+    //await this.signUpNewUser(environment.debug_user_email, environment.debug_user_password, environment.debug_user_name, 'dummydata');
     //await this.signUpNewUser(environment.debug_user2_email, environment.debug_user2_password, environment.debug_user2_name);
-    await this.signInWithEmail(environment.debug_user_email, environment.debug_user_password);
+    //await this.signInWithEmail(environment.debug_user_email, environment.debug_user_password);
     //await this.signOut();
   }
 
@@ -106,18 +106,22 @@ export class DatabaseAuth {
   }
 
   // Funktion signUpNewUser error handlieng überarbeiten
-  public async signUpNewUser(user_email: string, user_password: string, user_name: string): Promise<void> {
+  public async signUpNewUser(user_email: string, user_password: string, user_name: string, user_avatar: string): Promise<void> {
     if (user_email.length > 5 && user_password.length > 5 && user_name.length > 5) {
       const { data, error } = await this.supabase.auth.signUp({
         email: user_email,
         password: user_password,
         options: {
-          data: { name: user_name }
-        }
+          data: { name: user_name, avatar: user_avatar },
+        },
       });
       if (this.debug_logs) {
         if (error) console.error('signUpNewUser_error', error);
         console.log('signUpNewUser_data', data);
+      }
+      if (data.user) {
+        const userId: string = data.user.id;
+        this.setUserOnline(userId);
       }
     }
   }

@@ -44,6 +44,23 @@ To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use th
 ng test
 ```
 
+### Database Testing & Debugging
+
+The application uses Vitest for testing and mocks the Supabase database interactions using custom mock chains. 
+
+If you want to monitor the data flow and verify the queries being made to the database during tests, you can enable the debug flow.
+
+1. Open the specific test file (e.g., `src/app/shared/services/db/db-messages.spec.ts`).
+2. Locate the constant `DEBUG_TEST_FLOW` at the top of the file:
+   ```typescript
+   const DEBUG_TEST_FLOW = false;
+   ```
+3. Change it to `true` to enable verbose logging:
+   ```typescript
+   const DEBUG_TEST_FLOW = true;
+   ```
+4. Run the tests. You will see detailed logs of all mocked `select`, `insert`, `update`, and `delete` calls in your terminal, as well as the simulated Realtime events.
+
 ## Running end-to-end tests
 
 For end-to-end (e2e) testing, run:

@@ -4,21 +4,39 @@ import { Supabase } from './db-superbase';
 import { PLATFORM_ID } from '@angular/core';
 import { Profile } from '../../interfaces/profile';
 
+const DEBUG_TEST_FLOW = false; // Set to true to monitor mocked database queries and realtime events
+
 describe('DatabaseProfiles', () => {
   let service: DatabaseProfiles;
   let registeredCallbacks: { table: string; callback: Function }[];
   let mockChannelInstance: any;
   let mockSupabaseClient: any;
   let profilesChain: any;
+  let usersChain: any;
   let defaultChain: any;
   let mockSupabaseService: any;
 
-  function createMockChain(resolvedValue: any) {
+  function createMockChain(tableName: string, resolvedValue: any) {
+    const logCall = (method: string, args: any[]) => {
+      if (DEBUG_TEST_FLOW) {
+        console.log(`[Supabase Query][${tableName}] .${method}(${args.map(a => JSON.stringify(a)).join(', ')})`);
+      }
+    };
+
     const chain: any = {
-      select: vi.fn().mockImplementation(() => chain),
-      update: vi.fn().mockImplementation(() => chain),
-      eq: vi.fn().mockImplementation(() => chain),
-      then: vi.fn().mockImplementation((onfulfilled: any) => Promise.resolve(resolvedValue).then(onfulfilled)),
+      select: vi.fn().mockImplementation((...args) => { logCall('select', args); return chain; }),
+      update: vi.fn().mockImplementation((...args) => { logCall('update', args); return chain; }),
+      insert: vi.fn().mockImplementation((...args) => { logCall('insert', args); return chain; }),
+      delete: vi.fn().mockImplementation((...args) => { logCall('delete', args); return chain; }),
+      eq: vi.fn().mockImplementation((...args) => { logCall('eq', args); return chain; }),
+      in: vi.fn().mockImplementation((...args) => { logCall('in', args); return chain; }),
+      order: vi.fn().mockImplementation((...args) => { logCall('order', args); return chain; }),
+      single: vi.fn().mockImplementation((...args) => { logCall('single', args); return chain; }),
+      maybeSingle: vi.fn().mockImplementation((...args) => { logCall('maybeSingle', args); return chain; }),
+      then: vi.fn().mockImplementation((onfulfilled: any) => {
+        if (DEBUG_TEST_FLOW) console.log(`[Supabase Query][${tableName}] Resolving with:`, resolvedValue);
+        return Promise.resolve(resolvedValue).then(onfulfilled);
+      }),
     };
     return chain;
   }
@@ -36,8 +54,9 @@ describe('DatabaseProfiles', () => {
       subscribe: vi.fn().mockImplementation(() => mockChannelInstance),
     };
 
-    profilesChain = createMockChain({ data: [], error: null });
-    defaultChain = createMockChain({ data: null, error: null });
+    profilesChain = createMockChain('profiles', { data: [], error: null });
+    usersChain = createMockChain('users', { data: [], error: null });
+    defaultChain = createMockChain('default', { data: null, error: null });
 
     mockSupabaseClient = {
       channel: vi.fn().mockReturnValue(mockChannelInstance),
@@ -74,6 +93,9 @@ describe('DatabaseProfiles', () => {
 
     describe('realtime events', () => {
       const triggerEvent = (table: string, payload: any) => {
+        if (DEBUG_TEST_FLOW) {
+          console.log(`[Realtime Event][${table}] Triggered event payload:`, payload);
+        }
         const matches = registeredCallbacks.filter((c) => c.table === table);
         matches.forEach((m) => m.callback(payload));
       };

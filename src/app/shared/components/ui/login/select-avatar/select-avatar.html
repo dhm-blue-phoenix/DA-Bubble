@@ -1,0 +1,35 @@
+<div class="flex flex-col gap-[30px] items-center">
+        <div class="flex items-center justify-between w-full">
+        <a routerLink="/sign-in">
+            <img src="assets/svg/icons/icon_black/arrow_back_black.svg" alt="back_arrow">
+        </a>
+        <h2 >Wähle deinen Avatar</h2>
+    </div>
+
+    <div class="flex flex-col items-center text-center gap-[30px]">
+        @if (sel_avatar === '') {
+            <img class="size-[168px]" src='assets/svg/avatar/avatar_default/default.svg' alt="default-avatar">
+        }@else {
+            <img class="size-[168px]" [src]="'assets/svg/avatar/avatar_small/' + sel_avatar + '.svg'" alt="select_avatar">
+        }
+        <h2>{{signin.data().name || 'Unbekannt'}}</h2>
+    </div>
+
+    <div class="flex w-full gap-[8px] flex-col" action="">
+        <div class="w-full flex justify-start">
+            <span class="text-xl">Aus der Liste wählen</span>
+        </div>
+        <div class="flex w-full items-center justify-between">
+            @for (avatar of avatars; track avatar) {
+                <button class="selecet_avatar" [class.active]="sel_avatar === '' + avatar" (click)="select_Avatar(avatar)">
+                    <img [src]="'assets/svg/avatar/avatar_small/' + avatar + '.svg'" alt="avatar">
+                </button>
+            }
+        </div>
+    </div>
+
+
+    <div class="flex w-full justify-end">
+        <button (click)="singin()" [disabled]="sel_avatar === ''" [class]="sel_avatar === '' ? 'btn_disable font-bold' : 'btn_raw bg-[var(--btn)] text-white font-bold'">Weiter</button>
+    </div>
+</div>
