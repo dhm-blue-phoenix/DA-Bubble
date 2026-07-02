@@ -12,6 +12,6 @@ export class LoginHeader {
   private router = inject(Router);
 
   get isLogingRoot(): boolean{
-    return this.router.url === '/login'
+    return this.router.url === '/'
   }
 }

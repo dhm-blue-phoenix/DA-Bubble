@@ -35,7 +35,7 @@ export class SignIn {
         name: this.register_Data.name,
         avatar:""
       })
-      this.router.navigate(['/login/select-avatar'])
+      this.router.navigate(['/select-avatar'])
     }
     return
     }

@@ -9,13 +9,13 @@ import { SelectAvatar } from'./shared/components/ui/login/select-avatar/select-a
 import path from 'path';
 
 export const routes: Routes = [
-    { path: '', component: LayoutComponent },
-    { path: 'login', component: LoginComponent, children: [
+    { path: '', component: LoginComponent, children: [
         {path: '', component: Login},
         {path: 'sign-in', component: SignIn},
         {path: 'select-avatar', component: SelectAvatar},
         {path: 'forgot-password', component: ForgotPassword},
         {path: 'reset-password', component: ResetPassword},
     ]},
+    { path: 'workspace', component: LayoutComponent },
     { path: '**', redirectTo: '' },
 ];

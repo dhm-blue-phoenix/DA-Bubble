@@ -1,15 +1,14 @@
-<!-- <div class="animation_container relative">
-	<div class="intro-overlay">
-		<img src="assets/svg/logo/Logo.svg" alt="Logo" class="logo-icon">
-		<p class="app-name">DABubble</p>
-	</div>
-</div> -->
-<app-login-header></app-login-header>
-<section class="flex items-center justify-center">
+<div class="animation_container">
+  <img src="assets/svg/logo/Logo.svg" alt="Logo" class="logo-icon">
+  <p class="app-name">DABubble</p>
+</div>
 
-  <div class="bg-white login_container">
-		<router-outlet></router-outlet>
-  </div>
-
-</section>
-<app-login-footer></app-login-footer>
+<div class="page-content">
+  <app-login-header></app-login-header>
+  <section class="flex items-center justify-center">
+    <div class="bg-white login_container">
+      <router-outlet></router-outlet>
+    </div>
+  </section>
+  <app-login-footer></app-login-footer>
+</div>

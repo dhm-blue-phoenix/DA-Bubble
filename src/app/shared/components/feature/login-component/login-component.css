@@ -1,9 +1,14 @@
 @import '../../../../app.css';
 .animation_container {
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: linear-gradient(1.46deg, #313AE6 1.22%, #797EF3 98.76%);
   z-index: 10;
+  animation: remove-intro 2s ease 3s forwards;
+}
+
+.page-content {
+  animation: content-fade-in 1s ease 3s both;
 }
 
 .logo-icon {
@@ -51,6 +56,19 @@ section{
   to {
     width: 40vw;
   }
+}
+
+@keyframes remove-intro {
+  to {
+    opacity: 0;
+    filter: blur(15px);
+    pointer-events: none;
+  }
+}
+
+@keyframes content-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 h2{
