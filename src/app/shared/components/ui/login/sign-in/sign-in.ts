@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from "@angular/router";
 import { Database } from '../../../../services/db';
-import { FormsModule, NgForm, NgModel } from '@angular/forms';
+import { FormsModule, NgForm} from '@angular/forms';
 import { SignInService } from '../../../../services/singin_service'
 
 

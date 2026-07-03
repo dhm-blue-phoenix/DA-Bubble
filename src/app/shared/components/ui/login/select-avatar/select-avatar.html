@@ -33,3 +33,5 @@
         <button (click)="singin()" [disabled]="sel_avatar === ''" [class]="sel_avatar === '' ? 'btn_disable font-bold' : 'btn_raw bg-[var(--btn)] text-white font-bold'">Weiter</button>
     </div>
 </div>
+
+<app-user-feedback [show]="show_feedback()">Konto erfolgreich erstellt</app-user-feedback>
