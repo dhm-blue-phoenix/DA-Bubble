@@ -1,0 +1,28 @@
+.user_Feedback {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(200vh);
+}
+
+.user_Feedback.show {
+  animation: popup-feedback 3s ease-in-out forwards;
+}
+
+.feedback_Container {
+  padding: 12px 24px;
+  border-radius: 25px 25px 0px 25px;
+  background-color: var(--btn);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+@keyframes popup-feedback {
+  0%   { transform: translateX(-50%) translateY(100vh); }
+  25%  { transform: translateX(-50%) translateY(-25%); }
+  50%  { transform: translateX(-50%) translateY(-50%); }
+  75%  { transform: translateX(-50%) translateY(-50%); }
+  100% { transform: translateX(-50%) translateY(100vh); }
+}

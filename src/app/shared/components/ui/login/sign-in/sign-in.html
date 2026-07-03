@@ -7,7 +7,7 @@
         <div class="w-full">
             <div class="input_container flex items-center p-4 justify-between">
                 <img src="assets/svg/icons/icon_grey/person_grey.svg" alt="user-icon">
-                <input [(ngModel)]="this.register_Data.name" name="name" class="py-2" type="text" placeholder="Name und Nachname" required #name="ngModel">
+                <input [(ngModel)]="this.register_Data.name" name="name" class="py-2" type="text" placeholder="Name und Nachname" required #name="ngModel" minlength="5" maxlength="40">
 
             </div>
             <div class="errorContainer">
@@ -20,12 +20,13 @@
         <div class="w-full">
             <div class="input_container flex items-center p-4 justify-between">
                 <img src="assets/svg/icons/icon_grey/mail_grey.svg" alt="mail-icon">
-                <input [(ngModel)]="this.register_Data.email" name="email" class="py-2" type="text" placeholder="beispielname@email.com" required #email="ngModel">
+                <input [(ngModel)]="this.register_Data.email" name="email" class="py-2" type="text" placeholder="beispielname@email.com" required #email="ngModel"
+                pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}">
 
             </div>
             <div class="errorContainer">
                         @if (!email.valid && email.touched) {
-                        <span class="errorMassage">*Diese E-Mail ist leider Ungültig</span>
+                        <span class="errorMassage">*Diese E-Mail ist leider ungültig.</span>
                         }
             </div>
         </div>
@@ -33,12 +34,12 @@
         <div class="w-full">
             <div class="input_container flex items-center p-4 justify-between">
                 <img src="assets/svg/icons/icon_grey/lock_grey.svg" alt="lock-icon">
-                <input [(ngModel)]="this.register_Data.password" name="password" class="py-2" type="password" placeholder="Passwort" required #password="ngModel">
+                <input [(ngModel)]="this.register_Data.password" name="password" class="py-2" type="password" placeholder="Passwort" required #password="ngModel" minlength="5" maxlength="40">
                             
             </div>
             <div class="errorContainer">
                         @if (!password.valid && password.touched) {
-                        <span class="errorMassage">Bitte geben Sie ein Passwort ein</span>
+                        <span class="errorMassage">Bitte geben Sie ein Passwort ein.</span>
                         }
             </div>
         </div>

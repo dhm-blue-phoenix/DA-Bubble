@@ -133,3 +133,31 @@ cursor: pointer;
       border: solid 4px var(--border-aktiv);
     }
 }
+
+.user_Feedback {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, 200%);
+}
+
+.user_Feedback.show {
+  animation: popup-feedback 3s ease-in-out forwards;
+}
+
+@keyframes popup-feedback {
+  0%   { transform: translate(-50%, 200%); }
+  20%  { transform: translate(-50%, -50%); }
+  80%  { transform: translate(-50%, -50%); }
+  100% { transform: translate(-50%, 200%); }
+}
+
+.feedback_Container {
+  padding: 12px 24px;
+  border-radius: 25px 25px 0px 25px;
+  background-color: var(--btn);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
