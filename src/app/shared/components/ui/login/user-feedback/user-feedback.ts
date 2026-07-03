@@ -8,4 +8,5 @@ import { Component, input } from '@angular/core';
 })
 export class UserFeedback {
   show = input(false);
+  showIcon = input(false)
 }
