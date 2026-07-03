@@ -6,7 +6,8 @@
     <form class="flex justify-center items-center flex-col w-full gap-[30px]" action="">
         <div class="input_container flex items-center p-4 justify-between">
             <img src="assets/svg/icons/icon_grey/mail_grey.svg" alt="mail-icon">
-            <input name="email" class="py-2" [(ngModel)]="login_Data.email" type="text" placeholder="beispielname@email.com">
+            <input name="email" class="py-2" [(ngModel)]="login_Data.email" type="text" placeholder="beispielname@email.com"
+            pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}">
         </div>
 
         <div class="input_container flex items-center p-4 justify-between">
