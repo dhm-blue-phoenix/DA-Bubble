@@ -11,4 +11,7 @@ export interface Environment {
   debug_user2_password: string;
 
   debug_logs: boolean;
+
+  guest_email: string,
+  guest_password: string,
 }

@@ -1,0 +1,79 @@
+h2{
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    line-height: 100%;
+    font-style: bold;
+}
+
+h3{
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    line-height: 100%;
+    font-style: bold;
+}
+
+button{
+    cursor: pointer;
+}
+
+.btn_raw{
+padding: 12px 24px;
+border-radius: 24px;
+font-size: 18px;
+}
+
+:disabled{
+padding: 12px 24px;
+border-radius: 24px;
+font-size: 18px;
+color: white;
+background-color: gray;
+cursor: not-allowed;
+}
+
+.rotated-90 {
+    transform: rotate(-90deg);
+    transition: transform 0.2s ease;
+}
+
+.rotated0 {
+    transform: rotate(0deg);
+    transition: transform 0.2s ease;
+}
+.status {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+.status_User {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.errorContainer {
+    height: 16px;
+    width: 100%;
+    margin-bottom: 16px;
+    margin-top: 4px;
+}
+
+.errorMassage {
+    color: red;
+    font-size: 1rem;
+}
+
+.online{
+    background-color: var(--status-online)
+}
+.offline{
+    background-color: var(--status-offline);
+}
