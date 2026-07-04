@@ -1,0 +1,26 @@
+@import '../../../../app.css';
+
+.channel_button{
+width: 100%;
+display: flex;
+justify-content: flex-start;
+}
+.single_channel{
+    display: flex;
+    justify-content: flex-start;
+    font-size: 18px;
+    line-height: 100%;
+    padding: 8px 24px;
+    border-radius: 20px;
+    width: 100%;
+
+    &:hover{
+        background-color: rgba(236, 238, 254, 0.8);
+    }
+}
+.aktiv_channel{
+    background-color: rgba(236, 238, 254, 1);
+    color: rgba(83, 90, 241, 1);
+    font-style: bold !important;
+    font-weight: 800;
+}

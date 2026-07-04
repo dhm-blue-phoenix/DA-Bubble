@@ -1,0 +1,35 @@
+<section class="px-16 py-2 flex justify-between items-center">
+    <div class="flex items-center gap-2">
+        <img src="assets/svg/logo/Logo.svg" alt="DA-Bubble-logo">
+        <h2>DABubble</h2>
+        
+    </div>
+
+    <div>
+        <div class="input_container flex items-center justify-between px-12 py-2">
+            <input type="text" placeholder="Devspace durchsuchen" class="w-full" name="search" id="">
+            <button><img class="size-[35px]" src="assets/svg/icons/icon_grey/search_grey.svg" alt=""></button>
+        </div>
+    </div>
+
+    <div class="flex gap-2 items-center">
+        <h2>Frederik Beck</h2>
+        <div class="flex relative">
+            <img class="size-[70px] " src="assets/svg/avatar/avatar_small/1.svg" alt="">
+            <div class="status_User online"></div>
+        </div>
+        <button (click)="toggle_Dialog()">
+            <img class="size-[30px]" src="assets/svg/icons/icon_black/dropdown_black.svg" alt="">
+        </button>
+    </div>
+    
+</section>
+
+    @if (dialog_open) {
+        <div class="profil_overlay" (click)="toggle_Dialog()">
+            <div (click)="$event.stopPropagation()" class="flex flex-col items-center bg-color-white profil_content justify-center gap-4">
+                <button class="w-5/6"><span class="font-semibold text-2xl">Profil</span></button>
+                <button class="w-5/6"><span class="font-semibold text-2xl">Log out</span></button>
+            </div>
+        </div>
+    }

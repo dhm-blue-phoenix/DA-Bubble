@@ -1,0 +1,13 @@
+@import '../../../../app.css';
+.user_container{
+    padding: 4px 24px;
+    border-radius: 30px;
+    &:hover{
+        background-color: var(--hover-bg);
+    }
+}
+
+.aktiv{
+    background-color: var(--hover-bg);
+}
+
