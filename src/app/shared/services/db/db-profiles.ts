@@ -13,7 +13,7 @@ type SupabaseResponseProfiles = { data: Profiles | null; error: PostgrestError |
 })
 export class DatabaseProfiles implements OnDestroy {
   private readonly platformId: Object = inject(PLATFORM_ID);
-  private readonly supabase: SupabaseClient = inject(Supabase).supabase;
+  private readonly supabase: SupabaseClient = inject(Supabase)['supabase'];
   private readonly channels?: RealtimeChannel;
 
   public readonly _profiles: WritableSignal<Profiles> = signal<Profiles>([]);

@@ -21,7 +21,7 @@ type SupabaseResponseMessage = { data: Message; error: PostgrestError };
 })
 export class DatabaseMessages implements OnDestroy {
   private readonly platformId: Object = inject(PLATFORM_ID);
-  private readonly supabase: SupabaseClient = inject(Supabase).supabase;
+  private readonly supabase: SupabaseClient = inject(Supabase)['supabase'];
   private readonly channels?: RealtimeChannel;
 
   public readonly _messages: WritableSignal<Messages> = signal<Messages>([]);

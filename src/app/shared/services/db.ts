@@ -4,6 +4,7 @@ import { DatabaseProfiles } from './db/db-profiles';
 import { DatabaseAuth } from './db/db-auth';
 import { DatabaseChats } from './db/db-chats';
 import { DatabaseMessages, ReactionResult } from './db/db-messages';
+import { DatabaseChannels } from './db/db-channels';
 
 import { Profiles, Profile } from '../interfaces/profile';
 import { Messages } from '../interfaces/messages';
@@ -16,6 +17,7 @@ export class Database {
   private readonly db_auth: DatabaseAuth = inject(DatabaseAuth);
   private readonly db_chats: DatabaseChats = inject(DatabaseChats);
   private readonly db_messages: DatabaseMessages = inject(DatabaseMessages);
+  private readonly db_channels: DatabaseChannels = inject(DatabaseChannels);
 
   public readonly profiles: Signal<Profiles> = this.db_profiles._profiles.asReadonly();
   public readonly isLogin: Signal<boolean> = this.db_auth._isUserLogin.asReadonly();

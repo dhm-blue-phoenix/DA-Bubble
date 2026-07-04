@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 
 import { SupabaseClient, PostgrestSingleResponse } from '@supabase/supabase-js';
 
@@ -11,7 +11,7 @@ type ExistChat = { success: boolean; chat_id: ChatId };
   providedIn: 'root',
 })
 export class DatabaseChats {
-  private readonly supabase: SupabaseClient = inject(Supabase).supabase;
+  private readonly supabase: SupabaseClient = inject(Supabase)['supabase'];
 
   private async checkExistChat(currentUserId: string, otherUserId: string): Promise<ExistChat> {
     const { data: chats }: PostgrestSingleResponse<{ chat_id: string }[]> = await this.supabase

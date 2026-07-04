@@ -20,7 +20,7 @@ type SupabaseResponseProfiles = { data: Profiles | null; error: PostgrestError |
 export class DatabaseAuth {
   private readonly platformId: Object = inject(PLATFORM_ID);
   private readonly debug_logs: boolean = environment.debug_logs;
-  private readonly supabase: SupabaseClient = inject(Supabase).supabase;
+  private readonly supabase: SupabaseClient = inject(Supabase)['supabase'];
 
   public readonly _isUserLogin: WritableSignal<boolean> = signal<boolean>(false);
 
