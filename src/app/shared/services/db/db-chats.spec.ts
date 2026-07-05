@@ -13,10 +13,10 @@ describe('DatabaseChats', () => {
   const DEBUG_TEST_FLOW = true; // Set to true to monitor mocked database queries and realtime events
 
   function createMockChain(tableName: string, resolvedValue: any) {
+    let queryActions: any[] = [];
+
     const logCall = (method: string, args: any[]) => {
-      if (DEBUG_TEST_FLOW) {
-        console.log(`[Supabase Query][${tableName}] .${method}(${args.map(a => JSON.stringify(a)).join(', ')})`);
-      }
+      queryActions.push({ method, args });
     };
 
     const chain: any = {
@@ -32,7 +32,14 @@ describe('DatabaseChats', () => {
       maybeSingle: vi.fn().mockImplementation((...args) => { logCall('maybeSingle', args); return chain; }),
       in: vi.fn().mockImplementation((...args) => { logCall('in', args); return chain; }),
       then: vi.fn().mockImplementation((onfulfilled: any) => {
-        if (DEBUG_TEST_FLOW) console.log(`[Supabase Query][${tableName}] Resolving with:`, resolvedValue);
+        if (DEBUG_TEST_FLOW) {
+          console.log(`[Supabase Query][${tableName}] Executed:`, {
+            table: tableName,
+            query: queryActions,
+            resolvesWith: resolvedValue
+          });
+        }
+        queryActions = [];
         return Promise.resolve(resolvedValue).then(onfulfilled);
       }),
     };
