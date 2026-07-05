@@ -4,22 +4,15 @@ import { isPlatformBrowser } from '@angular/common';
 import {
   RealtimeChannel,
   SupabaseClient,
-  PostgrestError,
   PostgrestSingleResponse,
   RealtimePostgresChangesPayload,
   PostgrestResponse,
 } from '@supabase/supabase-js';
 
 import { Supabase } from './db-superbase';
-import { Message, Messages, Reaction, Reactions } from '../../interfaces/messages';
 
-export interface ReactionResult {
-  action: 'added' | 'removed';
-}
-interface SupabaseResponseMessage {
-  data: Message;
-  error: PostgrestError;
-}
+import { Message, Messages, Reaction, Reactions } from '../../interfaces/messages';
+import { SupabaseResponseMessage, ReactionResult } from '../../interfaces/db/db-messages';
 
 @Injectable({
   providedIn: 'root',
@@ -54,14 +47,15 @@ export class DatabaseMessages implements OnDestroy {
   }
 
   private handleMessageEvent(payload: RealtimePostgresChangesPayload<object>): void {
-    if (payload.table === 'messages' && payload.eventType === 'INSERT')
-      this.insertEventMessage(payload);
-    if (payload.table === 'messages' && payload.eventType === 'UPDATE')
-      this.updateEventMessage(payload);
-    if (payload.table === 'reactions' && payload.eventType === 'INSERT')
-      this.insertEventReaction(payload);
-    if (payload.table === 'reactions' && payload.eventType === 'DELETE')
-      this.deleteEventReaction(payload);
+    const { table, eventType }: { table: string; eventType: string } = payload;
+    if (table === 'messages') {
+      if (eventType === 'INSERT') this.insertEventMessage(payload);
+      if (eventType === 'UPDATE') this.updateEventMessage(payload);
+    }
+    if (table === 'reactions') {
+      if (eventType === 'INSERT') this.insertEventReaction(payload);
+      if (eventType === 'DELETE') this.deleteEventReaction(payload);
+    }
   }
 
   private insertEventMessage(payload: RealtimePostgresChangesPayload<object>): void {

@@ -5,14 +5,11 @@ import { Supabase } from './db-superbase';
 
 import {
   SupabaseClient,
-  PostgrestError,
   AuthChangeEvent,
   Session
 } from '@supabase/supabase-js';
 
-import { Profiles } from '../../interfaces/profile';
-
-type SupabaseResponseProfiles = { data: Profiles | null; error: PostgrestError | null; };
+import { SupabaseResponseProfiles } from '../../interfaces/db/db-auth';
 
 @Injectable({
   providedIn: 'root',

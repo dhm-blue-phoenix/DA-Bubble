@@ -10,7 +10,7 @@ export interface Channel {
 export interface ChannelMember {
   readonly channel_id: string;
   readonly user_id: string;
-  readonly role: string;
+  readonly role: 'admin' | 'member';
   readonly joined_at: string;
 }
 

@@ -1,15 +1,12 @@
 import { Injectable, signal, WritableSignal, PLATFORM_ID, inject, OnDestroy } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
-import { RealtimeChannel, SupabaseClient, PostgrestError } from '@supabase/supabase-js';
+import { RealtimeChannel, SupabaseClient } from '@supabase/supabase-js';
 
-import { Profile, Profiles } from '../../interfaces/profile';
 import { Supabase } from './db-superbase';
 
-interface SupabaseResponseProfiles {
-  data: Profiles | null;
-  error: PostgrestError | null;
-}
+import { Profile, Profiles } from '../../interfaces/profile';
+import { SupabaseResponseProfiles } from '../../interfaces/db/db-profiles';
 
 @Injectable({
   providedIn: 'root',

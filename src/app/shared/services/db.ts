@@ -3,12 +3,13 @@ import { inject, Injectable, Signal } from '@angular/core';
 import { DatabaseProfiles } from './db/db-profiles';
 import { DatabaseAuth } from './db/db-auth';
 import { DatabaseChats } from './db/db-chats';
-import { DatabaseMessages, ReactionResult } from './db/db-messages';
+import { DatabaseMessages } from './db/db-messages';
 import { DatabaseChannels } from './db/db-channels';
 
 import { Profiles, Profile } from '../interfaces/profile';
 import { Messages } from '../interfaces/messages';
 import { ReturnFromCreateNewChannel, SignalChannel } from '../interfaces/db/db-channels';
+import { ReactionResult } from '../interfaces/db/db-messages';
 
 @Injectable({
   providedIn: 'root',

@@ -5,7 +5,8 @@ import {
   SupabaseClient,
   PostgrestSingleResponse,
   PostgrestResponse,
-  RealtimeChannel, RealtimePostgresChangesPayload,
+  RealtimeChannel,
+  RealtimePostgresChangesPayload,
 } from '@supabase/supabase-js';
 
 import { Supabase } from './db-superbase';
@@ -61,7 +62,31 @@ export class DatabaseChannels {
   }
 
   private handleChannelsEvent(payload: RealtimePostgresChangesPayload<object>): void {
-    console.log('channels event', payload);
+    const { table, eventType }: { table: string, eventType: string} = payload;
+    if (table === 'channels') {
+      if (eventType === 'INSERT') this.insertEventChannel(payload);
+      if (eventType === 'UPDATE') this.insertEventChannel(payload);
+    }
+    if (table === 'channel_members') {
+      if (eventType === 'INSERT') this.insertEventMember(payload);
+      if (eventType === 'DELETE') this.deleteEventMembers(payload);
+    }
+  }
+
+  private insertEventChannel(payload: RealtimePostgresChangesPayload<object>): void {
+    console.log('CHANNELS INSERT', payload);
+  }
+
+  private updateEventChannel(payload: RealtimePostgresChangesPayload<object>): void {
+    console.log('CHANNELS UPDATE', payload);
+  }
+
+  private insertEventMember(payload: RealtimePostgresChangesPayload<object>): void {
+    console.log('MEMBERS INSERT', payload);
+  }
+
+  private deleteEventMembers(payload: RealtimePostgresChangesPayload<object>): void {
+    console.log('MEMBERS DELETE', payload);
   }
 
   public ngOnDestroy(): void {
