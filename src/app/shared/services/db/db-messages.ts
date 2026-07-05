@@ -39,7 +39,7 @@ export class DatabaseMessages implements OnDestroy {
 
   private subscribeMessages(): RealtimeChannel {
     return this.supabase
-      .channel('custom-all-channel')
+      .channel('realtime:messages')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'messages' },

@@ -29,7 +29,7 @@ export class DatabaseProfiles implements OnDestroy {
 
   private subscribeProfiles(): RealtimeChannel {
     return this.supabase
-      .channel('profiles')
+      .channel('realtime:profiles')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, (payload) =>
         this.handleProfileEvent(payload),
       )

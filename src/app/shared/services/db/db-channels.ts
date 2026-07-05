@@ -10,26 +10,13 @@ import {
 
 import { Supabase } from './db-superbase';
 
-interface ChannelId {
-  channel_id: string;
-  channels: object;
-}
-
-interface ChannelIdAndName {
-  id: string;
-  name: string;
-}
-
-interface ReturnChannelIds {
-  success: boolean;
-  channelData: ChannelIdAndName[] | [];
-}
-
-interface ReturnErrorFromCreateNewChannel {
-  success: false;
-  msg: 'Duplicate found';
-}
-export type ReturnFromCreateNewChannel = void | ReturnErrorFromCreateNewChannel;
+import {
+  ChannelId,
+  ReturnFromCreateNewChannel,
+  SignalChannels,
+  SignalChannel,
+  ChannelIdAndName,
+} from '../../interfaces/db/db-channels';
 
 @Injectable({
   providedIn: 'root',
@@ -39,64 +26,72 @@ export class DatabaseChannels {
   private readonly supabase: SupabaseClient = inject(Supabase)['supabase'];
   private readonly channels?: RealtimeChannel;
 
-  public readonly _channels: WritableSignal<any> = signal<any>([]); // Wichtig: In Arbeit: channel ids + names
-  public readonly _channel: WritableSignal<any> = signal<any>([]); // Wichtig: In Arbeit: Channel daten
+  public readonly _channels: WritableSignal<SignalChannels> = signal<SignalChannels>([]);
+  public readonly _channel: WritableSignal<SignalChannel> = signal<SignalChannel>({});
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
-      //this.channels = this.subscribeChannels();
+      this.channels = this.subscribeChannels();
+      this.debugging();
     }
+  }
+
+  private async debugging() {
+    this.getChannelIds('631b4bad-b6ee-439a-b9e8-e366d03afa39');
+    this.getChannelData('06fb25c7-857c-460e-abc6-b478c03174e7');
   }
 
   // -- In Arbeit
   private subscribeChannels(): RealtimeChannel {
     return this.supabase
-      .channel('custom-all-channel')
+      .channel('realtime:channels')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'channel_members' },
-        (payload: RealtimePostgresChangesPayload<object>): void => this.handleChannelsEvent(payload),
+        (payload: RealtimePostgresChangesPayload<object>): void =>
+          this.handleChannelsEvent(payload),
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'channels' },
-        (payload: RealtimePostgresChangesPayload<object>): void => this.handleChannelsEvent(payload),
+        (payload: RealtimePostgresChangesPayload<object>): void =>
+          this.handleChannelsEvent(payload),
       )
       .subscribe();
   }
 
-  private handleChannelsEvent(payload: RealtimePostgresChangesPayload<object>): void {}
+  private handleChannelsEvent(payload: RealtimePostgresChangesPayload<object>): void {
+    console.log('channels event', payload);
+  }
 
   public ngOnDestroy(): void {
     if (this.channels) this.supabase.removeChannel(this.channels);
   }
 
-  private async getChannelIds(userId: string): Promise<ReturnChannelIds> {
+  public async getChannelIds(userId: string): Promise<void> {
     const { data }: PostgrestSingleResponse<ChannelId[] | []> = await this.supabase
       .from('channel_members')
       .select('channel_id, channels(name)')
       .eq('user_id', userId);
     if (data && data.length > 0) {
-      const returnData: ChannelIdAndName[] = data.map((channel: ChannelId): ChannelIdAndName => {
+      const channels: ChannelIdAndName[] = data.map((channel: ChannelId): ChannelIdAndName => {
         const channelName: { name: string } = channel['channels'] as { name: string };
         return { id: channel['channel_id'], name: channelName['name'] };
       });
-      return { success: true, channelData: returnData };
+      this._channels.set(channels);
     }
-    return { success: false, channelData: [] };
   }
 
-  private async getChannelData(channelId: string): Promise<void> {
+  public async getChannelData(channelId: string): Promise<void> {
     const { data } = await this.supabase
       .from('channels')
       .select('id, name, description, created_by, channel_members(user_id)')
       .eq('id', channelId);
 
     if (data && data.length > 0) {
-      console.log(data[0]);
+      this._channel.set(data[0]);
     }
   }
-  // ---
 
   public async createNewChannel(
     userId: string,

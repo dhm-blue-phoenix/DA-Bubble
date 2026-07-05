@@ -4,10 +4,11 @@ import { DatabaseProfiles } from './db/db-profiles';
 import { DatabaseAuth } from './db/db-auth';
 import { DatabaseChats } from './db/db-chats';
 import { DatabaseMessages, ReactionResult } from './db/db-messages';
-import { DatabaseChannels, ReturnFromCreateNewChannel } from './db/db-channels';
+import { DatabaseChannels } from './db/db-channels';
 
 import { Profiles, Profile } from '../interfaces/profile';
 import { Messages } from '../interfaces/messages';
+import { ReturnFromCreateNewChannel, SignalChannel } from '../interfaces/db/db-channels';
 
 @Injectable({
   providedIn: 'root',
@@ -22,6 +23,8 @@ export class Database {
   public readonly profiles: Signal<Profiles> = this.db_profiles._profiles.asReadonly();
   public readonly isLogin: Signal<boolean> = this.db_auth._isUserLogin.asReadonly();
   public readonly messages: Signal<Messages> = this.db_messages._messages.asReadonly();
+  public readonly channels: Signal<SignalChannel> = this.db_channels._channels.asReadonly();
+  public readonly channel: Signal<SignalChannel> = this.db_channels._channel.asReadonly();
 
   constructor() {
     this.db_profiles.getProfiles();
@@ -33,7 +36,12 @@ export class Database {
     user_name: string,
     user_avatar: string,
   ): void {
-    this.db_auth.signUpNewUser(user_email.trim(), user_password.trim(), user_name.trim(), user_avatar.trim().toLowerCase());
+    this.db_auth.signUpNewUser(
+      user_email.trim(),
+      user_password.trim(),
+      user_name.trim(),
+      user_avatar.trim().toLowerCase(),
+    );
   }
 
   public sendEmailForPasswordReset(email: string): void {
@@ -63,6 +71,8 @@ export class Database {
   public logout(): void {
     this.db_profiles._profiles.set([]);
     this.db_messages._messages.set([]);
+    this.db_channels._channels.set([]);
+    this.db_channels._channel.set({});
     this.db_auth.signOut();
   }
 
@@ -101,7 +111,11 @@ export class Database {
     return this.db_messages.toggleReaction(msgId, senderId, emoji.trim().toLowerCase());
   }
 
-  public async newChannel(userId: string, title: string, desc: string): Promise<ReturnFromCreateNewChannel> {
+  public async newChannel(
+    userId: string,
+    title: string,
+    desc: string,
+  ): Promise<ReturnFromCreateNewChannel> {
     return await this.db_channels.createNewChannel(userId.trim(), title.trim(), desc.trim());
   }
 
@@ -115,5 +129,13 @@ export class Database {
 
   public removeChannelMember(channelId: string, userId: string): void {
     this.db_channels.removeMember(channelId.trim(), userId.trim());
+  }
+
+  public getChannels(userId: string): void {
+    this.db_channels.getChannelIds(userId.trim());
+  }
+
+  public getChannelContent(channelId: string): void {
+    this.db_channels.getChannelData(channelId.trim());
   }
 }
