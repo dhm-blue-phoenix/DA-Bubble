@@ -33,7 +33,7 @@ export class Database {
     user_name: string,
     user_avatar: string,
   ): void {
-    this.db_auth.signUpNewUser(user_email, user_password, user_name, user_avatar);
+    this.db_auth.signUpNewUser(user_email.trim(), user_password.trim(), user_name.trim(), user_avatar.trim().toLowerCase());
   }
 
   public sendEmailForPasswordReset(email: string): void {
@@ -57,7 +57,7 @@ export class Database {
   }
 
   public login(user_email: string, user_password: string): void {
-    this.db_auth.signInWithEmail(user_email, user_password);
+    this.db_auth.signInWithEmail(user_email.trim(), user_password.trim());
   }
 
   public logout(): void {
@@ -71,7 +71,7 @@ export class Database {
   }
 
   public editProfileName(profileId: string, value: string): void {
-    this.db_profiles.updateProfileName(profileId, value);
+    this.db_profiles.updateProfileName(profileId, value.trim());
   }
 
   public async getChatId(otherUserId: string): Promise<string | null> {
@@ -82,11 +82,11 @@ export class Database {
   }
 
   public newMsg(chatId: string, senderId: string, content: string): void {
-    this.db_messages.createNewMessage(chatId, senderId, content);
+    this.db_messages.createNewMessage(chatId, senderId, content.trim());
   }
 
   public editMsg(msgId: string, newContent: string): void {
-    this.db_messages.updateMessage(msgId, newContent);
+    this.db_messages.updateMessage(msgId, newContent.trim());
   }
 
   public loadMsg(chatId: string): void {
@@ -98,6 +98,6 @@ export class Database {
     senderId: string,
     emoji: string,
   ): Promise<ReactionResult> {
-    return this.db_messages.toggleReaction(msgId, senderId, emoji);
+    return this.db_messages.toggleReaction(msgId, senderId, emoji.trim().toLowerCase());
   }
 }

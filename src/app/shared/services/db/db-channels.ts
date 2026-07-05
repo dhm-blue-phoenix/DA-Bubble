@@ -4,6 +4,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { SupabaseClient, PostgrestSingleResponse, PostgrestResponse } from '@supabase/supabase-js';
 
 import { Supabase } from './db-superbase';
+import { dateTimestampProvider } from 'rxjs/internal/scheduler/dateTimestampProvider';
 
 interface ChannelMemberRow {
   channel_id: string;
@@ -30,14 +31,10 @@ export class DatabaseChannels {
   }
 
   private async debbug() {
-    const data = await this.getChannelIds('631b4bad-b6ee-439a-b9e8-e366d03afa39');
-    console.warn(data);
+    //this.createNewChannel('631b4bad-b6ee-439a-b9e8-e366d03afa39', 'My Channel', 'Blablabal');
+    //this.checkDuplicateCannelName('631b4bad-b6ee-439a-b9e8-e366d03afa39', 'My Channel');
   }
 
-
-  /**
-   * Ladet die Channel Ids wo man mitglid ist also admin und member
-   * */
   private async getChannelIds(userId: string): Promise<ReturnChannelIds> {
     const { data }: PostgrestSingleResponse<ChannelId[] | []> = await this.supabase
       .from('channel_members')
@@ -50,5 +47,27 @@ export class DatabaseChannels {
       return { success: true, channelIds: ids };
     }
     return { success: false, channelIds: [] };
+  }
+
+  private async createNewChannel(userId: string, name: string, description: string): Promise<void> {
+    if (await this.checkDuplicateCannelName(userId, name)) return; // Eventuelle Ergenzente Rückgabewerte
+    await this.supabase
+      .from('channels')
+      .insert({
+        name: name,
+        description: description,
+        created_by: userId
+      })
+      .select();
+  }
+
+  private async checkDuplicateCannelName(userId: string, name: string): Promise<boolean> {
+    const { data } = await this.supabase
+      .from('channels')
+      .select('name')
+      .eq('created_by', userId)
+      .eq('name', name);
+    if (data && data.length > 0) return true;
+    return false;
   }
 }
