@@ -4,8 +4,12 @@ import { SupabaseClient, PostgrestSingleResponse } from '@supabase/supabase-js';
 
 import { Supabase } from './db-superbase';
 
+interface ExistChat {
+  success: boolean;
+  chat_id: ChatId;
+}
+
 type ChatId = string | null;
-type ExistChat = { success: boolean; chat_id: ChatId };
 
 @Injectable({
   providedIn: 'root',

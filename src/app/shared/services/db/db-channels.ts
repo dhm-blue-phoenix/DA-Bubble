@@ -10,8 +10,26 @@ import {
 
 import { Supabase } from './db-superbase';
 
-type ChannelId = { channel_id: string };
-type ReturnChannelIds = { success: boolean; channelIds: string[] | [] };
+interface ChannelId {
+  channel_id: string;
+  channels: object;
+}
+
+interface ChannelIdAndName {
+  id: string;
+  name: string;
+}
+
+interface ReturnChannelIds {
+  success: boolean;
+  channelData: ChannelIdAndName[] | [];
+}
+
+interface ReturnErrorFromCreateNewChannel {
+  success: false;
+  msg: 'Duplicate found';
+}
+type ReturnFromCreateNewChannel = void | ReturnErrorFromCreateNewChannel;
 
 @Injectable({
   providedIn: 'root',
@@ -21,54 +39,59 @@ export class DatabaseChannels {
   private readonly supabase: SupabaseClient = inject(Supabase)['supabase'];
   private readonly channels?: RealtimeChannel;
 
-  public readonly _channels: WritableSignal<any> = signal<any>([]); // Wichtig: In Arbeit
+  public readonly _channels: WritableSignal<any> = signal<any>([]); // Wichtig: In Arbeit: channel ids + names
+  public readonly _channel: WritableSignal<any> = signal<any>([]); // Wichtig: In Arbeit: Channel daten
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
-      //this.debbug();
+      this.debbug();
     }
   }
 
-  private async debbug() {
+  private async debbug(): Promise<void> {
     const data: ReturnChannelIds = await this.getChannelIds('631b4bad-b6ee-439a-b9e8-e366d03afa39');
-    data.channelIds.forEach((channelId: string): void => {
-      this.getChannelData(channelId);
+    console.log(data);
+    data.channelData.forEach((channelId: any): any => {
+      console.log(channelId);
+      this.getChannelData(channelId.id);
     });
-
     //this.createNewChannel('631b4bad-b6ee-439a-b9e8-e366d03afa39', 'My Channel15', '...');
     //this.updateChannelData('06fb25c7-857c-460e-abc6-b478c03174e7', 'First Channel', '...');
   }
 
-  // ----
-  // Evenutell Funktion Löschen
   private async getChannelIds(userId: string): Promise<ReturnChannelIds> {
     const { data }: PostgrestSingleResponse<ChannelId[] | []> = await this.supabase
       .from('channel_members')
-      .select('channel_id')
+      .select('channel_id, channels(name)')
       .eq('user_id', userId);
     if (data && data.length > 0) {
-      const ids: string[] = data.map((channel: ChannelId): string => {
-        return channel['channel_id'];
+      const returnData: ChannelIdAndName[] = data.map((channel: ChannelId): ChannelIdAndName => {
+        const channelName: { name: string } = channel['channels'] as { name: string };
+        return { id: channel['channel_id'], name: channelName['name'] };
       });
-      return { success: true, channelIds: ids };
+      return { success: true, channelData: returnData };
     }
-    return { success: false, channelIds: [] };
+    return { success: false, channelData: [] };
   }
 
   private async getChannelData(channelId: string): Promise<void> {
     const { data } = await this.supabase
       .from('channels')
-      .select('id, name, description, created_by, channel_members(profiles(avatar, name, status))')
+      .select('id, name, description, created_by, channel_members(user_id)')
       .eq('id', channelId);
 
     if (data && data.length > 0) {
       console.log(data[0]);
     }
   }
-  // ----
 
-  public async createNewChannel(userId: string, name: string, description: string): Promise<void> {
-    if (await this.checkDuplicateCannelName(userId, name)) return; // Eventuelle Ergenzente Rückgabewerte
+  public async createNewChannel(
+    userId: string,
+    name: string,
+    description: string,
+  ): Promise<ReturnFromCreateNewChannel> {
+    if (await this.checkDuplicateCannelName(name))
+      return { success: false, msg: 'Duplicate found' };
     const { data }: PostgrestSingleResponse<{ id: string }[]> = await this.supabase
       .from('channels')
       .insert({
@@ -80,11 +103,10 @@ export class DatabaseChannels {
     if (data && data.length > 0) this.createNewMember(data[0]['id'], userId, 'admin');
   }
 
-  private async checkDuplicateCannelName(userId: string, name: string): Promise<boolean> {
+  private async checkDuplicateCannelName(name: string): Promise<boolean> {
     const { data }: PostgrestSingleResponse<Object[]> = await this.supabase
       .from('channels')
       .select('name')
-      .eq('created_by', userId)
       .eq('name', name);
     return !!(data && data.length > 0);
   }
@@ -110,7 +132,7 @@ export class DatabaseChannels {
       .delete()
       .eq('channel_id', channelId)
       .eq('user_id', userId);
-  };
+  }
 
   public async updateChannelData(
     channelId: string,

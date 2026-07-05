@@ -6,7 +6,10 @@ import { RealtimeChannel, SupabaseClient, PostgrestError } from '@supabase/supab
 import { Profile, Profiles } from '../../interfaces/profile';
 import { Supabase } from './db-superbase';
 
-type SupabaseResponseProfiles = { data: Profiles | null; error: PostgrestError | null };
+interface SupabaseResponseProfiles {
+  data: Profiles | null;
+  error: PostgrestError | null;
+}
 
 @Injectable({
   providedIn: 'root',

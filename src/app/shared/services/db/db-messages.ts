@@ -13,8 +13,13 @@ import {
 import { Supabase } from './db-superbase';
 import { Message, Messages, Reaction, Reactions } from '../../interfaces/messages';
 
-export type ReactionResult = { action: 'added' | 'removed' };
-type SupabaseResponseMessage = { data: Message; error: PostgrestError };
+export interface ReactionResult {
+  action: 'added' | 'removed';
+}
+interface SupabaseResponseMessage {
+  data: Message;
+  error: PostgrestError;
+}
 
 @Injectable({
   providedIn: 'root',
