@@ -5,9 +5,16 @@ import { SupabaseClient, PostgrestSingleResponse, PostgrestResponse } from '@sup
 
 import { Supabase } from './db-superbase';
 
+interface ChannelMemberRow {
+  channel_id: string;
+  channels: {
+    name: string;
+  };
+}
 
-type ChannelId = string | null;
-type ExistChannelId = { success: boolean; channel_id: ChannelId[] };
+type ChannelId = { channel_id: string };
+type ReturnChannelIds = { success: boolean; channelIds: string[] | [] };
+type ChannelIdsResponse = ChannelId[] | [];
 
 @Injectable({
   providedIn: 'root',
@@ -18,57 +25,30 @@ export class DatabaseChannels {
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
-      this.checkExistChannel('daww');
+      this.debbug();
     }
   }
 
-  /*
-   * Wichtig: Alle Tabellen von Channel sind noch nicht freigegeben in Superbase
-   * */
+  private async debbug() {
+    const data = await this.getChannelIds('631b4bad-b6ee-439a-b9e8-e366d03afa39');
+    console.warn(data);
+  }
 
-  // Editing + Duplikats Prüfung namen
-  private async checkExistChannel(currentUserId: string): Promise<ExistChannelId> {
-    const { data: channel_ids }: PostgrestResponse<{ channel_id: string }> = await this.supabase
+
+  /**
+   * Ladet die Channel Ids wo man mitglid ist also admin und member
+   * */
+  private async getChannelIds(userId: string): Promise<ReturnChannelIds> {
+    const { data }: PostgrestSingleResponse<ChannelId[] | []> = await this.supabase
       .from('channel_members')
       .select('channel_id')
-      .eq('user_id', currentUserId)
-      .eq('role', 'admin');
-    if (channel_ids) {
-      const ids: string[] = channel_ids.map((channel: { channel_id: string }): string => {
+      .eq('user_id', userId);
+    if (data && data.length > 0) {
+      const ids: string[] = data.map((channel: ChannelId): string => {
         return channel['channel_id'];
       });
-      return { success: true, channel_id: ids };
+      return { success: true, channelIds: ids };
     }
-    return { success: false, channel_id: [] };
+    return { success: false, channelIds: [] };
   }
-
-  // Editing
-  private async createNewChannel(
-    currentUserId: string,
-    name: string,
-    description: string,
-  ): Promise<ChannelId> {
-    const { data: newChannel, error }: PostgrestSingleResponse<any> = await this.supabase
-      .from('channels')
-      .insert({
-        name: name,
-        description: description,
-        created_by: currentUserId,
-      })
-      .select()
-      .single();
-    return newChannel['id'];
-  }
-
-  /*
-  public async getChannelId(
-    currentUserId: string,
-    name: string,
-    description: string,
-  ): Promise<ChannelId> {
-    const existChat: ExistChannel = await this.checkExistChat(currentUserId, otherUserId);
-    if (!existChat['success']) return this.createNewChat(currentUserId, otherUserId);
-    return existChat['channel_id'];
-  }
-  */
 }

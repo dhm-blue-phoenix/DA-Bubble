@@ -62,6 +62,7 @@ export class Database {
 
   public logout(): void {
     this.db_profiles._profiles.set([]);
+    this.db_messages._messages.set([]);
     this.db_auth.signOut();
   }
 
