@@ -31,8 +31,7 @@ export class DatabaseChannels {
   }
 
   private async debbug() {
-    //this.createNewChannel('631b4bad-b6ee-439a-b9e8-e366d03afa39', 'My Channel', 'Blablabal');
-    //this.checkDuplicateCannelName('631b4bad-b6ee-439a-b9e8-e366d03afa39', 'My Channel');
+    //this.createNewChannel('631b4bad-b6ee-439a-b9e8-e366d03afa39', 'My Channel15', '...');
   }
 
   private async getChannelIds(userId: string): Promise<ReturnChannelIds> {
@@ -51,7 +50,7 @@ export class DatabaseChannels {
 
   private async createNewChannel(userId: string, name: string, description: string): Promise<void> {
     if (await this.checkDuplicateCannelName(userId, name)) return; // Eventuelle Ergenzente Rückgabewerte
-    await this.supabase
+    const { data }: PostgrestSingleResponse<{ id: string }[]> = await this.supabase
       .from('channels')
       .insert({
         name: name,
@@ -59,15 +58,25 @@ export class DatabaseChannels {
         created_by: userId
       })
       .select();
+    if (data && data.length > 0) this.createNewMember(data[0]['id'], userId, 'admin');
   }
 
   private async checkDuplicateCannelName(userId: string, name: string): Promise<boolean> {
-    const { data } = await this.supabase
+    const { data }: PostgrestSingleResponse<Object[]> = await this.supabase
       .from('channels')
       .select('name')
       .eq('created_by', userId)
       .eq('name', name);
-    if (data && data.length > 0) return true;
-    return false;
+    return !!(data && data.length > 0);
+  }
+
+  private async createNewMember(channelId: string, userId: string, role: 'admin' | 'member'): Promise<void> {
+    await this.supabase.from('channel_members')
+      .insert({
+        channel_id: channelId,
+        user_id: userId,
+        role: role
+      })
+      .select();
   }
 }
