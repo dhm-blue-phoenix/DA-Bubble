@@ -32,6 +32,7 @@ export class DatabaseChannels {
 
   private async debbug() {
     //this.createNewChannel('631b4bad-b6ee-439a-b9e8-e366d03afa39', 'My Channel15', '...');
+    this.updateChannelData('06fb25c7-857c-460e-abc6-b478c03174e7', 'First Channel', '...');
   }
 
   private async getChannelIds(userId: string): Promise<ReturnChannelIds> {
@@ -77,6 +78,18 @@ export class DatabaseChannels {
         user_id: userId,
         role: role
       })
+      .select();
+  }
+
+  private async updateChannelData(channelId: string, name: string, description: string): Promise<void> {
+    await this.supabase
+      .from('channels')
+      .update({
+        name: name,
+        description: description,
+        edited_at: new Date().toISOString()
+      })
+      .eq('id', channelId)
       .select();
   }
 }
