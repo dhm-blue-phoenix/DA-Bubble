@@ -107,7 +107,7 @@ describe('DatabaseProfiles', () => {
           name: 'User One',
           created_at: '2026-06-28T12:00:00Z',
           status: 'online',
-          avatar_url: 'avatar1.png',
+          avatar: 'avatar1.png',
         };
 
         triggerEvent('profiles', {
@@ -125,7 +125,7 @@ describe('DatabaseProfiles', () => {
           name: 'User One',
           created_at: '2026-06-28T12:00:00Z',
           status: 'online',
-          avatar_url: 'avatar1.png',
+          avatar: 'avatar1.png',
         };
 
         service._profiles.set([newProfile]);
@@ -145,7 +145,7 @@ describe('DatabaseProfiles', () => {
           name: 'User One',
           created_at: '2026-06-28T12:00:00Z',
           status: 'online',
-          avatar_url: 'avatar1.png',
+          avatar: 'avatar1.png',
         };
         const updatedProfile: Profile = { ...oldProfile, name: 'User One Updated', status: 'away' };
 
@@ -170,7 +170,7 @@ describe('DatabaseProfiles', () => {
             name: 'User One',
             created_at: '2026-06-28T12:00:00Z',
             status: 'online',
-            avatar_url: 'avatar1.png',
+            avatar: 'avatar1.png',
           },
         ];
 
@@ -192,7 +192,7 @@ describe('DatabaseProfiles', () => {
           name: 'User One',
           created_at: '2026-06-28T12:00:00Z',
           status: 'online',
-          avatar_url: 'avatar1.png',
+          avatar: 'avatar1.png',
         };
 
         profilesChain.then.mockImplementation((onfulfilled: any) =>
