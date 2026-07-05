@@ -5,7 +5,7 @@ import {
   SupabaseClient,
   PostgrestSingleResponse,
   PostgrestResponse,
-  RealtimeChannel,
+  RealtimeChannel, RealtimePostgresChangesPayload,
 } from '@supabase/supabase-js';
 
 import { Supabase } from './db-superbase';
@@ -29,7 +29,7 @@ interface ReturnErrorFromCreateNewChannel {
   success: false;
   msg: 'Duplicate found';
 }
-type ReturnFromCreateNewChannel = void | ReturnErrorFromCreateNewChannel;
+export type ReturnFromCreateNewChannel = void | ReturnErrorFromCreateNewChannel;
 
 @Injectable({
   providedIn: 'root',
@@ -44,19 +44,31 @@ export class DatabaseChannels {
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
-      this.debbug();
+      //this.channels = this.subscribeChannels();
     }
   }
 
-  private async debbug(): Promise<void> {
-    const data: ReturnChannelIds = await this.getChannelIds('631b4bad-b6ee-439a-b9e8-e366d03afa39');
-    console.log(data);
-    data.channelData.forEach((channelId: any): any => {
-      console.log(channelId);
-      this.getChannelData(channelId.id);
-    });
-    //this.createNewChannel('631b4bad-b6ee-439a-b9e8-e366d03afa39', 'My Channel15', '...');
-    //this.updateChannelData('06fb25c7-857c-460e-abc6-b478c03174e7', 'First Channel', '...');
+  // -- In Arbeit
+  private subscribeChannels(): RealtimeChannel {
+    return this.supabase
+      .channel('custom-all-channel')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'channel_members' },
+        (payload: RealtimePostgresChangesPayload<object>): void => this.handleChannelsEvent(payload),
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'channels' },
+        (payload: RealtimePostgresChangesPayload<object>): void => this.handleChannelsEvent(payload),
+      )
+      .subscribe();
+  }
+
+  private handleChannelsEvent(payload: RealtimePostgresChangesPayload<object>): void {}
+
+  public ngOnDestroy(): void {
+    if (this.channels) this.supabase.removeChannel(this.channels);
   }
 
   private async getChannelIds(userId: string): Promise<ReturnChannelIds> {
@@ -84,6 +96,7 @@ export class DatabaseChannels {
       console.log(data[0]);
     }
   }
+  // ---
 
   public async createNewChannel(
     userId: string,

@@ -4,7 +4,7 @@ import { DatabaseProfiles } from './db/db-profiles';
 import { DatabaseAuth } from './db/db-auth';
 import { DatabaseChats } from './db/db-chats';
 import { DatabaseMessages, ReactionResult } from './db/db-messages';
-import { DatabaseChannels } from './db/db-channels';
+import { DatabaseChannels, ReturnFromCreateNewChannel } from './db/db-channels';
 
 import { Profiles, Profile } from '../interfaces/profile';
 import { Messages } from '../interfaces/messages';
@@ -99,5 +99,21 @@ export class Database {
     emoji: string,
   ): Promise<ReactionResult> {
     return this.db_messages.toggleReaction(msgId, senderId, emoji.trim().toLowerCase());
+  }
+
+  public async newChannel(userId: string, title: string, desc: string): Promise<ReturnFromCreateNewChannel> {
+    return await this.db_channels.createNewChannel(userId.trim(), title.trim(), desc.trim());
+  }
+
+  public editChannel(channelId: string, title: string, desc: string): void {
+    this.db_channels.updateChannelData(channelId.trim(), title.trim(), desc.trim());
+  }
+
+  public addChannelMember(channelId: string, userId: string): void {
+    this.db_channels.createNewMember(channelId.trim(), userId.trim(), 'admin');
+  }
+
+  public removeChannelMember(channelId: string, userId: string): void {
+    this.db_channels.removeMember(channelId.trim(), userId.trim());
   }
 }
