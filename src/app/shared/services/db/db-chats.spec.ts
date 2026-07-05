@@ -10,7 +10,7 @@ describe('DatabaseChats', () => {
   let chatsChain: any;
   let defaultChain: any;
   let mockSupabaseService: any;
-  const DEBUG_TEST_FLOW = false; // Set to true to monitor mocked database queries and realtime events
+  const DEBUG_TEST_FLOW = true; // Set to true to monitor mocked database queries and realtime events
 
   function createMockChain(tableName: string, resolvedValue: any) {
     const logCall = (method: string, args: any[]) => {

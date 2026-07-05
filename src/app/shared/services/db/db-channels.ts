@@ -17,6 +17,8 @@ import {
   SignalChannels,
   SignalChannel,
   ChannelIdAndName,
+  Channel,
+  ChannelMember,
 } from '../../interfaces/db/db-channels';
 
 @Injectable({
@@ -33,16 +35,9 @@ export class DatabaseChannels {
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
       this.channels = this.subscribeChannels();
-      this.debugging();
     }
   }
 
-  private async debugging() {
-    this.getChannelIds('631b4bad-b6ee-439a-b9e8-e366d03afa39');
-    this.getChannelData('06fb25c7-857c-460e-abc6-b478c03174e7');
-  }
-
-  // -- In Arbeit
   private subscribeChannels(): RealtimeChannel {
     return this.supabase
       .channel('realtime:channels')
@@ -65,7 +60,7 @@ export class DatabaseChannels {
     const { table, eventType }: { table: string, eventType: string} = payload;
     if (table === 'channels') {
       if (eventType === 'INSERT') this.insertEventChannel(payload);
-      if (eventType === 'UPDATE') this.insertEventChannel(payload);
+      if (eventType === 'UPDATE') this.updateEventChannel(payload);
     }
     if (table === 'channel_members') {
       if (eventType === 'INSERT') this.insertEventMember(payload);
@@ -74,19 +69,51 @@ export class DatabaseChannels {
   }
 
   private insertEventChannel(payload: RealtimePostgresChangesPayload<object>): void {
-    console.log('CHANNELS INSERT', payload);
+    const channel = payload.new as Channel;
+    const currentChannel = this._channel();
+    if ('id' in currentChannel && currentChannel.id === channel.id) {
+      this._channel.set({ ...currentChannel, ...channel });
+    }
   }
 
   private updateEventChannel(payload: RealtimePostgresChangesPayload<object>): void {
-    console.log('CHANNELS UPDATE', payload);
+    const channel = payload.new as Channel;
+    const currentChannel = this._channel();
+    
+    if ('id' in currentChannel && currentChannel.id === channel.id) {
+      this._channel.set({ ...currentChannel, ...channel });
+    }
+
+    this._channels.update((channels: SignalChannels) =>
+      channels.map((c: ChannelIdAndName) => (c.id === channel.id ? { ...c, name: channel.name } : c))
+    );
   }
 
   private insertEventMember(payload: RealtimePostgresChangesPayload<object>): void {
-    console.log('MEMBERS INSERT', payload);
+    const member = payload.new as ChannelMember;
+    const currentChannel = this._channel();
+    
+    if ('id' in currentChannel && currentChannel.id === member.channel_id) {
+      const members = currentChannel.channel_members || [];
+      if (!members.some((m: { user_id: string }) => m.user_id === member.user_id)) {
+        this._channel.set({
+          ...currentChannel,
+          channel_members: [...members, { user_id: member.user_id }]
+        });
+      }
+    }
   }
 
   private deleteEventMembers(payload: RealtimePostgresChangesPayload<object>): void {
-    console.log('MEMBERS DELETE', payload);
+    const member = payload.old as Partial<ChannelMember>;
+    const currentChannel = this._channel();
+    
+    if ('id' in currentChannel && currentChannel.id === member.channel_id) {
+      this._channel.set({
+        ...currentChannel,
+        channel_members: (currentChannel.channel_members || []).filter((m: { user_id: string }) => m.user_id !== member.user_id)
+      });
+    }
   }
 
   public ngOnDestroy(): void {

@@ -17,12 +17,18 @@ export type ReturnFromCreateNewChannel = void | ReturnErrorFromCreateNewChannel;
 
 export type SignalChannels = ChannelIdAndName[];
 
-interface Channel {
+export interface Channel {
   id: string;
   name: string;
   description: string;
   created_at: string;
   channel_members: { user_id: string }[];
+}
+
+export interface ChannelMember {
+  channel_id: string;
+  user_id: string;
+  role: string;
 }
 
 export type SignalChannel = Channel | object;

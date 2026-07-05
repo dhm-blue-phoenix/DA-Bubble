@@ -14,7 +14,7 @@ describe('DatabaseMessages', () => {
   let defaultChain: any;
   let mockSupabaseService: any;
 
-  const DEBUG_TEST_FLOW = false; // Set to true to monitor mocked database queries and realtime events
+  const DEBUG_TEST_FLOW = true; // Set to true to monitor mocked database queries and realtime events
 
   function createMockChain(tableName: string, resolvedValue: any) {
     const logCall = (method: string, args: any[]) => {
@@ -87,7 +87,7 @@ describe('DatabaseMessages', () => {
 
     it('should be created and subscribe to messages and reactions channels', () => {
       expect(service).toBeTruthy();
-      expect(mockSupabaseClient.channel).toHaveBeenCalledWith('custom-all-channel');
+      expect(mockSupabaseClient.channel).toHaveBeenCalledWith('realtime:messages');
       expect(mockChannelInstance.on).toHaveBeenCalledTimes(2);
       expect(mockChannelInstance.subscribe).toHaveBeenCalled();
     });

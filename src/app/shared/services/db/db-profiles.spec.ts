@@ -4,7 +4,7 @@ import { Supabase } from './db-superbase';
 import { PLATFORM_ID } from '@angular/core';
 import { Profile } from '../../interfaces/profile';
 
-const DEBUG_TEST_FLOW = false; // Set to true to monitor mocked database queries and realtime events
+const DEBUG_TEST_FLOW = true; // Set to true to monitor mocked database queries and realtime events
 
 describe('DatabaseProfiles', () => {
   let service: DatabaseProfiles;
@@ -86,7 +86,7 @@ describe('DatabaseProfiles', () => {
 
     it('should be created and subscribe to profiles channel', () => {
       expect(service).toBeTruthy();
-      expect(mockSupabaseClient.channel).toHaveBeenCalledWith('profiles');
+      expect(mockSupabaseClient.channel).toHaveBeenCalledWith('realtime:profiles');
       expect(mockChannelInstance.on).toHaveBeenCalledTimes(1);
       expect(mockChannelInstance.subscribe).toHaveBeenCalled();
     });
@@ -202,7 +202,7 @@ describe('DatabaseProfiles', () => {
         const profile = await service.getProfile('user_1');
 
         expect(mockSupabaseClient.from).toHaveBeenCalledWith('profiles');
-        expect(profilesChain.select).toHaveBeenCalledWith('id, name, email, avatar_url, status, created_at');
+        expect(profilesChain.select).toHaveBeenCalledWith('id, name, email, avatar, status, created_at');
         expect(profilesChain.eq).toHaveBeenCalledWith('id', 'user_1');
         expect(profile).toEqual(mockProfile);
       });
