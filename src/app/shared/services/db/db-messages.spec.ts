@@ -127,7 +127,7 @@ describe('DatabaseMessages', () => {
           new: newMsg,
         });
 
-        expect(service._messages()).toContainEqual(newMsg);
+        expect(service._chat_messages()).toContainEqual(newMsg);
       });
 
       it('should not add message on INSERT if message is already present', () => {
@@ -143,7 +143,7 @@ describe('DatabaseMessages', () => {
           edited_at: null,
         };
 
-        service._messages.set([newMsg]);
+        service._chat_messages.set([newMsg]);
 
         triggerEvent('messages', {
           table: 'messages',
@@ -151,7 +151,7 @@ describe('DatabaseMessages', () => {
           new: newMsg,
         });
 
-        expect(service._messages().length).toBe(1);
+        expect(service._chat_messages().length).toBe(1);
       });
 
       it('should update message on UPDATE', () => {
@@ -168,7 +168,7 @@ describe('DatabaseMessages', () => {
         };
         const updatedMsg: Message = { ...oldMsg, content: 'Updated Hello World', edited_at: '2026-06-28T12:05:00Z' };
 
-        service._messages.set([oldMsg]);
+        service._chat_messages.set([oldMsg]);
 
         triggerEvent('messages', {
           table: 'messages',
@@ -176,8 +176,8 @@ describe('DatabaseMessages', () => {
           new: updatedMsg,
         });
 
-        expect(service._messages()).toContainEqual(updatedMsg);
-        expect(service._messages().length).toBe(1);
+        expect(service._chat_messages()).toContainEqual(updatedMsg);
+        expect(service._chat_messages().length).toBe(1);
       });
 
       it('should add reaction on INSERT reaction event', () => {
@@ -199,7 +199,7 @@ describe('DatabaseMessages', () => {
           created_at: '2026-06-28T12:10:00Z',
         };
 
-        service._messages.set([msg]);
+        service._chat_messages.set([msg]);
 
         triggerEvent('reactions', {
           table: 'reactions',
@@ -207,7 +207,7 @@ describe('DatabaseMessages', () => {
           new: reaction,
         });
 
-        expect(service._messages()[0].reactions).toContainEqual(reaction);
+        expect(service._chat_messages()[0].reactions).toContainEqual(reaction);
       });
 
       it('should remove reaction on DELETE reaction event', () => {
@@ -235,7 +235,7 @@ describe('DatabaseMessages', () => {
           edited_at: null,
         };
 
-        service._messages.set([msg]);
+        service._chat_messages.set([msg]);
 
         triggerEvent('reactions', {
           table: 'reactions',
@@ -243,9 +243,9 @@ describe('DatabaseMessages', () => {
           old: reaction1,
         });
 
-        expect(service._messages()[0].reactions).not.toContainEqual(reaction1);
-        expect(service._messages()[0].reactions).toContainEqual(reaction2);
-        expect(service._messages()[0].reactions.length).toBe(1);
+        expect(service._chat_messages()[0].reactions).not.toContainEqual(reaction1);
+        expect(service._chat_messages()[0].reactions).toContainEqual(reaction2);
+        expect(service._chat_messages()[0].reactions.length).toBe(1);
       });
     });
 
@@ -276,7 +276,7 @@ describe('DatabaseMessages', () => {
         expect(messagesChain.eq).toHaveBeenCalledWith('chat_id', 'chat_1');
         expect(messagesChain.is).toHaveBeenCalledWith('thread_id', null);
         expect(messagesChain.order).toHaveBeenCalledWith('created_at', { ascending: true });
-        expect(service._messages()).toEqual(mockMessages);
+        expect(service._chat_messages()).toEqual(mockMessages);
       });
 
       it('should update a message', async () => {

@@ -22,7 +22,8 @@ export class DatabaseMessages implements OnDestroy {
   private readonly supabase: SupabaseClient = inject(Supabase)['supabase'];
   private readonly channels?: RealtimeChannel;
 
-  public readonly _messages: WritableSignal<Messages> = signal<Messages>([]);
+  public readonly _chat_messages: WritableSignal<Messages> = signal<Messages>([]);
+  public readonly _channel_messages: WritableSignal<Messages> = signal<Messages>([]);
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
@@ -60,7 +61,7 @@ export class DatabaseMessages implements OnDestroy {
 
   private insertEventMessage(payload: RealtimePostgresChangesPayload<object>): void {
     const massage: Message = payload.new as Message;
-    this._messages.update(
+    this._chat_messages.update(
       (list: Messages): Messages =>
         list.some((msg: Message): boolean => msg['id'] === massage['id'])
           ? list
@@ -71,7 +72,7 @@ export class DatabaseMessages implements OnDestroy {
   private updateEventMessage(payload: RealtimePostgresChangesPayload<object>): void {
     const message: Message = payload.new as Message;
 
-    this._messages.update(
+    this._chat_messages.update(
       (list: Messages): Messages =>
         list.map((msg: Message): Message => (msg['id'] === message['id'] ? message : msg)),
     );
@@ -79,7 +80,7 @@ export class DatabaseMessages implements OnDestroy {
 
   private insertEventReaction(payload: RealtimePostgresChangesPayload<object>): void {
     const reaction = payload.new as Reaction;
-    this._messages.update(
+    this._chat_messages.update(
       (list: Messages): Messages =>
         list.map(
           (msg: Message): Message =>
@@ -92,7 +93,7 @@ export class DatabaseMessages implements OnDestroy {
 
   private deleteEventReaction(payload: RealtimePostgresChangesPayload<object>): void {
     const reaction = payload.old as Reaction;
-    this._messages.update(
+    this._chat_messages.update(
       (list: Messages): Messages =>
         list.map(
           (msg: Message): Message =>
@@ -130,7 +131,7 @@ export class DatabaseMessages implements OnDestroy {
       .eq('chat_id', chatId)
       .is('thread_id', null)
       .order('created_at', { ascending: true });
-    if (messages) this._messages.set(messages);
+    if (messages) this._chat_messages.set(messages);
   }
 
   public async updateMessage(messageId: string, newContent: string): Promise<void> {

@@ -23,7 +23,7 @@ export class Database {
 
   public readonly profiles: Signal<Profiles> = this.db_profiles._profiles.asReadonly();
   public readonly isLogin: Signal<boolean> = this.db_auth._isUserLogin.asReadonly();
-  public readonly messages: Signal<Messages> = this.db_messages._messages.asReadonly();
+  public readonly chatMsg: Signal<Messages> = this.db_messages._chat_messages.asReadonly();
   public readonly channels: Signal<SignalChannel> = this.db_channels._channels.asReadonly();
   public readonly channel: Signal<SignalChannel> = this.db_channels._channel.asReadonly();
 
@@ -71,7 +71,7 @@ export class Database {
 
   public logout(): void {
     this.db_profiles._profiles.set([]);
-    this.db_messages._messages.set([]);
+    this.db_messages._chat_messages.set([]);
     this.db_channels._channels.set([]);
     this.db_channels._channel.set({});
     this.db_auth.signOut();
