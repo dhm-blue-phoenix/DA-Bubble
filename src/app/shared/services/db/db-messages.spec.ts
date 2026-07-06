@@ -108,18 +108,18 @@ describe('DatabaseMessages', () => {
         matches.forEach((m) => m.callback(payload));
       };
 
-      it('should add message on INSERT if message is not present', () => {
+      it('should add message on INSERT if message is not present (chat)', () => {
         const newMsg: Message = {
           id: 'msg_1',
           sender_id: 'user_1',
-          content: 'Hello World',
+          content: 'Hello Chat',
           reactions: [],
-          channel_id: 'chan_1',
+          channel_id: null,
           chat_id: 'chat_1',
           thread_id: null,
           created_at: '2026-06-28T12:00:00Z',
           edited_at: null,
-        };
+        } as any;
 
         triggerEvent('messages', {
           table: 'messages',
@@ -130,18 +130,40 @@ describe('DatabaseMessages', () => {
         expect(service._chat_messages()).toContainEqual(newMsg);
       });
 
+      it('should add message on INSERT if message is not present (channel)', () => {
+        const newMsg: Message = {
+          id: 'msg_1',
+          sender_id: 'user_1',
+          content: 'Hello Channel',
+          reactions: [],
+          channel_id: 'chan_1',
+          chat_id: null,
+          thread_id: null,
+          created_at: '2026-06-28T12:00:00Z',
+          edited_at: null,
+        } as any;
+
+        triggerEvent('messages', {
+          table: 'messages',
+          eventType: 'INSERT',
+          new: newMsg,
+        });
+
+        expect(service._channel_messages()).toContainEqual(newMsg);
+      });
+
       it('should not add message on INSERT if message is already present', () => {
         const newMsg: Message = {
           id: 'msg_1',
           sender_id: 'user_1',
           content: 'Hello World',
           reactions: [],
-          channel_id: 'chan_1',
+          channel_id: null,
           chat_id: 'chat_1',
           thread_id: null,
           created_at: '2026-06-28T12:00:00Z',
           edited_at: null,
-        };
+        } as any;
 
         service._chat_messages.set([newMsg]);
 
@@ -154,18 +176,18 @@ describe('DatabaseMessages', () => {
         expect(service._chat_messages().length).toBe(1);
       });
 
-      it('should update message on UPDATE', () => {
+      it('should update message on UPDATE (chat)', () => {
         const oldMsg: Message = {
           id: 'msg_1',
           sender_id: 'user_1',
           content: 'Hello World',
           reactions: [],
-          channel_id: 'chan_1',
+          channel_id: null,
           chat_id: 'chat_1',
           thread_id: null,
           created_at: '2026-06-28T12:00:00Z',
           edited_at: null,
-        };
+        } as any;
         const updatedMsg: Message = { ...oldMsg, content: 'Updated Hello World', edited_at: '2026-06-28T12:05:00Z' };
 
         service._chat_messages.set([oldMsg]);
@@ -180,24 +202,24 @@ describe('DatabaseMessages', () => {
         expect(service._chat_messages().length).toBe(1);
       });
 
-      it('should add reaction on INSERT reaction event', () => {
+      it('should add reaction on INSERT reaction event (chat)', () => {
         const msg: Message = {
           id: 'msg_1',
           sender_id: 'user_1',
           content: 'Hello World',
           reactions: [],
-          channel_id: 'chan_1',
+          channel_id: null,
           chat_id: 'chat_1',
           thread_id: null,
           created_at: '2026-06-28T12:00:00Z',
           edited_at: null,
-        };
+        } as any;
         const reaction: Reaction = {
           message_id: 'msg_1',
           user_id: 'user_2',
           emoji: '👍',
           created_at: '2026-06-28T12:10:00Z',
-        };
+        } as any;
 
         service._chat_messages.set([msg]);
 
@@ -210,30 +232,60 @@ describe('DatabaseMessages', () => {
         expect(service._chat_messages()[0].reactions).toContainEqual(reaction);
       });
 
+      it('should add reaction on INSERT reaction event (channel)', () => {
+        const msg: Message = {
+          id: 'msg_1',
+          sender_id: 'user_1',
+          content: 'Hello Channel',
+          reactions: [],
+          channel_id: 'chan_1',
+          chat_id: null,
+          thread_id: null,
+          created_at: '2026-06-28T12:00:00Z',
+          edited_at: null,
+        } as any;
+        const reaction: Reaction = {
+          message_id: 'msg_1',
+          user_id: 'user_2',
+          emoji: '❤️',
+          created_at: '2026-06-28T12:10:00Z',
+        } as any;
+
+        service._channel_messages.set([msg]);
+
+        triggerEvent('reactions', {
+          table: 'reactions',
+          eventType: 'INSERT',
+          new: reaction,
+        });
+
+        expect(service._channel_messages()[0].reactions).toContainEqual(reaction);
+      });
+
       it('should remove reaction on DELETE reaction event', () => {
         const reaction1: Reaction = {
           message_id: 'msg_1',
           user_id: 'user_2',
           emoji: '👍',
           created_at: '2026-06-28T12:10:00Z',
-        };
+        } as any;
         const reaction2: Reaction = {
           message_id: 'msg_1',
           user_id: 'user_3',
           emoji: '❤️',
           created_at: '2026-06-28T12:11:00Z',
-        };
+        } as any;
         const msg: Message = {
           id: 'msg_1',
           sender_id: 'user_1',
           content: 'Hello World',
           reactions: [reaction1, reaction2],
-          channel_id: 'chan_1',
+          channel_id: null,
           chat_id: 'chat_1',
           thread_id: null,
           created_at: '2026-06-28T12:00:00Z',
           edited_at: null,
-        };
+        } as any;
 
         service._chat_messages.set([msg]);
 
@@ -250,26 +302,26 @@ describe('DatabaseMessages', () => {
     });
 
     describe('database query operations', () => {
-      it('should fetch chat messages and update the signal', async () => {
+      it('should fetch messages and update the correct signal', async () => {
         const mockMessages: Message[] = [
           {
             id: 'msg_1',
             sender_id: 'user_1',
             content: 'Hello',
             reactions: [],
-            channel_id: 'chan_1',
+            channel_id: null,
             chat_id: 'chat_1',
             thread_id: null,
             created_at: '2026-06-28T12:00:00Z',
             edited_at: null,
-          },
+          } as any,
         ];
 
         messagesChain.then.mockImplementation((onfulfilled: any) =>
           Promise.resolve({ data: mockMessages, error: null }).then(onfulfilled),
         );
 
-        await service.getChatMessages('chat_1');
+        await service.getMessages('chat', 'chat_1');
 
         expect(mockSupabaseClient.from).toHaveBeenCalledWith('messages');
         expect(messagesChain.select).toHaveBeenCalled();
@@ -277,6 +329,11 @@ describe('DatabaseMessages', () => {
         expect(messagesChain.is).toHaveBeenCalledWith('thread_id', null);
         expect(messagesChain.order).toHaveBeenCalledWith('created_at', { ascending: true });
         expect(service._chat_messages()).toEqual(mockMessages);
+
+        // Test channel
+        await service.getMessages('channel', 'chan_1');
+        expect(messagesChain.eq).toHaveBeenCalledWith('channel_id', 'chan_1');
+        expect(service._channel_messages()).toEqual(mockMessages);
       });
 
       it('should update a message', async () => {
@@ -293,16 +350,31 @@ describe('DatabaseMessages', () => {
         expect(messagesChain.eq).toHaveBeenCalledWith('id', 'msg_1');
       });
 
-      it('should create a new message', async () => {
+      it('should create a new message for chat', async () => {
         messagesChain.then.mockImplementation((onfulfilled: any) =>
           Promise.resolve({ data: { id: 'msg_2', content: 'New Message' }, error: null }).then(onfulfilled),
         );
 
-        await service.createNewMessage('chat_1', 'user_1', 'New Message');
+        await service.createNewMessage('chat', 'chat_1', 'user_1', 'New Message');
 
         expect(mockSupabaseClient.from).toHaveBeenCalledWith('messages');
         expect(messagesChain.insert).toHaveBeenCalledWith({
           chat_id: 'chat_1',
+          sender_id: 'user_1',
+          content: 'New Message',
+        });
+      });
+
+      it('should create a new message for channel', async () => {
+        messagesChain.then.mockImplementation((onfulfilled: any) =>
+          Promise.resolve({ data: { id: 'msg_3', content: 'New Message' }, error: null }).then(onfulfilled),
+        );
+
+        await service.createNewMessage('channel', 'chan_1', 'user_1', 'New Message');
+
+        expect(mockSupabaseClient.from).toHaveBeenCalledWith('messages');
+        expect(messagesChain.insert).toHaveBeenCalledWith({
+          channel_id: 'chan_1',
           sender_id: 'user_1',
           content: 'New Message',
         });

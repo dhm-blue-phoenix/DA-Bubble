@@ -4,7 +4,6 @@ import { isPlatformBrowser } from '@angular/common';
 import {
   SupabaseClient,
   PostgrestSingleResponse,
-  PostgrestResponse,
   RealtimeChannel,
   RealtimePostgresChangesPayload,
 } from '@supabase/supabase-js';
@@ -79,11 +78,9 @@ export class DatabaseChannels {
   private updateEventChannel(payload: RealtimePostgresChangesPayload<object>): void {
     const channel = payload.new as Channel;
     const currentChannel = this._channel();
-    
     if ('id' in currentChannel && currentChannel.id === channel.id) {
       this._channel.set({ ...currentChannel, ...channel });
     }
-
     this._channels.update((channels: SignalChannels) =>
       channels.map((c: ChannelIdAndName) => (c.id === channel.id ? { ...c, name: channel.name } : c))
     );
@@ -92,7 +89,6 @@ export class DatabaseChannels {
   private insertEventMember(payload: RealtimePostgresChangesPayload<object>): void {
     const member = payload.new as ChannelMember;
     const currentChannel = this._channel();
-    
     if ('id' in currentChannel && currentChannel.id === member.channel_id) {
       const members = currentChannel.channel_members || [];
       if (!members.some((m: { user_id: string }) => m.user_id === member.user_id)) {
@@ -107,7 +103,6 @@ export class DatabaseChannels {
   private deleteEventMembers(payload: RealtimePostgresChangesPayload<object>): void {
     const member = payload.old as Partial<ChannelMember>;
     const currentChannel = this._channel();
-    
     if ('id' in currentChannel && currentChannel.id === member.channel_id) {
       this._channel.set({
         ...currentChannel,
@@ -139,7 +134,6 @@ export class DatabaseChannels {
       .from('channels')
       .select('id, name, description, created_by, channel_members(user_id)')
       .eq('id', channelId);
-
     if (data && data.length > 0) {
       this._channel.set(data[0]);
     }

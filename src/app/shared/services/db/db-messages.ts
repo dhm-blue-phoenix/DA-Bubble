@@ -32,7 +32,6 @@ export class DatabaseMessages implements OnDestroy {
     }
   }
 
-  // Eine Temporere Testing funktion bitte nicht rauslöschen wirt noch für die entwicklung von threads benötigt!!!
   private async debugging(): Promise<void> {}
 
   private subscribeMessages(): RealtimeChannel {
@@ -120,9 +119,14 @@ export class DatabaseMessages implements OnDestroy {
 
   private deleteEventReaction(payload: RealtimePostgresChangesPayload<object>): void {
     const reaction = payload.old as Reaction;
-    this._chat_messages.update(
-      (list: Messages): Messages => this.eventHelperDeleteReaction(list, reaction),
-    );
+    if (this.eventHelperIsMsgType(reaction) === 'chat')
+      this._chat_messages.update(
+        (list: Messages): Messages => this.eventHelperDeleteReaction(list, reaction),
+      );
+    if (this.eventHelperIsMsgType(reaction) === 'channel')
+      this._channel_messages.update(
+        (list: Messages): Messages => this.eventHelperDeleteReaction(list, reaction),
+      );
   }
 
   private eventHelperDeleteReaction(list: Messages, reaction: Reaction): Messages {
@@ -205,8 +209,6 @@ export class DatabaseMessages implements OnDestroy {
       })
       .select()
       .single();
-
-    console.warn('DEBUG:', data, error);
   }
 
   private async checkExistReaction(
