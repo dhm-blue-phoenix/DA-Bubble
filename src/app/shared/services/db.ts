@@ -24,6 +24,7 @@ export class Database {
   public readonly profiles: Signal<Profiles> = this.db_profiles._profiles.asReadonly();
   public readonly isLogin: Signal<boolean> = this.db_auth._isUserLogin.asReadonly();
   public readonly chatMsg: Signal<Messages> = this.db_messages._chat_messages.asReadonly();
+  public readonly channelMsg: Signal<Messages> = this.db_messages._channel_messages.asReadonly();
   public readonly channels: Signal<SignalChannel> = this.db_channels._channels.asReadonly();
   public readonly channel: Signal<SignalChannel> = this.db_channels._channel.asReadonly();
 
@@ -72,6 +73,7 @@ export class Database {
   public logout(): void {
     this.db_profiles._profiles.set([]);
     this.db_messages._chat_messages.set([]);
+    this.db_messages._channel_messages.set([]);
     this.db_channels._channels.set([]);
     this.db_channels._channel.set({});
     this.db_auth.signOut();
@@ -92,7 +94,7 @@ export class Database {
     );
   }
 
-  public newMsg(msgType: ("chat" | "channel"), id: string, senderId: string, content: string): void {
+  public newMsg(msgType: 'chat' | 'channel', id: string, senderId: string, content: string): void {
     this.db_messages.createNewMessage(msgType, id, senderId, content.trim());
   }
 
@@ -100,7 +102,7 @@ export class Database {
     this.db_messages.updateMessage(msgId, newContent.trim());
   }
 
-  public loadMsg(msgType: ("chat" | "channel"), id: string): void {
+  public loadMsg(msgType: 'chat' | 'channel', id: string): void {
     this.db_messages.getMessages(msgType, id);
   }
 
