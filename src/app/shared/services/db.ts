@@ -92,16 +92,16 @@ export class Database {
     );
   }
 
-  public newMsg(chatId: string, senderId: string, content: string): void {
-    this.db_messages.createNewMessage(chatId, senderId, content.trim());
+  public newMsg(msgType: ("chat" | "channel"), id: string, senderId: string, content: string): void {
+    this.db_messages.createNewMessage(msgType, id, senderId, content.trim());
   }
 
   public editMsg(msgId: string, newContent: string): void {
     this.db_messages.updateMessage(msgId, newContent.trim());
   }
 
-  public loadMsg(chatId: string): void {
-    this.db_messages.getChatMessages(chatId);
+  public loadMsg(msgType: ("chat" | "channel"), id: string): void {
+    this.db_messages.getMessages(msgType, id);
   }
 
   public async toggleReaction(

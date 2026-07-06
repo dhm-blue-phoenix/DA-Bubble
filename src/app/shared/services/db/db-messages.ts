@@ -28,8 +28,12 @@ export class DatabaseMessages implements OnDestroy {
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
       this.channels = this.subscribeMessages();
+      this.debugging();
     }
   }
+
+  // Eine Temporere Testing funktion bitte nicht rauslöschen wirt noch für die entwicklung von threads benötigt!!!
+  private async debugging(): Promise<void> {}
 
   private subscribeMessages(): RealtimeChannel {
     return this.supabase
@@ -60,61 +64,97 @@ export class DatabaseMessages implements OnDestroy {
   }
 
   private insertEventMessage(payload: RealtimePostgresChangesPayload<object>): void {
-    const massage: Message = payload.new as Message;
-    this._chat_messages.update(
-      (list: Messages): Messages =>
-        list.some((msg: Message): boolean => msg['id'] === massage['id'])
-          ? list
-          : [...list, massage],
-    );
+    const message: Message = payload.new as Message;
+    if (message.chat_id)
+      this._chat_messages.update(
+        (list: Messages): Messages => this.eventHelperInsertMessage(list, message),
+      );
+    if (message.channel_id)
+      this._channel_messages.update(
+        (list: Messages): Messages => this.eventHelperInsertMessage(list, message),
+      );
+  }
+
+  private eventHelperInsertMessage(list: Messages, message: Message): Messages {
+    return list.some((msg: Message): boolean => msg['id'] === message['id'])
+      ? list
+      : [...list, message];
   }
 
   private updateEventMessage(payload: RealtimePostgresChangesPayload<object>): void {
     const message: Message = payload.new as Message;
+    if (message.chat_id)
+      this._chat_messages.update(
+        (list: Messages): Messages => this.eventHelperUpdateMessage(list, message),
+      );
+    if (message.channel_id)
+      this._channel_messages.update(
+        (list: Messages): Messages => this.eventHelperUpdateMessage(list, message),
+      );
+  }
 
-    this._chat_messages.update(
-      (list: Messages): Messages =>
-        list.map((msg: Message): Message => (msg['id'] === message['id'] ? message : msg)),
-    );
+  private eventHelperUpdateMessage(list: Messages, message: Message): Messages {
+    return list.map((msg: Message): Message => (msg['id'] === message['id'] ? message : msg));
   }
 
   private insertEventReaction(payload: RealtimePostgresChangesPayload<object>): void {
     const reaction = payload.new as Reaction;
-    this._chat_messages.update(
-      (list: Messages): Messages =>
-        list.map(
-          (msg: Message): Message =>
-            msg.id === reaction.message_id
-              ? { ...msg, reactions: [...msg.reactions, reaction] }
-              : msg,
-        ),
+    if (this.eventHelperIsMsgType(reaction) === 'chat')
+      this._chat_messages.update(
+        (list: Messages): Messages => this.eventHelperInsertReaction(list, reaction),
+      );
+    if (this.eventHelperIsMsgType(reaction) === 'channel')
+      this._channel_messages.update(
+        (list: Messages): Messages => this.eventHelperInsertReaction(list, reaction),
+      );
+  }
+
+  private eventHelperInsertReaction(list: Messages, reaction: Reaction): Messages {
+    return list.map(
+      (msg: Message): Message =>
+        msg.id === reaction['message_id']
+          ? { ...msg, reactions: [...msg['reactions'], reaction] }
+          : msg,
     );
   }
 
   private deleteEventReaction(payload: RealtimePostgresChangesPayload<object>): void {
     const reaction = payload.old as Reaction;
     this._chat_messages.update(
-      (list: Messages): Messages =>
-        list.map(
-          (msg: Message): Message =>
-            msg.id === reaction.message_id
-              ? {
-                  ...msg,
-                  reactions: msg.reactions.filter(
-                    (r: Reaction): boolean =>
-                      !(r.user_id === reaction.user_id && r.emoji === reaction.emoji),
-                  ),
-                }
-              : msg,
-        ),
+      (list: Messages): Messages => this.eventHelperDeleteReaction(list, reaction),
     );
+  }
+
+  private eventHelperDeleteReaction(list: Messages, reaction: Reaction): Messages {
+    return list.map(
+      (msg: Message): Message =>
+        msg.id === reaction.message_id
+          ? {
+              ...msg,
+              reactions: msg.reactions.filter(
+                (r: Reaction): boolean =>
+                  !(r.user_id === reaction.user_id && r.emoji === reaction.emoji),
+              ),
+            }
+          : msg,
+    );
+  }
+
+  private eventHelperIsMsgType(reaction: Reaction): string {
+    const isChat: boolean = this._chat_messages().some((list: Message): boolean => {
+      return list['id'] === reaction['message_id'];
+    });
+    const isChannel: boolean = this._channel_messages().some((list: Message): boolean => {
+      return list['id'] === reaction['message_id'];
+    });
+    return (isChat && 'chat') || (isChannel && 'channel') || 'none';
   }
 
   public ngOnDestroy(): void {
     if (this.channels) this.supabase.removeChannel(this.channels);
   }
 
-  public async getChatMessages(chatId: string): Promise<void> {
+  public async getMessages(msgType: ('chat' | 'channel'), id: string): Promise<void> {
     const { data: messages }: PostgrestResponse<any> = await this.supabase
       .from('messages')
       .select(
@@ -128,10 +168,13 @@ export class DatabaseMessages implements OnDestroy {
         threads!threads_root_message_id_fkey(id)
       `,
       )
-      .eq('chat_id', chatId)
+      .eq(msgType + '_id', id)
       .is('thread_id', null)
       .order('created_at', { ascending: true });
-    if (messages) this._chat_messages.set(messages);
+    if (messages) {
+      if (msgType === 'chat') this._chat_messages.set(messages);
+      if (msgType === 'channel') this._channel_messages.set(messages);
+    }
   }
 
   public async updateMessage(messageId: string, newContent: string): Promise<void> {
@@ -146,16 +189,24 @@ export class DatabaseMessages implements OnDestroy {
       .single();
   }
 
-  public async createNewMessage(chatId: string, senderId: string, content: string): Promise<void> {
+  public async createNewMessage(
+    msgType: ('chat' | 'channel'),
+    id: string,
+    senderId: string,
+    content: string,
+  ): Promise<void> {
+    const mt: string = msgType + '_id';
     const { data, error }: PostgrestSingleResponse<SupabaseResponseMessage> = await this.supabase
       .from('messages')
       .insert({
-        chat_id: chatId,
+        [mt]: id,
         sender_id: senderId,
         content: content,
       })
       .select()
       .single();
+
+    console.warn('DEBUG:', data, error);
   }
 
   private async checkExistReaction(
