@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Workspace } from '../../ui/workspace/workspace'
 import { Channels } from '../../ui/channels/channels'
 import { Profile } from '../../../interfaces/profile';
+import { Database } from '../../../services/db';
 
 
 interface ChannelInterface{
@@ -35,10 +36,22 @@ interface Message{
 })
 export class MainComponent {
 
+db = inject(Database)
+currentUser = signal<Profile | null>(null);
+
 channelOpen = true
 dmOpen = true
 workspace_Open = true
 thread_Open = true
+
+async ngOnInit() {
+    const id = this.db.getCurrentProfileId();
+    if (id){
+        this.currentUser.set(await this.db.getProfile(id));
+        console.log('Current User:', this.currentUser());
+    }
+}
+
 
 users: Profile[] = [
         {  id: '1', email: 'EliasNeumann@web.de', name:"Elias Neumann", created_at: '01.01.1993', status: 'online', avatar: 'assets/svg/avatar/avatar_small/1.svg'},

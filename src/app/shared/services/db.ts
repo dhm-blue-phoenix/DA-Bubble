@@ -73,6 +73,10 @@ export class Database {
     this.db_auth.signInWithEmail(user_email.trim(), user_password.trim());
   }
 
+  public getCurrentProfileId(): string {
+    return this.db_auth.getLocalStorageCurrentProfileId();
+  }
+
   public logout(): void {
     this.db_profiles._profiles.set([]);
     this.db_messages._chat_messages.set([]);
