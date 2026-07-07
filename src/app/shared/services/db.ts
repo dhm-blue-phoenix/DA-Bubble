@@ -69,8 +69,8 @@ export class Database {
     this.db_auth.changePassword(newPassword);
   }
 
-  public login(user_email: string, user_password: string): void {
-    this.db_auth.signInWithEmail(user_email.trim(), user_password.trim());
+  public login(user_email: string, user_password: string): Promise<void> {
+    return this.db_auth.signInWithEmail(user_email.trim(), user_password.trim());
   }
 
   public getCurrentProfileId(): string {
