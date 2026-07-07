@@ -69,7 +69,7 @@ export class DatabaseChannels {
 
   private insertEventChannel(payload: RealtimePostgresChangesPayload<object>): void {
     const channel = payload.new as Channel;
-    const currentChannel = this._channel();
+    const currentChannel: SignalChannel = this._channel();
     if ('id' in currentChannel && currentChannel.id === channel.id) {
       this._channel.set({ ...currentChannel, ...channel });
     }
@@ -77,21 +77,21 @@ export class DatabaseChannels {
 
   private updateEventChannel(payload: RealtimePostgresChangesPayload<object>): void {
     const channel = payload.new as Channel;
-    const currentChannel = this._channel();
+    const currentChannel: SignalChannel = this._channel();
     if ('id' in currentChannel && currentChannel.id === channel.id) {
       this._channel.set({ ...currentChannel, ...channel });
     }
-    this._channels.update((channels: SignalChannels) =>
-      channels.map((c: ChannelIdAndName) => (c.id === channel.id ? { ...c, name: channel.name } : c))
+    this._channels.update((channels: SignalChannels): ChannelIdAndName[] =>
+      channels.map((c: ChannelIdAndName): ChannelIdAndName => (c.id === channel.id ? { ...c, name: channel.name } : c))
     );
   }
 
   private insertEventMember(payload: RealtimePostgresChangesPayload<object>): void {
     const member = payload.new as ChannelMember;
-    const currentChannel = this._channel();
+    const currentChannel: SignalChannel = this._channel();
     if ('id' in currentChannel && currentChannel.id === member.channel_id) {
-      const members = currentChannel.channel_members || [];
-      if (!members.some((m: { user_id: string }) => m.user_id === member.user_id)) {
+      const members: { user_id: string }[] = currentChannel.channel_members || [];
+      if (!members.some((m: { user_id: string }): boolean => m.user_id === member.user_id)) {
         this._channel.set({
           ...currentChannel,
           channel_members: [...members, { user_id: member.user_id }]
@@ -102,7 +102,7 @@ export class DatabaseChannels {
 
   private deleteEventMembers(payload: RealtimePostgresChangesPayload<object>): void {
     const member = payload.old as Partial<ChannelMember>;
-    const currentChannel = this._channel();
+    const currentChannel: SignalChannel = this._channel();
     if ('id' in currentChannel && currentChannel.id === member.channel_id) {
       this._channel.set({
         ...currentChannel,

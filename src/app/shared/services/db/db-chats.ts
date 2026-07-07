@@ -1,4 +1,4 @@
-import { Injectable, inject, PLATFORM_ID } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 
 import { SupabaseClient, PostgrestSingleResponse } from '@supabase/supabase-js';
 
@@ -52,6 +52,6 @@ export class DatabaseChats {
   public async getChatId(currentUserId: string, otherUserId: string): Promise<ChatId> {
     const existChat: ExistChat = await this.checkExistChat(currentUserId, otherUserId);
     if (!existChat['success']) return this.createNewChat(currentUserId, otherUserId);
-    return existChat['chat_id'];
+    return existChat['chat_id'] as string;
   }
 }
