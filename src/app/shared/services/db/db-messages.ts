@@ -12,10 +12,7 @@ import {
 import { Supabase } from './db-superbase';
 
 import { Message, Messages, Reaction, Reactions } from '../../interfaces/messages';
-import {
-  ReactionResult,
-  NewMessage, MsgType,
-} from '../../interfaces/db/db-messages';
+import { ReactionResult, NewMessage, MsgType } from '../../interfaces/db/db-messages';
 
 @Injectable({
   providedIn: 'root',
@@ -73,6 +70,10 @@ export class DatabaseMessages implements OnDestroy {
       this._channel_messages.update(
         (list: Messages): Messages => this.eventHelperInsertMessage(list, message),
       );
+    if (message.thread_id)
+      this._thread_messages.update(
+        (list: Messages): Messages => this.eventHelperInsertMessage(list, message),
+      );
   }
 
   private eventHelperInsertMessage(list: Messages, message: Message): Messages {
@@ -91,6 +92,10 @@ export class DatabaseMessages implements OnDestroy {
       this._channel_messages.update(
         (list: Messages): Messages => this.eventHelperUpdateMessage(list, message),
       );
+    if (message.thread_id)
+      this._thread_messages.update(
+        (list: Messages): Messages => this.eventHelperUpdateMessage(list, message),
+      );
   }
 
   private eventHelperUpdateMessage(list: Messages, message: Message): Messages {
@@ -104,6 +109,10 @@ export class DatabaseMessages implements OnDestroy {
         (list: Messages): Messages => this.eventHelperInsertReaction(list, reaction),
       );
     if (this.eventHelperIsMsgType(reaction) === 'channel')
+      this._channel_messages.update(
+        (list: Messages): Messages => this.eventHelperInsertReaction(list, reaction),
+      );
+    if (this.eventHelperIsMsgType(reaction) === 'thread')
       this._channel_messages.update(
         (list: Messages): Messages => this.eventHelperInsertReaction(list, reaction),
       );
@@ -126,6 +135,10 @@ export class DatabaseMessages implements OnDestroy {
       );
     if (this.eventHelperIsMsgType(reaction) === 'channel')
       this._channel_messages.update(
+        (list: Messages): Messages => this.eventHelperDeleteReaction(list, reaction),
+      );
+    if (this.eventHelperIsMsgType(reaction) === 'thread')
+      this._thread_messages.update(
         (list: Messages): Messages => this.eventHelperDeleteReaction(list, reaction),
       );
   }
@@ -152,7 +165,10 @@ export class DatabaseMessages implements OnDestroy {
     const isChannel: boolean = this._channel_messages().some((list: Message): boolean => {
       return list['id'] === reaction['message_id'];
     });
-    return (isChat && 'chat') || (isChannel && 'channel') || 'none';
+    const isThread: boolean = this._thread_messages().some((list: Message): boolean => {
+      return list['id'] === reaction['message_id'];
+    });
+    return (isChat && 'chat') || (isChannel && 'channel') || (isThread && 'thread') || 'none';
   }
 
   public ngOnDestroy(): void {
