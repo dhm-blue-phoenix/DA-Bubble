@@ -1,6 +1,8 @@
 export interface ExistChat {
   success: boolean;
-  chat_id: ChatId | null;
+  chat_id: string | null;
 }
 
-export type ChatId = string;
+export interface ChatId {
+  chat_id: string;
+}
