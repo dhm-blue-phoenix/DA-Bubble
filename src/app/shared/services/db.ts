@@ -5,7 +5,7 @@ import { DatabaseAuth } from './db/db-auth';
 import { DatabaseChats } from './db/db-chats';
 import { DatabaseMessages } from './db/db-messages';
 import { DatabaseChannels } from './db/db-channels';
-import { DatabaseThreats } from './db/db-threats';
+import { DatabaseThreads } from './db/db-threads';
 
 import { Profiles, Profile } from '../interfaces/profile';
 import { Messages } from '../interfaces/messages';
@@ -21,7 +21,7 @@ export class Database {
   private readonly db_chats: DatabaseChats = inject(DatabaseChats);
   private readonly db_messages: DatabaseMessages = inject(DatabaseMessages);
   private readonly db_channels: DatabaseChannels = inject(DatabaseChannels);
-  private readonly db_threads: DatabaseThreats = inject(DatabaseThreats);
+  private readonly db_threads: DatabaseThreads = inject(DatabaseThreads);
 
   public readonly profiles: Signal<Profiles> = this.db_profiles._profiles.asReadonly();
   public readonly isLogin: Signal<boolean> = this.db_auth._isUserLogin.asReadonly();
@@ -151,6 +151,6 @@ export class Database {
   }
 
   public async getThreadId(messageId: string): Promise<string> {
-    return await this.db_threads.getThreatId(messageId);
+    return await this.db_threads.getThreadId(messageId);
   }
 }

@@ -9,7 +9,7 @@ import { ExistThread } from '../../interfaces/db/db-threads';
 @Injectable({
   providedIn: 'root',
 })
-export class DatabaseThreats {
+export class DatabaseThreads {
   private readonly supabase: SupabaseClient = inject(Supabase)['supabase'];
 
   private async checkExistThread(
@@ -24,31 +24,31 @@ export class DatabaseThreats {
   }
 
   private async createNewThread(msgId: string): Promise<string> {
-    const { data: newThreat }: PostgrestSingleResponse<any> = await this.supabase
+    const { data: newThread }: PostgrestSingleResponse<any> = await this.supabase
       .from('threads')
       .insert({
         root_message_id: msgId,
       })
       .select();
-    const threatId: string = newThreat[0]['id'];
-    await this.updateMessageThreadId(threatId, msgId);
-    return threatId;
+    const threadId: string = newThread[0]['id'];
+    await this.updateMessageThreadId(threadId, msgId);
+    return threadId;
   }
 
-  private async updateMessageThreadId(threatId: string, msgId: string): Promise<void> {
+  private async updateMessageThreadId(threadId: string, msgId: string): Promise<void> {
     await this.supabase
       .from('messages')
       .update({
-        thread_id: threatId,
+        thread_id: threadId,
       })
       .eq('id', msgId)
       .select()
       .single();
   }
 
-  public async getThreatId(msgId: string): Promise<string> {
-    const existThreat: ExistThread = await this.checkExistThread(msgId);
-    if (existThreat['success']) return existThreat['thread_id'] as string;
+  public async getThreadId(msgId: string): Promise<string> {
+    const existThread: ExistThread = await this.checkExistThread(msgId);
+    if (existThread['success']) return existThread['thread_id'] as string;
     return this.createNewThread(msgId);
   }
 }

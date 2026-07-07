@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { DatabaseThreats } from './db-threats';
+import { DatabaseThreads } from './db-threads';
 import { Supabase } from './db-superbase';
 
-describe('DatabaseThreats', () => {
-  let service: DatabaseThreats;
+describe('Databasethreads', () => {
+  let service: DatabaseThreads;
   let mockSupabaseClient: any;
   let threadsChain: any;
   let messagesChain: any;
@@ -59,24 +59,24 @@ describe('DatabaseThreats', () => {
 
     TestBed.configureTestingModule({
       providers: [
-        DatabaseThreats,
+        DatabaseThreads,
         { provide: Supabase, useValue: mockSupabaseService },
       ],
     });
-    service = TestBed.inject(DatabaseThreats);
+    service = TestBed.inject(DatabaseThreads);
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('getThreatId', () => {
+  describe('getthreadId', () => {
     it('should return existing thread id if thread exists', async () => {
       threadsChain.then.mockImplementation((onfulfilled: any) =>
         Promise.resolve({ data: [{ id: 'existing_thread_1' }], error: null }).then(onfulfilled),
       );
 
-      const result = await service.getThreatId('msg_1');
+      const result = await service.getThreadId('msg_1');
 
       expect(mockSupabaseClient.from).toHaveBeenCalledWith('threads');
       expect(threadsChain.select).toHaveBeenCalledWith('id');
@@ -101,7 +101,7 @@ describe('DatabaseThreats', () => {
         Promise.resolve({ data: null, error: null }).then(onfulfilled),
       );
 
-      const result = await service.getThreatId('msg_2');
+      const result = await service.getThreadId('msg_2');
 
       // Assert thread creation
       expect(threadsChain.insert).toHaveBeenCalledWith({ root_message_id: 'msg_2' });
