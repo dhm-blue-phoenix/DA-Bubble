@@ -12,7 +12,10 @@ import {
 import { Supabase } from './db-superbase';
 
 import { Message, Messages, Reaction, Reactions } from '../../interfaces/messages';
-import { SupabaseResponseMessage, ReactionResult } from '../../interfaces/db/db-messages';
+import {
+  ReactionResult,
+  NewMessage, MsgType,
+} from '../../interfaces/db/db-messages';
 
 @Injectable({
   providedIn: 'root',
@@ -24,15 +27,13 @@ export class DatabaseMessages implements OnDestroy {
 
   public readonly _chat_messages: WritableSignal<Messages> = signal<Messages>([]);
   public readonly _channel_messages: WritableSignal<Messages> = signal<Messages>([]);
+  public readonly _thread_messages: WritableSignal<Messages> = signal<Messages>([]);
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
       this.channels = this.subscribeMessages();
-      this.debugging();
     }
   }
-
-  private async debugging(): Promise<void> {}
 
   private subscribeMessages(): RealtimeChannel {
     return this.supabase
@@ -158,7 +159,7 @@ export class DatabaseMessages implements OnDestroy {
     if (this.channels) this.supabase.removeChannel(this.channels);
   }
 
-  public async getMessages(msgType: ('chat' | 'channel'), id: string): Promise<void> {
+  public async getMessages(msgType: MsgType, id: string): Promise<void> {
     const { data: messages }: PostgrestResponse<any> = await this.supabase
       .from('messages')
       .select(
@@ -173,16 +174,16 @@ export class DatabaseMessages implements OnDestroy {
       `,
       )
       .eq(msgType + '_id', id)
-      .is('thread_id', null)
       .order('created_at', { ascending: true });
     if (messages) {
       if (msgType === 'chat') this._chat_messages.set(messages);
       if (msgType === 'channel') this._channel_messages.set(messages);
+      if (msgType === 'thread') this._thread_messages.set(messages);
     }
   }
 
   public async updateMessage(messageId: string, newContent: string): Promise<void> {
-    const { data, error }: PostgrestSingleResponse<SupabaseResponseMessage> = await this.supabase
+    await this.supabase
       .from('messages')
       .update({
         content: newContent,
@@ -194,21 +195,33 @@ export class DatabaseMessages implements OnDestroy {
   }
 
   public async createNewMessage(
-    msgType: ('chat' | 'channel'),
+    msgType: MsgType,
+    threadChannelId: string | null,
     id: string,
     senderId: string,
     content: string,
   ): Promise<void> {
     const mt: string = msgType + '_id';
-    const { data, error }: PostgrestSingleResponse<SupabaseResponseMessage> = await this.supabase
+    const newMessage: NewMessage = {
+      [mt]: id,
+      sender_id: senderId,
+      content: content,
+    };
+    await this.supabase
       .from('messages')
-      .insert({
-        [mt]: id,
-        sender_id: senderId,
-        content: content,
-      })
+      .insert(this.returnMsgType(msgType, threadChannelId, newMessage))
       .select()
       .single();
+  }
+
+  private returnMsgType(
+    msgType: MsgType,
+    threadChannelId: string | null,
+    newMessage: NewMessage,
+  ): NewMessage {
+    return msgType === 'thread'
+      ? { ...newMessage, channel_id: threadChannelId as string }
+      : newMessage;
   }
 
   private async checkExistReaction(
@@ -231,7 +244,7 @@ export class DatabaseMessages implements OnDestroy {
     userId: string,
     emoji: string,
   ): Promise<ReactionResult> {
-    const data: PostgrestSingleResponse<null> = await this.supabase
+    await this.supabase
       .from('reactions')
       .delete()
       .eq('message_id', messageId)
@@ -245,7 +258,7 @@ export class DatabaseMessages implements OnDestroy {
     userId: string,
     emoji: string,
   ): Promise<ReactionResult> {
-    const data: PostgrestSingleResponse<Reaction> = await this.supabase
+    await this.supabase
       .from('reactions')
       .insert({
         message_id: messageId,

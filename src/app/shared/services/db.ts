@@ -10,7 +10,7 @@ import { DatabaseThreats } from './db/db-threats';
 import { Profiles, Profile } from '../interfaces/profile';
 import { Messages } from '../interfaces/messages';
 import { ReturnFromCreateNewChannel, SignalChannel } from '../interfaces/db/db-channels';
-import { ReactionResult } from '../interfaces/db/db-messages';
+import { MsgType, ReactionResult } from '../interfaces/db/db-messages';
 
 @Injectable({
   providedIn: 'root',
@@ -27,6 +27,7 @@ export class Database {
   public readonly isLogin: Signal<boolean> = this.db_auth._isUserLogin.asReadonly();
   public readonly chatMsg: Signal<Messages> = this.db_messages._chat_messages.asReadonly();
   public readonly channelMsg: Signal<Messages> = this.db_messages._channel_messages.asReadonly();
+  public readonly threadMsg: Signal<Messages> = this.db_messages._thread_messages.asReadonly();
   public readonly channels: Signal<SignalChannel> = this.db_channels._channels.asReadonly();
   public readonly channel: Signal<SignalChannel> = this.db_channels._channel.asReadonly();
 
@@ -76,6 +77,7 @@ export class Database {
     this.db_profiles._profiles.set([]);
     this.db_messages._chat_messages.set([]);
     this.db_messages._channel_messages.set([]);
+    this.db_messages._thread_messages.set([]);
     this.db_channels._channels.set([]);
     this.db_channels._channel.set({});
     this.db_auth.signOut();
@@ -96,16 +98,16 @@ export class Database {
     );
   }
 
-  public newMsg(msgType: 'chat' | 'channel', id: string, senderId: string, content: string): void {
-    this.db_messages.createNewMessage(msgType, id, senderId, content.trim());
+  public newMsg(msgType: MsgType, threadChannelId: string | null, id: string, senderId: string, content: string): void {
+    this.db_messages.createNewMessage(msgType, threadChannelId, id.trim(), senderId.trim(), content.trim());
   }
 
   public editMsg(msgId: string, newContent: string): void {
-    this.db_messages.updateMessage(msgId, newContent.trim());
+    this.db_messages.updateMessage(msgId.trim(), newContent.trim());
   }
 
-  public loadMsg(msgType: 'chat' | 'channel', id: string): void {
-    this.db_messages.getMessages(msgType, id);
+  public loadMsg(msgType: MsgType, id: string): void {
+    this.db_messages.getMessages(msgType, id.trim());
   }
 
   public async toggleReaction(
@@ -113,7 +115,11 @@ export class Database {
     senderId: string,
     emoji: string,
   ): Promise<ReactionResult> {
-    return this.db_messages.toggleReaction(msgId, senderId, emoji.trim().toLowerCase());
+    return this.db_messages.toggleReaction(
+      msgId.trim(),
+      senderId.trim(),
+      emoji.trim().toLowerCase(),
+    );
   }
 
   public async newChannel(
