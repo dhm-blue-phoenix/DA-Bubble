@@ -1,7 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
-import { Profile } from '../../../interfaces/profile';
-import { Database } from '../../../services/db';
-import { Router, RouterLink } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { ProcessedData } from '../../../services/processed_data';
 
 @Component({
   selector: 'app-header-component',
@@ -12,27 +11,16 @@ import { Router, RouterLink } from '@angular/router';
 export class HeaderComponent {
 
   dialog_open = false
-
-  db = inject(Database)
   router = inject(Router)
-  currentUser = signal<Profile | null>(null);
-
-  async ngOnInit() {
-    const id = this.db.getCurrentProfileId();
-    if (id){
-        this.currentUser.set(await this.db.getProfile(id));
-        console.log('Current User:', this.currentUser());
-    }
-}
+  user = inject(ProcessedData)
 
   toggle_Dialog() {
     this.dialog_open = ! this.dialog_open
   }
 
   logout(){
-    this.db.logout();
-    this.currentUser.set(null);
-    console.log('User logged out, currentUser:', this.currentUser());
+    this.user.logoutCurrentUser() ;
+    console.log('User logged out, currentUser:', this.user.currentUser());
     this.router.navigate(['/'])
   }
 }

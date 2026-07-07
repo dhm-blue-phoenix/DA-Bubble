@@ -13,9 +13,9 @@
     </div>
 
     <div class="flex gap-2 items-center">
-        <h2>{{ currentUser()?.name }}</h2>
+        <h2>{{ user.currentUser()?.name }}</h2>
         <div class="flex relative">
-            <img class="size-[70px] " [src]='"assets/svg/avatar/avatar_small/" + (currentUser()?.avatar || "assets/svg/avatar/avatar_small/1") + ".svg"' alt="avatar">
+            <img class="size-[70px] " [src]='"assets/svg/avatar/avatar_small/" + (user.currentUser()?.avatar || "assets/svg/avatar/avatar_small/1") + ".svg"' alt="avatar">
             <div class="status_User online"></div>
         </div>
         <button (click)="toggle_Dialog()">
