@@ -15,6 +15,7 @@ export class ProcessedData {
   async loadCurrentUser() {
     const id = this.db.getCurrentProfileId();
     this.currentUser.set(id ? await this.db.getProfile(id) : null);
+    console.log('Current user loaded:', this.currentUser());
   }
 
   logoutCurrentUser() {

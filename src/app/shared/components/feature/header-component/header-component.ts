@@ -18,6 +18,10 @@ export class HeaderComponent {
     this.dialog_open = ! this.dialog_open
   }
 
+  ngOnInit() {
+    this.user.loadCurrentUser();
+  }
+
   logout(){
     this.user.logoutCurrentUser() ;
     console.log('User logged out, currentUser:', this.user.currentUser());
