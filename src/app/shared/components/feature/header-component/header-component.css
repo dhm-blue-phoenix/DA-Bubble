@@ -38,3 +38,18 @@ top: 96px;
         }
     }
 }
+
+.profile_Dialog{
+width: 540px;
+border-radius: 30px;
+background-color: white;
+position: absolute;
+right: 0px;
+top: 96px;
+}
+
+.status_currentUser{
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+}
