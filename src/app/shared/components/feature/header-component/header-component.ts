@@ -13,6 +13,7 @@ export class HeaderComponent {
 
   dialog_open = false
   profile_open = false
+  edit_profile = true
   router = inject(Router)
   user = inject(ProcessedData)
 
