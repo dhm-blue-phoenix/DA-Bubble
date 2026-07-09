@@ -36,7 +36,7 @@
 
     @if(profile_open){
         <div class="profil_overlay" >
-            <div (click)="$event.stopPropagation()" class="flex flex-col justify-start bg-color-white profile_Dialog justify-center gap-[32px] p-[42px]">
+            <div class="flex flex-col justify-start bg-color-white profile_Dialog justify-center gap-[32px] p-[42px]">
 
                 <div class="flex items-center justify-between w-full">
                     <span class="text-2xl font-bold">Profil</span>
@@ -73,19 +73,21 @@
                     </div>
                 }
                 @else {
-                    <div class="flex flex-col gap-2">
-                        <div class="flex gap-[32px]">
-                            <img class="size-[30px]" src="assets/svg/icons/icon_black/account_circle_black.svg" alt="profil_Icon">
-                            <span class="text-xl font-bold">Vollständiger Name</span>
+                    <form action="" class="flex flex-col gap-8">
+                        <div class="flex flex-col gap-2">
+                            <div class="flex gap-[32px]">
+                                <img class="size-[30px]" src="assets/svg/icons/icon_black/account_circle_black.svg" alt="profil_Icon">
+                                <span class="text-xl font-bold">Vollständiger Name</span>
+                            </div>
+                            <div class="edit_name flex px-4 w-full">
+                                <input name="username"  [(ngModel)]="current_username" class="w-full" type="text" placeholder="{{ user.currentUser()?.name }}">
+                            </div>
                         </div>
-                        <div class="edit_name flex px-4 w-full">
-                            <input  class="w-full" type="text" placeholder="{{ user.currentUser()?.email }}">
+                        <div class="flex gap-[30px] w-full justify-center">
+                            <button  class="btn_raw text-[var(--highligh-color)] border font-bold">Abbrechen</button>
+                            <button  class="btn_raw bg-[var(--highligh-color)] text-white font-bold" (click)="edit_Name()">Speichern</button>
                         </div>
-                    </div>
-                    <div class="flex gap-[30px] w-full justify-center">
-                        <button  class="btn_raw text-[var(--highligh-color)] border font-bold">Abbrechen</button>
-                        <button  class="btn_raw bg-[var(--highligh-color)] text-white font-bold">Speichern</button>
-                    </div>
+                    </form>
                 }
             </div>
         </div>
