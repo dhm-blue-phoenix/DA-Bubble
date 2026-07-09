@@ -9,7 +9,7 @@ Speichert Benutzerdaten (automatisch verknüpft mit Supabase Auth).
 - `id` (uuid) - Primärschlüssel (verweist auf auth.users)
 - `name` (text) - Der Anzeigename des Benutzers
 - `email` (text) - E-Mail Adresse
-- `avatar_url` (text) / `avatar` (text) - Pfad/URL zum Profilbild
+- `avatar` (text) - Pfad/URL zum Profilbild
 - `status` (text) - Online-Status ('online', 'offline', 'away')
 - `created_at` (timestamp) - Erstellungsdatum
 

@@ -100,10 +100,10 @@ Verwaltet Benutzerprofile und hält sie über Signals synchron.
 - **Eingabe:** `profileId` (string), `value` (string)
 - **Ausgabe:** `Promise<void>`
 
-## 6. DatabaseThreats (`db-threats.ts`)
+## 6. DatabaseThreads (`db-threads.ts`)
 Verwaltet Thread-Diskussionen (Antwortstränge) zu spezifischen Nachrichten.
 
-### `getThreatId` (eigtl. getThreadId)
+### `getThreadId`
 - **Zweck:** Prüft, ob zu einer Ursprungs-Nachricht bereits ein Thread existiert. Wenn nicht, wird einer erstellt und die Ursprungs-Nachricht aktualisiert.
 - **Eingabe:** `msgId` (string - ID der Ursprungsnachricht)
 - **Ausgabe:** `Promise<string>` (Gibt die `thread_id` zurück)

@@ -188,7 +188,7 @@ describe('DatabaseProfiles', () => {
         await service.getProfiles();
 
         expect(mockSupabaseClient.from).toHaveBeenCalledWith('profiles');
-        expect(profilesChain.select).toHaveBeenCalledWith('id, name, email, avatar_url, status, created_at');
+        expect(profilesChain.select).toHaveBeenCalledWith('id, name, email, avatar, status, created_at');
         expect(service._profiles()).toEqual(mockProfiles);
       });
 
