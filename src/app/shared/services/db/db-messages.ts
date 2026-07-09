@@ -22,8 +22,11 @@ export class DatabaseMessages implements OnDestroy {
   private readonly supabase: SupabaseClient = inject(Supabase)['supabase'];
   private readonly channels?: RealtimeChannel;
 
+  /** Signal für direkte Chat-Nachrichten */
   public readonly _chat_messages: WritableSignal<Messages> = signal<Messages>([]);
+  /** Signal für Kanal-Nachrichten */
   public readonly _channel_messages: WritableSignal<Messages> = signal<Messages>([]);
+  /** Signal für Thread-Nachrichten */
   public readonly _thread_messages: WritableSignal<Messages> = signal<Messages>([]);
 
   constructor() {
@@ -32,6 +35,10 @@ export class DatabaseMessages implements OnDestroy {
     }
   }
 
+  /**
+   * Abonniert Realtime-Events für die Nachrichten- und Reaktions-Tabellen.
+   * @returns {RealtimeChannel} Der abonnierte Realtime-Kanal.
+   */
   private subscribeMessages(): RealtimeChannel {
     return this.supabase
       .channel('realtime:messages')
@@ -48,6 +55,10 @@ export class DatabaseMessages implements OnDestroy {
       .subscribe();
   }
 
+  /**
+   * Verteilt einkommende Realtime-Events für Nachrichten und Reaktionen.
+   * @param {RealtimePostgresChangesPayload<object>} payload - Das Event-Payload.
+   */
   private handleMessageEvent(payload: RealtimePostgresChangesPayload<object>): void {
     const { table, eventType }: { table: string; eventType: string } = payload;
     if (table === 'messages') {
@@ -60,6 +71,10 @@ export class DatabaseMessages implements OnDestroy {
     }
   }
 
+  /**
+   * Behandelt ein INSERT-Event für Nachrichten und aktualisiert die passenden Signals.
+   * @param {RealtimePostgresChangesPayload<object>} payload - Das Event-Payload.
+   */
   private insertEventMessage(payload: RealtimePostgresChangesPayload<object>): void {
     const message: Message = payload.new as Message;
     if (message.chat_id)
@@ -76,12 +91,22 @@ export class DatabaseMessages implements OnDestroy {
       );
   }
 
+  /**
+   * Hilfsfunktion zum Einfügen einer Nachricht in eine Liste (falls noch nicht vorhanden).
+   * @param {Messages} list - Die aktuelle Liste an Nachrichten.
+   * @param {Message} message - Die neu einzufügende Nachricht.
+   * @returns {Messages} Die aktualisierte Nachrichtenliste.
+   */
   private eventHelperInsertMessage(list: Messages, message: Message): Messages {
     return list.some((msg: Message): boolean => msg['id'] === message['id'])
       ? list
       : [...list, message];
   }
 
+  /**
+   * Behandelt ein UPDATE-Event für Nachrichten und aktualisiert die passenden Signals.
+   * @param {RealtimePostgresChangesPayload<object>} payload - Das Event-Payload.
+   */
   private updateEventMessage(payload: RealtimePostgresChangesPayload<object>): void {
     const message: Message = payload.new as Message;
     if (message.chat_id)
@@ -98,10 +123,20 @@ export class DatabaseMessages implements OnDestroy {
       );
   }
 
+  /**
+   * Hilfsfunktion zum Aktualisieren einer spezifischen Nachricht in einer Liste.
+   * @param {Messages} list - Die aktuelle Liste an Nachrichten.
+   * @param {Message} message - Die aktualisierte Nachricht.
+   * @returns {Messages} Die aktualisierte Nachrichtenliste.
+   */
   private eventHelperUpdateMessage(list: Messages, message: Message): Messages {
     return list.map((msg: Message): Message => (msg['id'] === message['id'] ? message : msg));
   }
 
+  /**
+   * Behandelt ein INSERT-Event für eine Reaktion und fügt diese der richtigen Nachricht hinzu.
+   * @param {RealtimePostgresChangesPayload<object>} payload - Das Event-Payload.
+   */
   private insertEventReaction(payload: RealtimePostgresChangesPayload<object>): void {
     const reaction = payload.new as Reaction;
     if (this.eventHelperIsMsgType(reaction) === 'chat')
@@ -118,6 +153,12 @@ export class DatabaseMessages implements OnDestroy {
       );
   }
 
+  /**
+   * Hilfsfunktion zum Einfügen einer Reaktion in die zugehörige Nachricht.
+   * @param {Messages} list - Die Nachrichtenliste.
+   * @param {Reaction} reaction - Die neue Reaktion.
+   * @returns {Messages} Die aktualisierte Nachrichtenliste.
+   */
   private eventHelperInsertReaction(list: Messages, reaction: Reaction): Messages {
     return list.map(
       (msg: Message): Message =>
@@ -127,6 +168,10 @@ export class DatabaseMessages implements OnDestroy {
     );
   }
 
+  /**
+   * Behandelt ein DELETE-Event für eine Reaktion und entfernt diese aus der Nachricht.
+   * @param {RealtimePostgresChangesPayload<object>} payload - Das Event-Payload.
+   */
   private deleteEventReaction(payload: RealtimePostgresChangesPayload<object>): void {
     const reaction = payload.old as Reaction;
     if (this.eventHelperIsMsgType(reaction) === 'chat')
@@ -143,6 +188,12 @@ export class DatabaseMessages implements OnDestroy {
       );
   }
 
+  /**
+   * Hilfsfunktion zum Löschen einer Reaktion aus der zugehörigen Nachricht.
+   * @param {Messages} list - Die Nachrichtenliste.
+   * @param {Reaction} reaction - Die zu löschende Reaktion.
+   * @returns {Messages} Die aktualisierte Nachrichtenliste.
+   */
   private eventHelperDeleteReaction(list: Messages, reaction: Reaction): Messages {
     return list.map(
       (msg: Message): Message =>
@@ -158,6 +209,11 @@ export class DatabaseMessages implements OnDestroy {
     );
   }
 
+  /**
+   * Bestimmt den Nachrichtentyp (Chat, Channel, Thread) anhand einer Reaktion.
+   * @param {Reaction} reaction - Die überprüfte Reaktion.
+   * @returns {string} Der gefundene Nachrichtentyp oder 'none'.
+   */
   private eventHelperIsMsgType(reaction: Reaction): string {
     const isChat: boolean = this._chat_messages().some((list: Message): boolean => {
       return list['id'] === reaction['message_id'];
@@ -171,10 +227,17 @@ export class DatabaseMessages implements OnDestroy {
     return (isChat && 'chat') || (isChannel && 'channel') || (isThread && 'thread') || 'none';
   }
 
+  /** Beendet die Realtime-Verbindung beim Zerstören des Services. */
   public ngOnDestroy(): void {
     if (this.channels) this.supabase.removeChannel(this.channels);
   }
 
+  /**
+   * Lädt Nachrichten für einen spezifischen Chat, Channel oder Thread.
+   * @param {MsgType} msgType - Der Typ der Nachrichtenquelle ('chat', 'channel' oder 'thread').
+   * @param {string} id - Die ID der Quelle (chat_id, channel_id oder thread_id).
+   * @returns {Promise<void>}
+   */
   public async getMessages(msgType: MsgType, id: string): Promise<void> {
     const { data: messages }: PostgrestResponse<any> = await this.supabase
       .from('messages')
@@ -198,6 +261,12 @@ export class DatabaseMessages implements OnDestroy {
     }
   }
 
+  /**
+   * Aktualisiert den Textinhalt einer bestehenden Nachricht.
+   * @param {string} messageId - Die ID der Nachricht.
+   * @param {string} newContent - Der neue Text.
+   * @returns {Promise<void>}
+   */
   public async updateMessage(messageId: string, newContent: string): Promise<void> {
     await this.supabase
       .from('messages')
@@ -210,6 +279,15 @@ export class DatabaseMessages implements OnDestroy {
       .single();
   }
 
+  /**
+   * Erstellt eine neue Nachricht in der Datenbank.
+   * @param {MsgType} msgType - Der Ziel-Typ ('chat', 'channel' oder 'thread').
+   * @param {string | null} threadChannelId - Optional die Kanal-ID, falls es sich um eine Thread-Nachricht handelt.
+   * @param {string} id - Die ID des Chats, Kanals oder Threads.
+   * @param {string} senderId - Die Profil-ID des Absenders.
+   * @param {string} content - Der Nachrichtentext.
+   * @returns {Promise<void>}
+   */
   public async createNewMessage(
     msgType: MsgType,
     threadChannelId: string | null,
@@ -230,6 +308,13 @@ export class DatabaseMessages implements OnDestroy {
       .single();
   }
 
+  /**
+   * Hilfsfunktion zum Ergänzen der channel_id bei Thread-Nachrichten.
+   * @param {MsgType} msgType - Der Ziel-Typ.
+   * @param {string | null} threadChannelId - Die ID des zugehörigen Kanals.
+   * @param {NewMessage} newMessage - Das rudimentäre Nachrichtenobjekt.
+   * @returns {NewMessage} Das fertige Nachrichtenobjekt zum Einfügen.
+   */
   private returnMsgType(
     msgType: MsgType,
     threadChannelId: string | null,
@@ -240,6 +325,13 @@ export class DatabaseMessages implements OnDestroy {
       : newMessage;
   }
 
+  /**
+   * Prüft, ob ein Benutzer bereits mit einem bestimmten Emoji auf eine Nachricht reagiert hat.
+   * @param {string} messageId - Die ID der Nachricht.
+   * @param {string} userId - Die ID des Benutzers.
+   * @param {string} emoji - Das geprüfte Emoji.
+   * @returns {Promise<boolean>} True, wenn die Reaktion existiert, sonst false.
+   */
   private async checkExistReaction(
     messageId: string,
     userId: string,
@@ -255,6 +347,13 @@ export class DatabaseMessages implements OnDestroy {
     return !!data['data'];
   }
 
+  /**
+   * Löscht eine spezifische Emoji-Reaktion aus der Datenbank.
+   * @param {string} messageId - Die ID der Nachricht.
+   * @param {string} userId - Die ID des Benutzers.
+   * @param {string} emoji - Das zu löschende Emoji.
+   * @returns {Promise<ReactionResult>} Das Ergebnis mit der Aktion 'removed'.
+   */
   private async deleteReaction(
     messageId: string,
     userId: string,
@@ -269,6 +368,13 @@ export class DatabaseMessages implements OnDestroy {
     return { action: 'removed' };
   }
 
+  /**
+   * Fügt eine neue Emoji-Reaktion in die Datenbank ein.
+   * @param {string} messageId - Die ID der Nachricht.
+   * @param {string} userId - Die ID des Benutzers.
+   * @param {string} emoji - Das neue Emoji.
+   * @returns {Promise<ReactionResult>} Das Ergebnis mit der Aktion 'added'.
+   */
   private async addReaction(
     messageId: string,
     userId: string,
@@ -286,6 +392,13 @@ export class DatabaseMessages implements OnDestroy {
     return { action: 'added' };
   }
 
+  /**
+   * Schaltet eine Reaktion um (Toggelt): Ist sie vorhanden, wird sie entfernt. Ist sie nicht vorhanden, wird sie hinzugefügt.
+   * @param {string} messageId - Die ID der Nachricht.
+   * @param {string} userId - Die ID des Benutzers.
+   * @param {string} emoji - Das umzuschaltende Emoji.
+   * @returns {Promise<ReactionResult>} Ein Promise, das 'added' oder 'removed' zurückgibt.
+   */
   public async toggleReaction(
     messageId: string,
     userId: string,
