@@ -20,6 +20,7 @@
 
     --status-offline: rgba(104, 104, 104, 1);
     --status-online: rgba(146, 200, 62, 1);
+    --link-profile: #1381FF;
 }
 
 @font-face {
