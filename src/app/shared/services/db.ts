@@ -140,7 +140,7 @@ export class Database {
    */
   public async getChatId(otherUserId: string): Promise<string> {
     return await this.db_chats.getChatId(
-      this.db_auth.getLocalStorageCurrentProfileId(),
+      this.db_auth.getCurrentUserId(),
       otherUserId,
     );
   }

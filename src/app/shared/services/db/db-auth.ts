@@ -22,9 +22,13 @@ export class DatabaseAuth {
   /** Signal, das den aktuellen Anmeldestatus des Benutzers hält. */
   public readonly _isUserLogin: WritableSignal<boolean> = signal<boolean>(false);
 
+  /** Speichert die Profil-ID des aktuell angemeldeten Benutzers */
+  private currentUserId: string = '';
+
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
-      //this.setupAuthListener();
+      this.setupAuthListener();
+      this.setupWindowFocusListener();
 
       if (this.debug_logs) {
         this.debugging();
@@ -44,77 +48,57 @@ export class DatabaseAuth {
   }
 
   /**
-   * Setzt den Benutzer-Status auf 'online', speichert die ID und setzt das Login-Signal.
-   * @param {string} userId - Die ID des Benutzers.
-   * @returns {Promise<void>}
+   * Lauscht auf Änderungen des Authentifizierungsstatus durch Supabase.
    */
-  private async setUserOnline(userId: string): Promise<void> {
-    await this.setStatus('online');
-    this.setLocalStorageCurrentProfileId(userId);
-    this._isUserLogin.set(true);
-  }
-
-  /**
-   * Setzt den Benutzer-Status auf 'offline', entfernt die ID und setzt das Login-Signal.
-   * @returns {Promise<void>}
-   */
-  private async setUserOffline(): Promise<void> {
-    await this.setStatus('offline');
-    this.deleteLocalStorageCurrentProfileId();
-    this._isUserLogin.set(false);
-  }
-
-  /**
-   * Speichert die Profil-ID des aktuell angemeldeten Benutzers im LocalStorage.
-   * @param {string} value - Die Profil-ID.
-   */
-  private setLocalStorageCurrentProfileId(value: string): void {
-    if (isPlatformBrowser(this.platformId) && value.length > 10) {
-      localStorage.setItem('currentProfileId', value);
-    }
-  }
-
-  /*
   private setupAuthListener(): void {
-    this.supabase.auth.onAuthStateChange( async (event: AuthChangeEvent, session: Session | null): Promise<void> => {
-        if (this.debug_logs) {
-          console.log('Auth state change:', event, session);
+    this.supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session: Session | null): Promise<void> => {
+      if (this.debug_logs) {
+        console.log('Auth state change:', event, session);
+      }
+      if (event === 'SIGNED_OUT') {
+        this.currentUserId = '';
+        this._isUserLogin.set(false);
+      } else if (session?.user) {
+        this.currentUserId = session.user.id;
+        this._isUserLogin.set(true);
+        if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
+          await this.setStatus('online');
         }
-        const userId: string | undefined = session?.user?.id;
-        if (userId) await this.setUserOnline(userId); else await this.setUserOffline();
-      },
-    );
+      }
+    });
   }
-  */
 
   /**
-   * Holt die Profil-ID des aktuell angemeldeten Benutzers aus dem LocalStorage.
+   * Verfolgt den Fensterfokus, um den Status auf 'away' oder 'online' zu setzen.
+   */
+  private setupWindowFocusListener(): void {
+    window.addEventListener('focus', async (): Promise<void> => {
+      if (this.currentUserId) {
+        await this.setStatus('online');
+      }
+    });
+    window.addEventListener('blur', async (): Promise<void> => {
+      if (this.currentUserId) {
+        await this.setStatus('away');
+      }
+    });
+  }
+
+  /**
+   * Gibt die Profil-ID des aktuell angemeldeten Benutzers zurück.
    * @returns {string} Die Profil-ID oder ein leerer String.
    */
-  public getLocalStorageCurrentProfileId(): string {
-    if (isPlatformBrowser(this.platformId)) {
-      const profileId: string | null = localStorage.getItem('currentProfileId');
-      return profileId ? profileId : '';
-    }
-    return '';
-  }
-
-  /**
-   * Entfernt die Profil-ID des aktuell angemeldeten Benutzers aus dem LocalStorage.
-   */
-  private deleteLocalStorageCurrentProfileId(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem('currentProfileId');
-    }
+  public getCurrentUserId(): string {
+    return this.currentUserId;
   }
 
   /**
    * Aktualisiert den Online-Status des aktuellen Profils.
-   * @param {'offline' | 'online'} status - Der neue Status.
+   * @param {'offline' | 'online' | 'away'} status - Der neue Status.
    * @returns {Promise<void>}
    */
-  private async setStatus(status: 'offline' | 'online'): Promise<void> {
-    const profileId: string = this.getLocalStorageCurrentProfileId();
+  private async setStatus(status: 'offline' | 'online' | 'away'): Promise<void> {
+    const profileId: string = this.getCurrentUserId();
     if (profileId) {
       await this.updateProfileStatus(profileId, status);
     }
@@ -123,18 +107,32 @@ export class DatabaseAuth {
   /**
    * Führt das Datenbank-Update für den Status eines bestimmten Profils aus.
    * @param {string} profileId - Die Profil-ID.
-   * @param {'offline' | 'online'} value - Der neue Status.
+   * @param {'offline' | 'online' | 'away'} value - Der neue Status.
    * @returns {Promise<void>}
    */
-  private async updateProfileStatus(profileId: string, value: 'offline' | 'online'): Promise<void> {
-    console.log('updateProfileStatus', profileId, value);
+  private async updateProfileStatus(profileId: string, value: 'offline' | 'online' | 'away'): Promise<void> {
+    if (this.debug_logs) console.log('updateProfileStatus', profileId, value);
     if (profileId.length > 5 && value.length > 1) {
-      const { data, error }: SupabaseResponseProfiles = await this.supabase
+      await this.supabase
         .from('profiles')
         .update({ status: value })
         .eq('id', profileId)
         .select();
     }
+  }
+
+  /**
+   * Prüft, ob eine E-Mail-Adresse bereits registriert ist.
+   * @param {string} email - Die zu prüfende E-Mail-Adresse.
+   * @returns {Promise<boolean>} True, wenn die E-Mail existiert, sonst false.
+   */
+  public async checkEmailExists(email: string): Promise<boolean> {
+    const { data } = await this.supabase
+      .from('profiles')
+      .select('id')
+      .eq('email', email)
+      .maybeSingle();
+    return !!data;
   }
 
   /**
@@ -152,6 +150,7 @@ export class DatabaseAuth {
     user_avatar: string,
   ): Promise<void> {
     if (user_email.length > 5 && user_password.length > 5 && user_name.length > 5) {
+      if (await this.checkEmailExists(user_email)) throw new Error('User email already exists');
       const { data, error } = await this.supabase.auth.signUp({
         email: user_email,
         password: user_password,
@@ -162,10 +161,6 @@ export class DatabaseAuth {
       if (this.debug_logs) {
         if (error) console.error('signUpNewUser_error', error);
         console.log('signUpNewUser_data', data);
-      }
-      if (data.user) {
-        const userId: string = data.user.id;
-        this.setUserOnline(userId);
       }
     }
   }
@@ -185,10 +180,6 @@ export class DatabaseAuth {
       if (this.debug_logs) {
         if (error) console.error('signInWithEmail_error', error);
         console.log('signInWithEmail_data', data);
-      }
-      if (data.user) {
-        const userId: string = data.user.id;
-        this.setUserOnline(userId);
       }
     }
   }
@@ -218,8 +209,10 @@ export class DatabaseAuth {
    * @returns {Promise<void>}
    */
   public async signOut(): Promise<void> {
-    await this.setUserOffline();
-    console.warn('Logout!!!');
+    const userId: string = this.currentUserId;
+    this.currentUserId = '';
+    if (userId) await this.updateProfileStatus(userId, 'offline');
+    if (this.debug_logs) console.warn('Logout!!!');
     const { error } = await this.supabase.auth.signOut();
     if (this.debug_logs && error) {
       console.error('signOut_error', error);
