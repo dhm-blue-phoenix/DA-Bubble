@@ -28,7 +28,7 @@
     @if (dialog_open) {
         <div class="profil_overlay" (click)="toggle_Dialog()">
             <div (click)="$event.stopPropagation()" class="flex flex-col items-center bg-color-white profil_content justify-center gap-4">
-                <button class="w-5/6" (click)="openProfile()"><span class="font-semibold text-2xl">Profil</span></button>
+                <button class="w-5/6" (click)="toggle_Profile()"><span class="font-semibold text-2xl">Profil</span></button>
                 <button class="w-5/6" (click)="logout()"><span class="font-semibold text-2xl" >Log out</span></button>
             </div>
         </div>
@@ -40,7 +40,7 @@
 
                 <div class="flex items-center justify-between w-full">
                     <span class="text-2xl font-bold">Profil</span>
-                    <button class="size-[24px]" (click)="openProfile()"><img src="assets/svg/icons/icon_black/close.svg" alt="close"></button>
+                    <button class="size-[24px]" (click)="toggle_Profile()"><img src="assets/svg/icons/icon_black/close.svg" alt="close"></button>
                 </div>
 
                 <div class="w-full flex justify-center">
@@ -50,7 +50,7 @@
                 @if(!edit_profile){
                     <div class="w-full flex justify-between">
                         <span class="text-3xl font-bold">{{ user.currentUser()?.name }}</span>
-                        <button class="text-[20px] text-[var(--hover-text)] hover:font-bold">Bearbeiten</button>
+                        <button class="text-[20px] text-[var(--hover-text)] hover:font-bold" (click)="toggle_EditProfile()">Bearbeiten</button>
                     </div>
     
                     <div class="justify-start w-full flex items-center gap-[16px]">
@@ -80,12 +80,12 @@
                                 <span class="text-xl font-bold">Vollständiger Name</span>
                             </div>
                             <div class="edit_name flex px-4 w-full">
-                                <input name="username"  [(ngModel)]="current_username" class="w-full" type="text" placeholder="{{ user.currentUser()?.name }}">
+                                <input name="new_Username" minlength="2" maxlength="40" #new_name="ngModel" required [(ngModel)]="new_Username" class="w-full" type="text" placeholder="{{ user.currentUser()?.name }}">
                             </div>
                         </div>
                         <div class="flex gap-[30px] w-full justify-center">
-                            <button  class="btn_raw text-[var(--highligh-color)] border font-bold">Abbrechen</button>
-                            <button  class="btn_raw bg-[var(--highligh-color)] text-white font-bold" (click)="edit_Name()">Speichern</button>
+                            <button class="btn_raw text-[var(--highligh-color)] border font-bold" (click)="toggle_EditProfile()">Abbrechen</button>
+                            <button [disabled]="new_name.invalid" class="btn_raw bg-[var(--highligh-color)] text-white font-bold" (click)="edit_Name()">Speichern</button>
                         </div>
                     </form>
                 }
