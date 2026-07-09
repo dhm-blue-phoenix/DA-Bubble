@@ -26,12 +26,12 @@ export class Login {
   }
 
 async login(){
-  console.log('email: ' + this.login_Data.email,'password: ' + this.login_Data.password)
   await this.db.login(this.login_Data.email, this.login_Data.password)
-  this.router.navigate(['/workspace'])
+  if (this.db.isLogin()) {
+    this.router.navigate(['/workspace'])
+  }
 }
 login_as_guest(){
-  console.log('email: ' + this.guest_Data.email,'password: ' + this.guest_Data.password)
   this.router.navigate(['/workspace'])
 }
 }

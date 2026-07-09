@@ -61,7 +61,7 @@ export class DatabaseProfiles implements OnDestroy {
   public async getProfiles(): Promise<void> {
     const { data: profiles }: SupabaseResponseProfiles = await this.supabase
       .from('profiles')
-      .select('id, name, email, avatar_url, status, created_at');
+      .select('id, name, email, avatar, status, created_at');
     if (profiles) this._profiles.set(profiles);
   }
 
