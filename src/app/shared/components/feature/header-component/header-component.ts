@@ -50,6 +50,7 @@ edit_Name(){
     this.db.editProfileName(profile.id, this.new_Username)
     this.user.currentUser.set({...profile, name: this.new_Username })
     this.toggle_Profile()
+    this.edit_profile = false
   }
 }
 }
