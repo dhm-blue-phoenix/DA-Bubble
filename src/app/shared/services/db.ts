@@ -9,8 +9,9 @@ import { DatabaseThreads } from './db/db-threads';
 
 import { Profiles, Profile } from '../interfaces/profile';
 import { Messages } from '../interfaces/messages';
-import { ReturnFromCreateNewChannel, SignalChannel } from '../interfaces/db/db-channels';
+import { SignalChannel } from '../interfaces/db/db-channels';
 import { MsgType, ReactionResult } from '../interfaces/db/db-messages';
+import { applyWhen } from '@angular/forms/signals';
 
 @Injectable({
   providedIn: 'root',
@@ -39,7 +40,12 @@ export class Database {
   public readonly channel: Signal<SignalChannel> = this.db_channels._channel.asReadonly();
 
   constructor() {
+
+  }
+
+  public ngOnInit(): void {
     this.db_profiles.getProfiles();
+    console.log('profiles', this.profiles())
   }
 
   /**
@@ -48,14 +54,15 @@ export class Database {
    * @param {string} user_password - Das Passwort.
    * @param {string} user_name - Der Anzeigename.
    * @param {string} user_avatar - URL oder Pfad zum Profilbild (Avatar).
+   * @return {boolean} - true bei Erfolg oder false bei einem Duplikat.
    */
-  public register(
+  public async register(
     user_email: string,
     user_password: string,
     user_name: string,
     user_avatar: string,
-  ): void {
-    this.db_auth.signUpNewUser(
+  ): Promise<boolean> {
+    return await this.db_auth.signUpNewUser(
       user_email.trim(),
       user_password.trim(),
       user_name.trim(),
@@ -139,10 +146,7 @@ export class Database {
    * @returns {Promise<string>} Die ID des Chats.
    */
   public async getChatId(otherUserId: string): Promise<string> {
-    return await this.db_chats.getChatId(
-      this.db_auth.getCurrentUserId(),
-      otherUserId,
-    );
+    return await this.db_chats.getChatId(this.db_auth.getCurrentUserId(), otherUserId);
   }
 
   /**
@@ -153,8 +157,20 @@ export class Database {
    * @param {string} senderId - Die Profil-ID des Absenders.
    * @param {string} content - Der Text der Nachricht.
    */
-  public newMsg(msgType: MsgType, threadChannelId: string | null, id: string, senderId: string, content: string): void {
-    this.db_messages.createNewMessage(msgType, threadChannelId, id.trim(), senderId.trim(), content.trim());
+  public newMsg(
+    msgType: MsgType,
+    threadChannelId: string | null,
+    id: string,
+    senderId: string,
+    content: string,
+  ): void {
+    this.db_messages.createNewMessage(
+      msgType,
+      threadChannelId,
+      id.trim(),
+      senderId.trim(),
+      content.trim(),
+    );
   }
 
   /**
@@ -199,13 +215,9 @@ export class Database {
    * @param {string} userId - Die Profil-ID des Erstellers.
    * @param {string} title - Der Name des Kanals.
    * @param {string} desc - Die Beschreibung des Kanals.
-   * @returns {Promise<ReturnFromCreateNewChannel>} Erfolg oder Misserfolg (z.B. bei Duplikat).
+   * @returns {Promise<boolean>} - true bei Erfolg oder false bei einem Duplikat.
    */
-  public async newChannel(
-    userId: string,
-    title: string,
-    desc: string,
-  ): Promise<ReturnFromCreateNewChannel> {
+  public async newChannel(userId: string, title: string, desc: string): Promise<boolean> {
     return await this.db_channels.createNewChannel(userId.trim(), title.trim(), desc.trim());
   }
 

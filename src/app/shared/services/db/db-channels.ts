@@ -12,7 +12,6 @@ import { Supabase } from './db-superbase';
 
 import {
   ChannelId,
-  ReturnFromCreateNewChannel,
   SignalChannels,
   SignalChannel,
   ChannelIdAndName,
@@ -182,15 +181,14 @@ export class DatabaseChannels {
    * @param {string} userId - Die ID des erstellenden Benutzers.
    * @param {string} name - Der Name des neuen Kanals.
    * @param {string} description - Die Beschreibung des Kanals.
-   * @returns {Promise<ReturnFromCreateNewChannel>} void im Erfolgsfall, ansonsten ein Objekt mit Fehlermeldung.
+   * @returns {Promise<boolean>} - Gibt ein false zurück wenn ein Duplikat vorliegt ansonsten true.
    */
   public async createNewChannel(
     userId: string,
     name: string,
     description: string,
-  ): Promise<ReturnFromCreateNewChannel> {
-    if (await this.checkDuplicateCannelName(name))
-      return { success: false, msg: 'Duplicate found' };
+  ): Promise<boolean> {
+    if (await this.checkDuplicateCannelName(name)) return false;
     const { data }: PostgrestSingleResponse<{ id: string }[]> = await this.supabase
       .from('channels')
       .insert({
@@ -200,6 +198,7 @@ export class DatabaseChannels {
       })
       .select();
     if (data && data.length > 0) this.createNewMember(data[0]['id'], userId, 'admin');
+    return true;
   }
 
   /**

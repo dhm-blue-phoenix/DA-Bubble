@@ -3,13 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../../../environment/environment';
 import { Supabase } from './db-superbase';
 
-import {
-  SupabaseClient,
-  AuthChangeEvent,
-  Session
-} from '@supabase/supabase-js';
-
-import { SupabaseResponseProfiles } from '../../interfaces/db/db-auth';
+import { SupabaseClient, AuthChangeEvent, Session } from '@supabase/supabase-js';
 
 @Injectable({
   providedIn: 'root',
@@ -29,43 +23,27 @@ export class DatabaseAuth {
     if (isPlatformBrowser(this.platformId)) {
       this.setupAuthListener();
       this.setupWindowFocusListener();
-
-      if (this.debug_logs) {
-        this.debugging();
-      }
     }
-  }
-
-  /**
-   * Interne Funktion für Debugging-Zwecke.
-   */
-  private async debugging(): Promise<void> {
-    //console.log('environment', environment);
-    //await this.signUpNewUser(environment.debug_user_email, environment.debug_user_password, environment.debug_user_name, 'dummydata');
-    //await this.signUpNewUser(environment.debug_user2_email, environment.debug_user2_password, environment.debug_user2_name);
-    //await this.signInWithEmail(environment.debug_user_email, environment.debug_user_password);
-    //await this.signOut();
   }
 
   /**
    * Lauscht auf Änderungen des Authentifizierungsstatus durch Supabase.
    */
   private setupAuthListener(): void {
-    this.supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session: Session | null): Promise<void> => {
-      if (this.debug_logs) {
-        console.log('Auth state change:', event, session);
-      }
-      if (event === 'SIGNED_OUT') {
-        this.currentUserId = '';
-        this._isUserLogin.set(false);
-      } else if (session?.user) {
-        this.currentUserId = session.user.id;
-        this._isUserLogin.set(true);
-        if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
-          await this.setStatus('online');
+    this.supabase.auth.onAuthStateChange(
+      async (event: AuthChangeEvent, session: Session | null): Promise<void> => {
+        if (event === 'SIGNED_OUT') {
+          this.currentUserId = '';
+          this._isUserLogin.set(false);
+        } else if (session?.user) {
+          this.currentUserId = session.user.id;
+          this._isUserLogin.set(true);
+          if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
+            await this.setStatus('online');
+          }
         }
-      }
-    });
+      },
+    );
   }
 
   /**
@@ -110,14 +88,12 @@ export class DatabaseAuth {
    * @param {'offline' | 'online' | 'away'} value - Der neue Status.
    * @returns {Promise<void>}
    */
-  private async updateProfileStatus(profileId: string, value: 'offline' | 'online' | 'away'): Promise<void> {
-    if (this.debug_logs) console.log('updateProfileStatus', profileId, value);
+  private async updateProfileStatus(
+    profileId: string,
+    value: 'offline' | 'online' | 'away',
+  ): Promise<void> {
     if (profileId.length > 5 && value.length > 1) {
-      await this.supabase
-        .from('profiles')
-        .update({ status: value })
-        .eq('id', profileId)
-        .select();
+      await this.supabase.from('profiles').update({ status: value }).eq('id', profileId).select();
     }
   }
 
@@ -127,11 +103,7 @@ export class DatabaseAuth {
    * @returns {Promise<boolean>} True, wenn die E-Mail existiert, sonst false.
    */
   public async checkEmailExists(email: string): Promise<boolean> {
-    const { data } = await this.supabase
-      .from('profiles')
-      .select('id')
-      .eq('email', email)
-      .maybeSingle();
+    const { data } = await this.supabase.from('profiles').select('id').eq('email', email).limit(1);
     return !!data;
   }
 
@@ -141,28 +113,23 @@ export class DatabaseAuth {
    * @param {string} user_password - Passwort.
    * @param {string} user_name - Anzeigename.
    * @param {string} user_avatar - Avatar-URL oder -Name.
-   * @returns {Promise<void>}
+   * @returns {Promise<boolean>} - Gibt ein false zurück wenn ein Duplikat vorliegt ansonsten true.
    */
   public async signUpNewUser(
     user_email: string,
     user_password: string,
     user_name: string,
     user_avatar: string,
-  ): Promise<void> {
-    if (user_email.length > 5 && user_password.length > 5 && user_name.length > 5) {
-      if (await this.checkEmailExists(user_email)) throw new Error('User email already exists');
-      const { data, error } = await this.supabase.auth.signUp({
-        email: user_email,
-        password: user_password,
-        options: {
-          data: { name: user_name, avatar: user_avatar },
-        },
-      });
-      if (this.debug_logs) {
-        if (error) console.error('signUpNewUser_error', error);
-        console.log('signUpNewUser_data', data);
-      }
-    }
+  ): Promise<boolean> {
+    if (await this.checkEmailExists(user_email)) return false;
+    await this.supabase.auth.signUp({
+      email: user_email,
+      password: user_password,
+      options: {
+        data: { name: user_name, avatar: user_avatar },
+      },
+    });
+    return true;
   }
 
   /**
@@ -172,16 +139,10 @@ export class DatabaseAuth {
    * @returns {Promise<void>}
    */
   public async signInWithEmail(user_email: string, user_password: string): Promise<void> {
-    if (user_email.length > 5 && user_password.length > 5) {
-      const { data, error } = await this.supabase.auth.signInWithPassword({
-        email: user_email,
-        password: user_password,
-      });
-      if (this.debug_logs) {
-        if (error) console.error('signInWithEmail_error', error);
-        console.log('signInWithEmail_data', data);
-      }
-    }
+    await this.supabase.auth.signInWithPassword({
+      email: user_email,
+      password: user_password,
+    });
   }
 
   /**
@@ -212,10 +173,6 @@ export class DatabaseAuth {
     const userId: string = this.currentUserId;
     this.currentUserId = '';
     if (userId) await this.updateProfileStatus(userId, 'offline');
-    if (this.debug_logs) console.warn('Logout!!!');
-    const { error } = await this.supabase.auth.signOut();
-    if (this.debug_logs && error) {
-      console.error('signOut_error', error);
-    }
+    await this.supabase.auth.signOut();
   }
 }
