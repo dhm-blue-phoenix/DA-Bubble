@@ -19,11 +19,16 @@ export class DatabaseAuth {
   private readonly debug_logs: boolean = environment.debug_logs;
   private readonly supabase: SupabaseClient = inject(Supabase)['supabase'];
 
+  /** Signal, das den aktuellen Anmeldestatus des Benutzers hält. */
   public readonly _isUserLogin: WritableSignal<boolean> = signal<boolean>(false);
+
+  /** Speichert die Profil-ID des aktuell angemeldeten Benutzers */
+  private currentUserId: string = '';
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
-      //this.setupAuthListener();
+      this.setupAuthListener();
+      this.setupWindowFocusListener();
 
       if (this.debug_logs) {
         this.debugging();
@@ -31,6 +36,9 @@ export class DatabaseAuth {
     }
   }
 
+  /**
+   * Interne Funktion für Debugging-Zwecke.
+   */
   private async debugging(): Promise<void> {
     //console.log('environment', environment);
     //await this.signUpNewUser(environment.debug_user_email, environment.debug_user_password, environment.debug_user_name, 'dummydata');
@@ -39,62 +47,73 @@ export class DatabaseAuth {
     //await this.signOut();
   }
 
-  private async setUserOnline(userId: string): Promise<void> {
-    await this.setStatus('online');
-    this.setLocalStorageCurrentProfileId(userId);
-    this._isUserLogin.set(true);
-  }
-
-  private async setUserOffline(): Promise<void> {
-    await this.setStatus('offline');
-    this.deleteLocalStorageCurrentProfileId();
-    this._isUserLogin.set(false);
-  }
-
-  /*
+  /**
+   * Lauscht auf Änderungen des Authentifizierungsstatus durch Supabase.
+   */
   private setupAuthListener(): void {
-    this.supabase.auth.onAuthStateChange( async (event: AuthChangeEvent, session: Session | null): Promise<void> => {
-        if (this.debug_logs) {
-          console.log('Auth state change:', event, session);
+    this.supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session: Session | null): Promise<void> => {
+      if (this.debug_logs) {
+        console.log('Auth state change:', event, session);
+      }
+      if (event === 'SIGNED_OUT') {
+        this.currentUserId = '';
+        this._isUserLogin.set(false);
+      } else if (session?.user) {
+        this.currentUserId = session.user.id;
+        this._isUserLogin.set(true);
+        if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
+          await this.setStatus('online');
         }
-        const userId: string | undefined = session?.user?.id;
-        if (userId) await this.setUserOnline(userId); else await this.setUserOffline();
-      },
-    );
-  }
-  */
-
-  private setLocalStorageCurrentProfileId(value: string): void {
-    if (isPlatformBrowser(this.platformId) && value.length > 10) {
-      localStorage.setItem('currentProfileId', value);
-    }
+      }
+    });
   }
 
-  public getLocalStorageCurrentProfileId(): string {
-    if (isPlatformBrowser(this.platformId)) {
-      const profileId: string | null = localStorage.getItem('currentProfileId');
-      return profileId ? profileId : '';
-    }
-    return '';
+  /**
+   * Verfolgt den Fensterfokus, um den Status auf 'away' oder 'online' zu setzen.
+   */
+  private setupWindowFocusListener(): void {
+    window.addEventListener('focus', async (): Promise<void> => {
+      if (this.currentUserId) {
+        await this.setStatus('online');
+      }
+    });
+    window.addEventListener('blur', async (): Promise<void> => {
+      if (this.currentUserId) {
+        await this.setStatus('away');
+      }
+    });
   }
 
-  private deleteLocalStorageCurrentProfileId(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem('currentProfileId');
-    }
+  /**
+   * Gibt die Profil-ID des aktuell angemeldeten Benutzers zurück.
+   * @returns {string} Die Profil-ID oder ein leerer String.
+   */
+  public getCurrentUserId(): string {
+    return this.currentUserId;
   }
 
-  private async setStatus(status: 'offline' | 'online'): Promise<void> {
-    const profileId: string = this.getLocalStorageCurrentProfileId();
+  /**
+   * Aktualisiert den Online-Status des aktuellen Profils.
+   * @param {'offline' | 'online' | 'away'} status - Der neue Status.
+   * @returns {Promise<void>}
+   */
+  private async setStatus(status: 'offline' | 'online' | 'away'): Promise<void> {
+    const profileId: string = this.getCurrentUserId();
     if (profileId) {
       await this.updateProfileStatus(profileId, status);
     }
   }
 
-  private async updateProfileStatus(profileId: string, value: 'offline' | 'online'): Promise<void> {
-    console.log('updateProfileStatus', profileId, value);
+  /**
+   * Führt das Datenbank-Update für den Status eines bestimmten Profils aus.
+   * @param {string} profileId - Die Profil-ID.
+   * @param {'offline' | 'online' | 'away'} value - Der neue Status.
+   * @returns {Promise<void>}
+   */
+  private async updateProfileStatus(profileId: string, value: 'offline' | 'online' | 'away'): Promise<void> {
+    if (this.debug_logs) console.log('updateProfileStatus', profileId, value);
     if (profileId.length > 5 && value.length > 1) {
-      const { data, error }: SupabaseResponseProfiles = await this.supabase
+      await this.supabase
         .from('profiles')
         .update({ status: value })
         .eq('id', profileId)
@@ -102,7 +121,28 @@ export class DatabaseAuth {
     }
   }
 
-  // Funktion signUpNewUser error handlieng überarbeiten
+  /**
+   * Prüft, ob eine E-Mail-Adresse bereits registriert ist.
+   * @param {string} email - Die zu prüfende E-Mail-Adresse.
+   * @returns {Promise<boolean>} True, wenn die E-Mail existiert, sonst false.
+   */
+  public async checkEmailExists(email: string): Promise<boolean> {
+    const { data } = await this.supabase
+      .from('profiles')
+      .select('id')
+      .eq('email', email)
+      .maybeSingle();
+    return !!data;
+  }
+
+  /**
+   * Registriert einen neuen Benutzer und loggt ihn bei Erfolg direkt ein.
+   * @param {string} user_email - E-Mail Adresse.
+   * @param {string} user_password - Passwort.
+   * @param {string} user_name - Anzeigename.
+   * @param {string} user_avatar - Avatar-URL oder -Name.
+   * @returns {Promise<void>}
+   */
   public async signUpNewUser(
     user_email: string,
     user_password: string,
@@ -110,6 +150,7 @@ export class DatabaseAuth {
     user_avatar: string,
   ): Promise<void> {
     if (user_email.length > 5 && user_password.length > 5 && user_name.length > 5) {
+      if (await this.checkEmailExists(user_email)) throw new Error('User email already exists');
       const { data, error } = await this.supabase.auth.signUp({
         email: user_email,
         password: user_password,
@@ -121,14 +162,15 @@ export class DatabaseAuth {
         if (error) console.error('signUpNewUser_error', error);
         console.log('signUpNewUser_data', data);
       }
-      if (data.user) {
-        const userId: string = data.user.id;
-        this.setUserOnline(userId);
-      }
     }
   }
 
-  // Funktion signInWithEmail error handlieng überarbeiten
+  /**
+   * Meldet einen bestehenden Benutzer mit E-Mail und Passwort an.
+   * @param {string} user_email - E-Mail Adresse.
+   * @param {string} user_password - Passwort.
+   * @returns {Promise<void>}
+   */
   public async signInWithEmail(user_email: string, user_password: string): Promise<void> {
     if (user_email.length > 5 && user_password.length > 5) {
       const { data, error } = await this.supabase.auth.signInWithPassword({
@@ -139,27 +181,38 @@ export class DatabaseAuth {
         if (error) console.error('signInWithEmail_error', error);
         console.log('signInWithEmail_data', data);
       }
-      if (data.user) {
-        const userId: string = data.user.id;
-        this.setUserOnline(userId);
-      }
     }
   }
 
-  // Wichtig: redirectTo die dort enthaltene url muss noch mit der richtigen url ausgetauscht werden!!!
+  /**
+   * Fordert eine E-Mail zum Zurücksetzen des Passworts an.
+   * @param {string} email - Die E-Mail Adresse des Benutzers.
+   * @returns {Promise<void>}
+   */
   public async resetPasswordForEmail(email: string): Promise<void> {
     await this.supabase.auth.resetPasswordForEmail(email, {
       redirectTo: 'http://example.com/account/update-password',
     });
   }
 
+  /**
+   * Ändert das Passwort des aktuell angemeldeten Benutzers.
+   * @param {string} newPassword - Das neue Passwort.
+   * @returns {Promise<void>}
+   */
   public async changePassword(newPassword: string): Promise<void> {
     await this.supabase.auth.updateUser({ password: newPassword });
   }
 
+  /**
+   * Meldet den aktuellen Benutzer ab und setzt seinen Status auf 'offline'.
+   * @returns {Promise<void>}
+   */
   public async signOut(): Promise<void> {
-    await this.setUserOffline();
-    console.warn('Logout!!!');
+    const userId: string = this.currentUserId;
+    this.currentUserId = '';
+    if (userId) await this.updateProfileStatus(userId, 'offline');
+    if (this.debug_logs) console.warn('Logout!!!');
     const { error } = await this.supabase.auth.signOut();
     if (this.debug_logs && error) {
       console.error('signOut_error', error);

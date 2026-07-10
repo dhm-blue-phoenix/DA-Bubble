@@ -16,6 +16,7 @@ export class DatabaseProfiles implements OnDestroy {
   private readonly supabase: SupabaseClient = inject(Supabase)['supabase'];
   private readonly channels?: RealtimeChannel;
 
+  /** Signal, welches die Liste der Benutzerprofile hält. */
   public readonly _profiles: WritableSignal<Profiles> = signal<Profiles>([]);
 
   constructor() {
@@ -24,6 +25,10 @@ export class DatabaseProfiles implements OnDestroy {
     }
   }
 
+  /**
+   * Abonniert die Realtime-Updates für die Profile-Tabelle.
+   * @returns {RealtimeChannel} Der abonnierte Supabase Realtime-Kanal.
+   */
   private subscribeProfiles(): RealtimeChannel {
     return this.supabase
       .channel('realtime:profiles')
@@ -33,15 +38,24 @@ export class DatabaseProfiles implements OnDestroy {
       .subscribe();
   }
 
+  /**
+   * Verarbeitet einkommende Realtime-Events für Profile.
+   * @param {any} payload - Das von Supabase übermittelte Event-Objekt.
+   */
   private handleProfileEvent(payload: any): void {
     if (payload.eventType === 'INSERT') this.insertProfile(payload);
     if (payload.eventType === 'UPDATE') this.updateProfile(payload);
   }
 
+  /** Beendet die Realtime-Verbindung, wenn der Service zerstört wird. */
   public ngOnDestroy(): void {
     if (this.channels) this.supabase.removeChannel(this.channels);
   }
 
+  /**
+   * Fügt ein neues Profil dem lokalen Signal hinzu (ausgelöst durch Realtime-Event).
+   * @param {any} payload - Das Event-Objekt mit den neuen Profildaten.
+   */
   private insertProfile(payload: any): void {
     const profile = payload.new as Profile;
     this._profiles.update(
@@ -50,6 +64,10 @@ export class DatabaseProfiles implements OnDestroy {
     );
   }
 
+  /**
+   * Aktualisiert ein bestehendes Profil im lokalen Signal (ausgelöst durch Realtime-Event).
+   * @param {any} payload - Das Event-Objekt mit den aktualisierten Profildaten.
+   */
   private updateProfile(payload: any): void {
     const profile = payload.new as Profile;
     this._profiles.update(
@@ -58,6 +76,10 @@ export class DatabaseProfiles implements OnDestroy {
     );
   }
 
+  /**
+   * Lädt alle Benutzerprofile aus der Datenbank und aktualisiert das Signal.
+   * @returns {Promise<void>}
+   */
   public async getProfiles(): Promise<void> {
     const { data: profiles }: SupabaseResponseProfiles = await this.supabase
       .from('profiles')
@@ -65,6 +87,11 @@ export class DatabaseProfiles implements OnDestroy {
     if (profiles) this._profiles.set(profiles);
   }
 
+  /**
+   * Lädt die Daten eines spezifischen Profils aus der Datenbank.
+   * @param {string} profileId - Die ID des zu ladenden Profils.
+   * @returns {Promise<Profile | null>} Ein Promise mit den Profildaten oder null.
+   */
   public async getProfile(profileId: string): Promise<Profile | null> {
     const { data: profiles }: SupabaseResponseProfiles = await this.supabase
       .from('profiles')
@@ -73,7 +100,15 @@ export class DatabaseProfiles implements OnDestroy {
     return profiles && profiles.length > 0 ? profiles[0] : null;
   }
 
+  /**
+   * Aktualisiert den Anzeigenamen eines Profils.
+   * @param {string} profileId - Die ID des Profils.
+   * @param {string} value - Der neue Name.
+   * @returns {Promise<void>}
+   */
   public async updateProfileName(profileId: string, value: string): Promise<void> {
-    await this.supabase.from('profiles').update({ name: value }).eq('id', profileId).select();
+    if (profileId.length > 5 && value.length > 1) {
+      await this.supabase.from('profiles').update({ name: value }).eq('id', profileId).select();
+    }
   }
 }

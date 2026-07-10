@@ -5,6 +5,7 @@ export interface Channel {
   readonly created_by: string;
   readonly created_at: string;
   edited_at: string;
+  channel_members?: { user_id: string }[];
 }
 
 export interface ChannelMember {
