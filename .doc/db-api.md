@@ -17,6 +17,11 @@ Verwaltet die Authentifizierung der Benutzer und deren Online-Status.
 - **Eingabe:** `user_email` (string), `user_password` (string)
 - **Ausgabe:** `Promise<void>`
 
+### `signInWithGoogle`
+- **Zweck:** Loggt einen bestehenden oder neuen Benutzer mit seinen Google Account an.
+- **Eingabe:** Keine.
+- **Ausgabe:** `Promise<void>`
+
 ### `signOut`
 - **Zweck:** Loggt den aktuellen Benutzer aus und setzt seinen Status auf `offline`.
 - **Eingabe:** Keine.

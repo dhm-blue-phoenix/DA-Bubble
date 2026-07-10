@@ -1,7 +1,7 @@
 import { Injectable, signal, WritableSignal, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { environment } from '../../../../environment/environment';
 import { Supabase } from './db-superbase';
+import { Router } from '@angular/router';
 
 import { SupabaseClient, AuthChangeEvent, Session } from '@supabase/supabase-js';
 
@@ -10,8 +10,8 @@ import { SupabaseClient, AuthChangeEvent, Session } from '@supabase/supabase-js'
 })
 export class DatabaseAuth {
   private readonly platformId: Object = inject(PLATFORM_ID);
-  private readonly debug_logs: boolean = environment.debug_logs;
   private readonly supabase: SupabaseClient = inject(Supabase)['supabase'];
+  private readonly router: Router = inject(Router);
 
   /** Signal, das den aktuellen Anmeldestatus des Benutzers hält. */
   public readonly _isUserLogin: WritableSignal<boolean> = signal<boolean>(false);
@@ -35,9 +35,11 @@ export class DatabaseAuth {
         if (event === 'SIGNED_OUT') {
           this.currentUserId = '';
           this._isUserLogin.set(false);
+          this.router.navigate(['/']);
         } else if (session?.user) {
           this.currentUserId = session.user.id;
           this._isUserLogin.set(true);
+          this.router.navigate(['/workspace']);
           if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
             await this.setStatus('online');
           }
@@ -142,6 +144,19 @@ export class DatabaseAuth {
     await this.supabase.auth.signInWithPassword({
       email: user_email,
       password: user_password,
+    });
+  }
+
+  /**
+   * Registriert einen neuen Benutzer mit Google und leitet einen danach zur hauptseite zurück.
+   * @returns {Promise<void>}
+   */
+  public async signInWithGoogle(): Promise<void> {
+    await this.supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin,
+      },
     });
   }
 

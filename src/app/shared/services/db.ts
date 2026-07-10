@@ -11,7 +11,6 @@ import { Profiles, Profile } from '../interfaces/profile';
 import { Messages } from '../interfaces/messages';
 import { SignalChannel } from '../interfaces/db/db-channels';
 import { MsgType, ReactionResult } from '../interfaces/db/db-messages';
-import { applyWhen } from '@angular/forms/signals';
 
 @Injectable({
   providedIn: 'root',
@@ -39,13 +38,8 @@ export class Database {
   /** Ein Read-Only Signal mit den detaillierten Daten des aktuell geöffneten Kanals. */
   public readonly channel: Signal<SignalChannel> = this.db_channels._channel.asReadonly();
 
-  constructor() {
-
-  }
-
   public ngOnInit(): void {
     this.db_profiles.getProfiles();
-    console.log('profiles', this.profiles())
   }
 
   /**
@@ -107,6 +101,13 @@ export class Database {
    */
   public login(user_email: string, user_password: string): void {
     this.db_auth.signInWithEmail(user_email.trim(), user_password.trim());
+  }
+
+  /**
+   * Meldet einen bestehenden Benutzer mit seinen Google Account an.
+   */
+  public loginWithGoogle(): void {
+    this.db_auth.signInWithGoogle();
   }
 
   /**
