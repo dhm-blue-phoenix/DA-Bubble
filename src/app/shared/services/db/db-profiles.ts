@@ -1,12 +1,17 @@
-import { Injectable, signal, WritableSignal, PLATFORM_ID, inject, OnDestroy } from '@angular/core';
+import { inject, Injectable, OnDestroy, PLATFORM_ID, signal, WritableSignal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
-import { RealtimeChannel, SupabaseClient } from '@supabase/supabase-js';
+import {
+  RealtimeChannel,
+  RealtimePostgresChangesPayload,
+  SupabaseClient,
+} from '@supabase/supabase-js';
 
 import { Supabase } from './db-superbase';
 
 import { Profile, Profiles } from '../../interfaces/profile';
 import { SupabaseResponseProfiles } from '../../interfaces/db/db-profiles';
+import { DbPostgrestError } from '../../interfaces/db-error';
 
 @Injectable({
   providedIn: 'root',
@@ -32,8 +37,10 @@ export class DatabaseProfiles implements OnDestroy {
   private subscribeProfiles(): RealtimeChannel {
     return this.supabase
       .channel('realtime:profiles')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, (payload) =>
-        this.handleProfileEvent(payload),
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'profiles' },
+        (payload: RealtimePostgresChangesPayload<object>): void => this.handleProfileEvent(payload),
       )
       .subscribe();
   }
@@ -81,9 +88,10 @@ export class DatabaseProfiles implements OnDestroy {
    * @returns {Promise<void>}
    */
   public async getProfiles(): Promise<void> {
-    const { data: profiles }: SupabaseResponseProfiles = await this.supabase
+    const { data: profiles, error }: SupabaseResponseProfiles = await this.supabase
       .from('profiles')
       .select('id, name, email, avatar, status, created_at');
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
     if (profiles) this._profiles.set(profiles);
   }
 
@@ -93,10 +101,11 @@ export class DatabaseProfiles implements OnDestroy {
    * @returns {Promise<Profile | null>} Ein Promise mit den Profildaten oder null.
    */
   public async getProfile(profileId: string): Promise<Profile | null> {
-    const { data: profiles }: SupabaseResponseProfiles = await this.supabase
+    const { data: profiles, error }: SupabaseResponseProfiles = await this.supabase
       .from('profiles')
       .select('id, name, email, avatar, status, created_at')
       .eq('id', profileId);
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
     return profiles && profiles.length > 0 ? profiles[0] : null;
   }
 
@@ -108,7 +117,8 @@ export class DatabaseProfiles implements OnDestroy {
    */
   public async updateProfileName(profileId: string, value: string): Promise<void> {
     if (profileId.length > 5 && value.length > 1) {
-      await this.supabase.from('profiles').update({ name: value }).eq('id', profileId).select();
+      const { error }: DbPostgrestError = await this.supabase.from('profiles').update({ name: value }).eq('id', profileId).select();
+      if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
     }
   }
 }
