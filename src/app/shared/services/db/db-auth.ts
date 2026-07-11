@@ -1,9 +1,15 @@
-import { Injectable, signal, WritableSignal, PLATFORM_ID, inject } from '@angular/core';
+import { inject, Injectable, PLATFORM_ID, signal, WritableSignal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Supabase } from './db-superbase';
 import { Router } from '@angular/router';
 
-import { SupabaseClient, AuthChangeEvent, Session } from '@supabase/supabase-js';
+import {
+  AuthChangeEvent,
+  PostgrestSingleResponse,
+  Session,
+  SupabaseClient,
+} from '@supabase/supabase-js';
+import { DbAuthError, DbPostgrestError } from '../../interfaces/db-error';
 
 @Injectable({
   providedIn: 'root',
@@ -109,9 +115,12 @@ export class DatabaseAuth {
     profileId: string,
     value: 'offline' | 'online' | 'away',
   ): Promise<void> {
-    if (profileId.length > 5 && value.length > 1) {
-      await this.supabase.from('profiles').update({ status: value }).eq('id', profileId).select();
-    }
+      const { error }: DbPostgrestError = await this.supabase
+        .from('profiles')
+        .update({ status: value })
+        .eq('id', profileId)
+        .select();
+      if (error) throw new Error(`[DB_ERROR] ${error}`);
   }
 
   /**
@@ -120,7 +129,12 @@ export class DatabaseAuth {
    * @returns {Promise<boolean>} True, wenn die E-Mail existiert, sonst false.
    */
   public async checkEmailExists(email: string): Promise<boolean> {
-    const { data } = await this.supabase.from('profiles').select('id').eq('email', email).limit(1);
+    const { data, error }: PostgrestSingleResponse<any> = await this.supabase
+      .from('profiles')
+      .select('id')
+      .eq('email', email)
+      .limit(1);
+    if (error) throw new Error(`[DB_ERROR] ${error}`);
     return Array.isArray(data) && data.length > 0;
   }
 
@@ -139,13 +153,14 @@ export class DatabaseAuth {
     user_avatar: string,
   ): Promise<boolean> {
     if (await this.checkEmailExists(user_email)) return false;
-    await this.supabase.auth.signUp({
+    const { error }: DbAuthError = await this.supabase.auth.signUp({
       email: user_email,
       password: user_password,
       options: {
         data: { name: user_name, avatar: user_avatar },
       },
     });
+    if (error) throw new Error(`[DB_ERROR] ${error}`);
     return true;
   }
 
@@ -156,10 +171,11 @@ export class DatabaseAuth {
    * @returns {Promise<void>}
    */
   public async signInWithEmail(user_email: string, user_password: string): Promise<void> {
-    await this.supabase.auth.signInWithPassword({
+    const { error }: DbAuthError = await this.supabase.auth.signInWithPassword({
       email: user_email,
       password: user_password,
     });
+    if (error) throw new Error(`[DB_ERROR] ${error}`);
   }
 
   /**
@@ -167,12 +183,13 @@ export class DatabaseAuth {
    * @returns {Promise<void>}
    */
   public async signInWithGoogle(): Promise<void> {
-    await this.supabase.auth.signInWithOAuth({
+    const { error }: DbAuthError = await this.supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: window.location.origin,
       },
     });
+    if (error) throw new Error(`[DB_ERROR] ${error}`);
   }
 
   /**
@@ -181,9 +198,10 @@ export class DatabaseAuth {
    * @returns {Promise<void>}
    */
   public async resetPasswordForEmail(email: string): Promise<void> {
-    await this.supabase.auth.resetPasswordForEmail(email, {
+    const { error }: DbAuthError = await this.supabase.auth.resetPasswordForEmail(email, {
       redirectTo: 'http://example.com/account/update-password',
     });
+    if (error) throw new Error(`[DB_ERROR] ${error}`);
   }
 
   /**
@@ -192,7 +210,8 @@ export class DatabaseAuth {
    * @returns {Promise<void>}
    */
   public async changePassword(newPassword: string): Promise<void> {
-    await this.supabase.auth.updateUser({ password: newPassword });
+    const { error }: DbAuthError = await this.supabase.auth.updateUser({ password: newPassword });
+    if (error) throw new Error(`[DB_ERROR] ${error}`);
   }
 
   /**
@@ -203,6 +222,7 @@ export class DatabaseAuth {
     const userId: string = this.currentUserId;
     this.currentUserId = '';
     if (userId) await this.updateProfileStatus(userId, 'offline');
-    await this.supabase.auth.signOut();
+    const { error }: DbAuthError = await this.supabase.auth.signOut();
+    if (error) throw new Error(`[DB_ERROR] ${error}`);
   }
 }
