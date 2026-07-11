@@ -1,4 +1,4 @@
-import { inject, Injectable, Signal } from '@angular/core';
+import { inject, Injectable, PLATFORM_ID, Signal } from '@angular/core';
 
 import { DatabaseProfiles } from './db/db-profiles';
 import { DatabaseAuth } from './db/db-auth';
@@ -7,15 +7,18 @@ import { DatabaseMessages } from './db/db-messages';
 import { DatabaseChannels } from './db/db-channels';
 import { DatabaseThreads } from './db/db-threads';
 
-import { Profiles, Profile } from '../interfaces/profile';
+import { Profile, Profiles } from '../interfaces/profile';
 import { Messages } from '../interfaces/messages';
 import { SignalChannel } from '../interfaces/db/db-channels';
 import { MsgType, ReactionResult } from '../interfaces/db/db-messages';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Database {
+  private readonly platformId: Object = inject(PLATFORM_ID);
+
   private readonly db_profiles: DatabaseProfiles = inject(DatabaseProfiles);
   private readonly db_auth: DatabaseAuth = inject(DatabaseAuth);
   private readonly db_chats: DatabaseChats = inject(DatabaseChats);
@@ -38,8 +41,21 @@ export class Database {
   /** Ein Read-Only Signal mit den detaillierten Daten des aktuell geöffneten Kanals. */
   public readonly channel: Signal<SignalChannel> = this.db_channels._channel.asReadonly();
 
-  public ngOnInit(): void {
-    this.db_profiles.getProfiles();
+  constructor() {
+    if (isPlatformBrowser(inject(PLATFORM_ID))) {
+      this.loadProfiles();
+    }
+  }
+
+  /**
+   * Ladet alle Benutzerprofile
+   */
+  private async loadProfiles(): Promise<void> {
+    try {
+      await this.db_profiles.getProfiles();
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   /**
@@ -56,12 +72,17 @@ export class Database {
     user_name: string,
     user_avatar: string,
   ): Promise<boolean> {
-    return await this.db_auth.signUpNewUser(
-      user_email.trim(),
-      user_password.trim(),
-      user_name.trim(),
-      user_avatar.trim().toLowerCase(),
-    );
+    try {
+      return await this.db_auth.signUpNewUser(
+        user_email.trim(),
+        user_password.trim(),
+        user_name.trim(),
+        user_avatar.trim().toLowerCase(),
+      );
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
   }
 
   /**
@@ -99,28 +120,40 @@ export class Database {
    * @param {string} user_email - Die E-Mail Adresse.
    * @param {string} user_password - Das Passwort.
    */
-  public login(user_email: string, user_password: string): void {
-    this.db_auth.signInWithEmail(user_email.trim(), user_password.trim());
+  public async login(user_email: string, user_password: string): Promise<void> {
+    try {
+      await this.db_auth.signInWithEmail(user_email.trim(), user_password.trim());
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   /**
    * Meldet einen bestehenden Benutzer mit seinen Google Account an.
    */
-  public loginWithGoogle(): void {
-    this.db_auth.signInWithGoogle();
+  public async loginWithGoogle(): Promise<void> {
+    try {
+      await this.db_auth.signInWithGoogle();
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   /**
    * Meldet den aktuellen Benutzer ab und leert alle gespeicherten Signals (Caches).
    */
-  public logout(): void {
-    this.db_profiles._profiles.set([]);
-    this.db_messages._chat_messages.set([]);
-    this.db_messages._channel_messages.set([]);
-    this.db_messages._thread_messages.set([]);
-    this.db_channels._channels.set([]);
-    this.db_channels._channel.set({});
-    this.db_auth.signOut();
+  public async logout(): Promise<void> {
+    try {
+      this.db_profiles._profiles.set([]);
+      this.db_messages._chat_messages.set([]);
+      this.db_messages._channel_messages.set([]);
+      this.db_messages._thread_messages.set([]);
+      this.db_channels._channels.set([]);
+      this.db_channels._channel.set({});
+      await this.db_auth.signOut();
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   /**
@@ -129,7 +162,12 @@ export class Database {
    * @returns {Promise<Profile | null>} Die Profildaten oder null.
    */
   public async getProfile(profileId: string): Promise<Profile | null> {
-    return await this.db_profiles.getProfile(profileId);
+    try {
+      return await this.db_profiles.getProfile(profileId);
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
   }
 
   /**
@@ -137,8 +175,12 @@ export class Database {
    * @param {string} profileId - Die Profil-ID.
    * @param {string} value - Der neue Anzeigename.
    */
-  public editProfileName(profileId: string, value: string): void {
-    this.db_profiles.updateProfileName(profileId, value.trim());
+  public async editProfileName(profileId: string, value: string): Promise<void> {
+    try {
+      await this.db_profiles.updateProfileName(profileId, value.trim());
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   /**
@@ -147,7 +189,12 @@ export class Database {
    * @returns {Promise<string>} Die ID des Chats.
    */
   public async getChatId(otherUserId: string): Promise<string> {
-    return await this.db_chats.getChatId(this.db_auth.getCurrentUserId(), otherUserId);
+    try {
+      return await this.db_chats.getChatId(this.db_auth.getCurrentUserId(), otherUserId);
+    } catch (error) {
+      console.error(error);
+      return '';
+    }
   }
 
   /**
@@ -158,20 +205,24 @@ export class Database {
    * @param {string} senderId - Die Profil-ID des Absenders.
    * @param {string} content - Der Text der Nachricht.
    */
-  public newMsg(
+  public async newMsg(
     msgType: MsgType,
     threadChannelId: string | null,
     id: string,
     senderId: string,
     content: string,
-  ): void {
-    this.db_messages.createNewMessage(
-      msgType,
-      threadChannelId,
-      id.trim(),
-      senderId.trim(),
-      content.trim(),
-    );
+  ): Promise<void> {
+    try {
+      await this.db_messages.createNewMessage(
+        msgType,
+        threadChannelId,
+        id.trim(),
+        senderId.trim(),
+        content.trim(),
+      );
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   /**
@@ -179,8 +230,12 @@ export class Database {
    * @param {string} msgId - Die Nachrichten-ID.
    * @param {string} newContent - Der neue Text.
    */
-  public editMsg(msgId: string, newContent: string): void {
-    this.db_messages.updateMessage(msgId.trim(), newContent.trim());
+  public async editMsg(msgId: string, newContent: string): Promise<void> {
+    try {
+      await this.db_messages.updateMessage(msgId.trim(), newContent.trim());
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   /**
@@ -188,8 +243,12 @@ export class Database {
    * @param {MsgType} msgType - Der Ziel-Typ.
    * @param {string} id - Die ID der Quelle.
    */
-  public loadMsg(msgType: MsgType, id: string): void {
-    this.db_messages.getMessages(msgType, id.trim());
+  public async loadMsg(msgType: MsgType, id: string): Promise<void> {
+    try {
+      await this.db_messages.getMessages(msgType, id.trim());
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   /**
@@ -203,12 +262,17 @@ export class Database {
     msgId: string,
     senderId: string,
     emoji: string,
-  ): Promise<ReactionResult> {
-    return this.db_messages.toggleReaction(
-      msgId.trim(),
-      senderId.trim(),
-      emoji.trim().toLowerCase(),
-    );
+  ): Promise<ReactionResult | null> {
+    try {
+      return await this.db_messages.toggleReaction(
+        msgId.trim(),
+        senderId.trim(),
+        emoji.trim().toLowerCase(),
+      );
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
   }
 
   /**
@@ -219,7 +283,12 @@ export class Database {
    * @returns {Promise<boolean>} - true bei Erfolg oder false bei einem Duplikat.
    */
   public async newChannel(userId: string, title: string, desc: string): Promise<boolean> {
-    return await this.db_channels.createNewChannel(userId.trim(), title.trim(), desc.trim());
+    try {
+      return await this.db_channels.createNewChannel(userId.trim(), title.trim(), desc.trim());
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
   }
 
   /**
@@ -228,8 +297,12 @@ export class Database {
    * @param {string} title - Der neue Name.
    * @param {string} desc - Die neue Beschreibung.
    */
-  public editChannel(channelId: string, title: string, desc: string): void {
-    this.db_channels.updateChannelData(channelId.trim(), title.trim(), desc.trim());
+  public async editChannel(channelId: string, title: string, desc: string): Promise<void> {
+    try {
+      await this.db_channels.updateChannelData(channelId.trim(), title.trim(), desc.trim());
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   /**
@@ -237,8 +310,12 @@ export class Database {
    * @param {string} channelId - Die Kanal-ID.
    * @param {string} userId - Die Profil-ID des Benutzers.
    */
-  public addChannelMember(channelId: string, userId: string): void {
-    this.db_channels.createNewMember(channelId.trim(), userId.trim(), 'admin');
+  public async addChannelMember(channelId: string, userId: string): Promise<void> {
+    try {
+      await this.db_channels.createNewMember(channelId.trim(), userId.trim(), 'admin');
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   /**
@@ -246,24 +323,36 @@ export class Database {
    * @param {string} channelId - Die Kanal-ID.
    * @param {string} userId - Die Profil-ID des Benutzers.
    */
-  public removeChannelMember(channelId: string, userId: string): void {
-    this.db_channels.removeMember(channelId.trim(), userId.trim());
+  public async removeChannelMember(channelId: string, userId: string): Promise<void> {
+    try {
+      await this.db_channels.removeMember(channelId.trim(), userId.trim());
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   /**
    * Lädt alle Kanäle, in denen ein Benutzer Mitglied ist, in das `channels` Signal.
    * @param {string} userId - Die Profil-ID des Benutzers.
    */
-  public getChannels(userId: string): void {
-    this.db_channels.getChannelIds(userId.trim());
+  public async getChannels(userId: string): Promise<void> {
+    try {
+      await this.db_channels.getChannelIds(userId.trim());
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   /**
    * Lädt die Detaildaten eines bestimmten Kanals in das `channel` Signal.
    * @param {string} channelId - Die Kanal-ID.
    */
-  public getChannelContent(channelId: string): void {
-    this.db_channels.getChannelData(channelId.trim());
+  public async getChannelContent(channelId: string): Promise<void> {
+    try {
+      await this.db_channels.getChannelData(channelId.trim());
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   /**
@@ -272,6 +361,11 @@ export class Database {
    * @returns {Promise<string>} Die ID des Threads.
    */
   public async getThreadId(messageId: string): Promise<string> {
-    return await this.db_threads.getThreadId(messageId);
+    try {
+      return await this.db_threads.getThreadId(messageId);
+    } catch (error) {
+      console.error(error);
+      return '';
+    }
   }
 }
