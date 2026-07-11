@@ -5,6 +5,7 @@ import { SupabaseClient, PostgrestSingleResponse } from '@supabase/supabase-js';
 import { Supabase } from './db-superbase';
 
 import { ExistThread } from '../../interfaces/db/db-threads';
+import { DbPostgrestError } from '../../interfaces/db-error';
 
 @Injectable({
   providedIn: 'root',
@@ -18,10 +19,11 @@ export class DatabaseThreads {
    * @returns {Promise<ExistThread>} Ein Promise, das das Vorhandensein und ggf. die thread_id zurückgibt.
    */
   private async checkExistThread(msgId: string): Promise<ExistThread> {
-    const { data: threads }: PostgrestSingleResponse<any> = await this.supabase
+    const { data: threads, error }: PostgrestSingleResponse<any> = await this.supabase
       .from('threads')
       .select('id')
       .eq('root_message_id', msgId);
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
     if (threads && threads.length > 0) return { success: true, thread_id: threads[0]['id'] };
     return { success: false, thread_id: null };
   }
@@ -32,12 +34,13 @@ export class DatabaseThreads {
    * @returns {Promise<string>} Ein Promise, das die ID des neu erstellten Threads zurückgibt.
    */
   private async createNewThread(msgId: string): Promise<string> {
-    const { data: newThread }: PostgrestSingleResponse<any> = await this.supabase
+    const { data: newThread, error }: PostgrestSingleResponse<any> = await this.supabase
       .from('threads')
       .insert({
         root_message_id: msgId,
       })
       .select();
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
     const threadId: string = newThread[0]['id'];
     await this.updateMessageThreadId(threadId, msgId);
     return threadId;
@@ -50,7 +53,7 @@ export class DatabaseThreads {
    * @returns {Promise<void>}
    */
   private async updateMessageThreadId(threadId: string, msgId: string): Promise<void> {
-    await this.supabase
+    const { error }: PostgrestSingleResponse<DbPostgrestError> = await this.supabase
       .from('messages')
       .update({
         thread_id: threadId,
@@ -58,6 +61,7 @@ export class DatabaseThreads {
       .eq('id', msgId)
       .select()
       .single();
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
   }
 
   /**
