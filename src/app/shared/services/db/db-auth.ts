@@ -115,12 +115,14 @@ export class DatabaseAuth {
     profileId: string,
     value: 'offline' | 'online' | 'away',
   ): Promise<void> {
-      const { error }: DbPostgrestError = await this.supabase
-        .from('profiles')
-        .update({ status: value })
-        .eq('id', profileId)
-        .select();
-      if (error) throw new Error(`[DB_ERROR] ${error}`);
+    const { error }: DbPostgrestError = await this.supabase
+      .from('profiles')
+      .update({ status: value })
+      .eq('id', profileId)
+      .select();
+    if (error) throw new Error(
+      `[ DB_CODE:${error['code']} ] MSG: ${error['message']} | HINT: ${error['hint']}`,
+    );
   }
 
   /**
@@ -134,7 +136,9 @@ export class DatabaseAuth {
       .select('id')
       .eq('email', email)
       .limit(1);
-    if (error) throw new Error(`[DB_ERROR] ${error}`);
+    if (error) throw new Error(
+      `[ DB_CODE:${error['code']} ] MSG: ${error['message']} | HINT: ${error['hint']}`,
+    );
     return Array.isArray(data) && data.length > 0;
   }
 
@@ -160,7 +164,9 @@ export class DatabaseAuth {
         data: { name: user_name, avatar: user_avatar },
       },
     });
-    if (error) throw new Error(`[DB_ERROR] ${error}`);
+    if (error) throw new Error(
+      `[ DB_CODE:${error['code']} ] MSG: ${error['message']}`,
+    );
     return true;
   }
 
@@ -175,7 +181,9 @@ export class DatabaseAuth {
       email: user_email,
       password: user_password,
     });
-    if (error) throw new Error(`[DB_ERROR] ${error}`);
+    if (error) throw new Error(
+      `[ DB_CODE:${error['code']} ] MSG: ${error['message']}`,
+    );
   }
 
   /**
@@ -189,7 +197,9 @@ export class DatabaseAuth {
         redirectTo: window.location.origin,
       },
     });
-    if (error) throw new Error(`[DB_ERROR] ${error}`);
+    if (error) throw new Error(
+      `[ DB_CODE:${error['code']} ] MSG: ${error['message']}`,
+    );
   }
 
   /**
@@ -201,7 +211,9 @@ export class DatabaseAuth {
     const { error }: DbAuthError = await this.supabase.auth.resetPasswordForEmail(email, {
       redirectTo: 'http://example.com/account/update-password',
     });
-    if (error) throw new Error(`[DB_ERROR] ${error}`);
+    if (error) throw new Error(
+      `[ DB_CODE:${error['code']} ] MSG: ${error['message']}`,
+    );
   }
 
   /**
@@ -211,7 +223,7 @@ export class DatabaseAuth {
    */
   public async changePassword(newPassword: string): Promise<void> {
     const { error }: DbAuthError = await this.supabase.auth.updateUser({ password: newPassword });
-    if (error) throw new Error(`[DB_ERROR] ${error}`);
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
   }
 
   /**
@@ -223,6 +235,8 @@ export class DatabaseAuth {
     this.currentUserId = '';
     if (userId) await this.updateProfileStatus(userId, 'offline');
     const { error }: DbAuthError = await this.supabase.auth.signOut();
-    if (error) throw new Error(`[DB_ERROR] ${error}`);
+    if (error) throw new Error(
+      `[ DB_CODE:${error['code']} ] MSG: ${error['message']}`,
+    );
   }
 }
