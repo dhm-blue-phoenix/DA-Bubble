@@ -7,12 +7,14 @@ import {
   PostgrestSingleResponse,
   RealtimePostgresChangesPayload,
   PostgrestResponse,
+  PostgrestError,
 } from '@supabase/supabase-js';
 
 import { Supabase } from './db-superbase';
 
-import { Message, Messages, Reaction, Reactions } from '../../interfaces/messages';
+import { Message, Messages, Reaction } from '../../interfaces/messages';
 import { ReactionResult, NewMessage, MsgType } from '../../interfaces/db/db-messages';
+import { DbPostgrestError } from '../../interfaces/db-error';
 
 @Injectable({
   providedIn: 'root',
@@ -239,7 +241,7 @@ export class DatabaseMessages implements OnDestroy {
    * @returns {Promise<void>}
    */
   public async getMessages(msgType: MsgType, id: string): Promise<void> {
-    const { data: messages }: PostgrestResponse<any> = await this.supabase
+    const { data: messages, error }: PostgrestResponse<any> = await this.supabase
       .from('messages')
       .select(
         `
@@ -254,6 +256,7 @@ export class DatabaseMessages implements OnDestroy {
       )
       .eq(msgType + '_id', id)
       .order('created_at', { ascending: true });
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
     if (messages) {
       if (msgType === 'chat') this._chat_messages.set(messages);
       if (msgType === 'channel') this._channel_messages.set(messages);
@@ -268,7 +271,7 @@ export class DatabaseMessages implements OnDestroy {
    * @returns {Promise<void>}
    */
   public async updateMessage(messageId: string, newContent: string): Promise<void> {
-    await this.supabase
+    const { error }: PostgrestSingleResponse<DbPostgrestError> = await this.supabase
       .from('messages')
       .update({
         content: newContent,
@@ -277,6 +280,7 @@ export class DatabaseMessages implements OnDestroy {
       .eq('id', messageId)
       .select()
       .single();
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
   }
 
   /**
@@ -301,11 +305,12 @@ export class DatabaseMessages implements OnDestroy {
       sender_id: senderId,
       content: content,
     };
-    await this.supabase
+    const { error }: PostgrestSingleResponse<DbPostgrestError> = await this.supabase
       .from('messages')
       .insert(this.returnMsgType(msgType, threadChannelId, newMessage))
       .select()
       .single();
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
   }
 
   /**
@@ -337,14 +342,15 @@ export class DatabaseMessages implements OnDestroy {
     userId: string,
     emoji: string,
   ): Promise<boolean> {
-    const data: PostgrestSingleResponse<Reactions | null> = await this.supabase
+    const { data, error }: PostgrestSingleResponse<any> = await this.supabase
       .from('reactions')
       .select('*')
       .eq('message_id', messageId)
       .eq('user_id', userId)
       .eq('emoji', emoji)
       .maybeSingle();
-    return !!data['data'];
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
+    return !!data;
   }
 
   /**
@@ -359,12 +365,13 @@ export class DatabaseMessages implements OnDestroy {
     userId: string,
     emoji: string,
   ): Promise<ReactionResult> {
-    await this.supabase
+    const { error }: PostgrestSingleResponse<PostgrestError | null> = await this.supabase
       .from('reactions')
       .delete()
       .eq('message_id', messageId)
       .eq('user_id', userId)
       .eq('emoji', emoji);
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
     return { action: 'removed' };
   }
 
@@ -380,7 +387,7 @@ export class DatabaseMessages implements OnDestroy {
     userId: string,
     emoji: string,
   ): Promise<ReactionResult> {
-    await this.supabase
+    const { error }: PostgrestSingleResponse<DbPostgrestError> = await this.supabase
       .from('reactions')
       .insert({
         message_id: messageId,
@@ -389,6 +396,7 @@ export class DatabaseMessages implements OnDestroy {
       })
       .select()
       .single();
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
     return { action: 'added' };
   }
 
