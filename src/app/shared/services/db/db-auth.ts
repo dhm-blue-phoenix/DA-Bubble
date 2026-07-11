@@ -27,6 +27,21 @@ export class DatabaseAuth {
   }
 
   /**
+   * Navigiert zu einer Route und fängt dabei mögliche Navigations‑Fehler ab.
+   * @param {string[]} commands – Die Router‑Kommandos
+   * @returns {Promise<void>}
+   */
+  private async safeNavigate(commands: string[]): Promise<void> {
+    if (this.router && typeof this.router.navigate === 'function') {
+      try {
+        await this.router.navigate(commands);
+      } catch (e) {
+        if (console && console.warn) console.warn('Navigation error suppressed:', e);
+      }
+    }
+  }
+
+  /**
    * Lauscht auf Änderungen des Authentifizierungsstatus durch Supabase.
    */
   private setupAuthListener(): void {
@@ -35,11 +50,11 @@ export class DatabaseAuth {
         if (event === 'SIGNED_OUT') {
           this.currentUserId = '';
           this._isUserLogin.set(false);
-          this.router.navigate(['/']);
+          await this.safeNavigate(['/']);
         } else if (session?.user) {
           this.currentUserId = session.user.id;
           this._isUserLogin.set(true);
-          this.router.navigate(['/workspace']);
+          await this.safeNavigate(['/workspace']);
           if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
             await this.setStatus('online');
           }
@@ -106,7 +121,7 @@ export class DatabaseAuth {
    */
   public async checkEmailExists(email: string): Promise<boolean> {
     const { data } = await this.supabase.from('profiles').select('id').eq('email', email).limit(1);
-    return !!data;
+    return Array.isArray(data) && data.length > 0;
   }
 
   /**

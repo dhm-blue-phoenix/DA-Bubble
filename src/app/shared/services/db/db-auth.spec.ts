@@ -14,7 +14,7 @@ describe('DatabaseAuth', () => {
       select: vi.fn().mockReturnThis(),
       update: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
-      maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null })
+      limit: vi.fn(),
     };
 
     mockSupabaseClient = {
@@ -26,23 +26,21 @@ describe('DatabaseAuth', () => {
         signOut: vi.fn().mockResolvedValue({ error: null }),
         updateUser: vi.fn().mockResolvedValue({ data: {}, error: null }),
         resetPasswordForEmail: vi.fn().mockResolvedValue({ data: {}, error: null }),
-      }
+      },
     };
 
     TestBed.configureTestingModule({
       providers: [
         DatabaseAuth,
         { provide: PLATFORM_ID, useValue: 'browser' },
-        { provide: Supabase, useValue: { supabase: mockSupabaseClient } }
-      ]
+        { provide: Supabase, useValue: { supabase: mockSupabaseClient } },
+      ],
     });
   });
 
   describe('in Browser environment', () => {
     beforeEach(() => {
-      vi.stubGlobal('window', {
-        addEventListener: vi.fn(),
-      });
+      vi.stubGlobal('window', { addEventListener: vi.fn() });
       service = TestBed.inject(DatabaseAuth);
     });
 
@@ -61,30 +59,30 @@ describe('DatabaseAuth', () => {
       expect(service.getCurrentUserId()).toBe('');
     });
 
-    it('should check if email exists and return boolean', async () => {
-      mockProfilesChain.maybeSingle.mockResolvedValueOnce({ data: { id: 'some_id' } });
+    it('should check if email exists and return true when present', async () => {
+      mockProfilesChain.limit.mockResolvedValueOnce({ data: [{ id: 'some_id' }] });
       const exists = await service.checkEmailExists('test@test.com');
       expect(exists).toBe(true);
+    });
 
-      mockProfilesChain.maybeSingle.mockResolvedValueOnce({ data: null });
+    it('should check if email exists and return false when absent', async () => {
+      mockProfilesChain.limit.mockResolvedValueOnce({ data: [] });
       const notExists = await service.checkEmailExists('new@test.com');
       expect(notExists).toBe(false);
     });
 
     it('should signUpNewUser if email does not exist', async () => {
-      mockProfilesChain.maybeSingle.mockResolvedValueOnce({ data: null });
+      mockProfilesChain.limit.mockResolvedValueOnce({ data: [] });
       await service.signUpNewUser('new@test.com', 'password123', 'New User', 'avatar.png');
       expect(mockSupabaseClient.auth.signUp).toHaveBeenCalledWith({
         email: 'new@test.com',
         password: 'password123',
-        options: {
-          data: { name: 'New User', avatar: 'avatar.png' }
-        }
+        options: { data: { name: 'New User', avatar: 'avatar.png' } },
       });
     });
 
     it('should not signUpNewUser if email exists', async () => {
-      mockProfilesChain.maybeSingle.mockResolvedValueOnce({ data: { id: 'existing' } });
+      mockProfilesChain.limit.mockResolvedValueOnce({ data: [{ id: 'existing' }] });
       await service.signUpNewUser('existing@test.com', 'password123', 'Existing User', 'avatar.png');
       expect(mockSupabaseClient.auth.signUp).not.toHaveBeenCalled();
     });
@@ -93,28 +91,24 @@ describe('DatabaseAuth', () => {
       await service.signInWithEmail('test@test.com', 'password123');
       expect(mockSupabaseClient.auth.signInWithPassword).toHaveBeenCalledWith({
         email: 'test@test.com',
-        password: 'password123'
+        password: 'password123',
       });
     });
 
     it('should signOut and set status to offline before signing out', async () => {
-      // Simulate that a user is signed in so currentUserId is populated
-      service['currentUserId'] = 'user_1'; 
+      service['currentUserId'] = 'user_1';
       await service.signOut();
-      
       expect(mockSupabaseClient.from).toHaveBeenCalledWith('profiles');
       expect(mockProfilesChain.update).toHaveBeenCalledWith({ status: 'offline' });
       expect(mockProfilesChain.eq).toHaveBeenCalledWith('id', 'user_1');
       expect(mockSupabaseClient.auth.signOut).toHaveBeenCalled();
     });
-    
+
     it('should update profile status properly on AuthStateChange SIGNED_IN', async () => {
       const authCallback = mockSupabaseClient.auth.onAuthStateChange.mock.calls[0][0];
       await authCallback('SIGNED_IN', { user: { id: 'user_1' } });
-      
       expect(service.getCurrentUserId()).toBe('user_1');
       expect(service._isUserLogin()).toBe(true);
-      
       expect(mockSupabaseClient.from).toHaveBeenCalledWith('profiles');
       expect(mockProfilesChain.update).toHaveBeenCalledWith({ status: 'online' });
       expect(mockProfilesChain.eq).toHaveBeenCalledWith('id', 'user_1');
@@ -123,7 +117,6 @@ describe('DatabaseAuth', () => {
     it('should clear profile status properly on AuthStateChange SIGNED_OUT', async () => {
       const authCallback = mockSupabaseClient.auth.onAuthStateChange.mock.calls[0][0];
       await authCallback('SIGNED_OUT', null);
-      
       expect(service.getCurrentUserId()).toBe('');
       expect(service._isUserLogin()).toBe(false);
     });
@@ -148,8 +141,8 @@ describe('DatabaseAuth', () => {
         providers: [
           DatabaseAuth,
           { provide: PLATFORM_ID, useValue: 'server' },
-          { provide: Supabase, useValue: { supabase: mockSupabaseClient } }
-        ]
+          { provide: Supabase, useValue: { supabase: mockSupabaseClient } },
+        ],
       });
       service = TestBed.inject(DatabaseAuth);
     });
