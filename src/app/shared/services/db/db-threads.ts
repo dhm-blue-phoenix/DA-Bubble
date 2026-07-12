@@ -41,6 +41,7 @@ export class DatabaseThreads {
       })
       .select();
     if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
+    if (!newThread || newThread.length === 0) throw new Error('Thread could not create become!');
     const threadId: string = newThread[0]['id'];
     await this.updateMessageThreadId(threadId, msgId);
     return threadId;
@@ -48,7 +49,7 @@ export class DatabaseThreads {
 
   /**
    * Aktualisiert eine Nachricht und setzt deren thread_id.
-   * @param {string} threatId - Die ID des erstellten Threads.
+   * @param {string} threadId - Die ID des erstellten Threads.
    * @param {string} msgId - Die ID der Nachricht, die aktualisiert werden soll.
    * @returns {Promise<void>}
    */

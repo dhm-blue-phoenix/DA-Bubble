@@ -206,7 +206,7 @@ export class DatabaseChannels {
       })
       .select();
     if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
-    if (data && data.length > 0) this.createNewMember(data[0]['id'], userId, 'admin');
+    if (data && data.length > 0) await this.createNewMember(data[0]['id'], userId, 'admin');
     return true;
   }
 

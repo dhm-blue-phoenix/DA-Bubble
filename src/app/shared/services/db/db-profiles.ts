@@ -49,7 +49,7 @@ export class DatabaseProfiles implements OnDestroy {
    * Verarbeitet einkommende Realtime-Events für Profile.
    * @param {any} payload - Das von Supabase übermittelte Event-Objekt.
    */
-  private handleProfileEvent(payload: any): void {
+  private handleProfileEvent(payload: RealtimePostgresChangesPayload<object>): void {
     if (payload.eventType === 'INSERT') this.insertProfile(payload);
     if (payload.eventType === 'UPDATE') this.updateProfile(payload);
   }
@@ -63,7 +63,7 @@ export class DatabaseProfiles implements OnDestroy {
    * Fügt ein neues Profil dem lokalen Signal hinzu (ausgelöst durch Realtime-Event).
    * @param {any} payload - Das Event-Objekt mit den neuen Profildaten.
    */
-  private insertProfile(payload: any): void {
+  private insertProfile(payload: RealtimePostgresChangesPayload<object>): void {
     const profile = payload.new as Profile;
     this._profiles.update(
       (list: Profiles): Profiles =>
@@ -75,7 +75,7 @@ export class DatabaseProfiles implements OnDestroy {
    * Aktualisiert ein bestehendes Profil im lokalen Signal (ausgelöst durch Realtime-Event).
    * @param {any} payload - Das Event-Objekt mit den aktualisierten Profildaten.
    */
-  private updateProfile(payload: any): void {
+  private updateProfile(payload: RealtimePostgresChangesPayload<object>): void {
     const profile = payload.new as Profile;
     this._profiles.update(
       (list: Profiles): Profiles =>
@@ -116,9 +116,11 @@ export class DatabaseProfiles implements OnDestroy {
    * @returns {Promise<void>}
    */
   public async updateProfileName(profileId: string, value: string): Promise<void> {
-    if (profileId.length > 5 && value.length > 1) {
-      const { error }: DbPostgrestError = await this.supabase.from('profiles').update({ name: value }).eq('id', profileId).select();
-      if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
-    }
+    const { error }: DbPostgrestError = await this.supabase
+      .from('profiles')
+      .update({ name: value })
+      .eq('id', profileId)
+      .select();
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
   }
 }
