@@ -202,12 +202,12 @@ export class DatabaseAuth {
 
   /**
    * Fordert eine E-Mail zum Zurücksetzen des Passworts an.
-   * @param {string} email - Die E-Mail Adresse des Benutzers.
+   * @param {string} email - Die E-Mail-Adresse des Benutzers.
    * @returns {Promise<void>}
    */
   public async resetPasswordForEmail(email: string): Promise<void> {
     const { error }: DbAuthError = await this.supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: 'http://example.com/account/update-password',
+      redirectTo: `${window.location.origin}/reset-password`,
     });
     if (error) throw new Error(
       `[ DB_CODE:${error['code']} ] MSG: ${error['message']}`,

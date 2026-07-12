@@ -42,8 +42,20 @@ export class Database {
   public readonly channel: Signal<SignalChannel> = this.db_channels._channel.asReadonly();
 
   constructor() {
-    if (isPlatformBrowser(inject(PLATFORM_ID))) {
+    if (isPlatformBrowser(this.platformId)) {
       this.loadProfiles();
+    }
+  }
+
+  /**
+   * Hilfsmethode für try/catch um code wiederholungen zu vermeiden
+   */
+  private async safeCall<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
+    try {
+      return await fn();
+    } catch (error) {
+      console.error(error);
+      return fallback;
     }
   }
 
@@ -51,11 +63,7 @@ export class Database {
    * Ladet alle Benutzerprofile
    */
   private async loadProfiles(): Promise<void> {
-    try {
-      await this.db_profiles.getProfiles();
-    } catch (error) {
-      console.error(error);
-    }
+    await this.safeCall((): Promise<void> => this.db_profiles.getProfiles(), undefined);
   }
 
   /**
@@ -72,17 +80,16 @@ export class Database {
     user_name: string,
     user_avatar: string,
   ): Promise<boolean> {
-    try {
-      return await this.db_auth.signUpNewUser(
-        user_email.trim(),
-        user_password.trim(),
-        user_name.trim(),
-        user_avatar.trim().toLowerCase(),
-      );
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
+    return await this.safeCall(
+      (): Promise<boolean> =>
+        this.db_auth.signUpNewUser(
+          user_email.trim(),
+          user_password.trim(),
+          user_name.trim(),
+          user_avatar.trim().toLowerCase(),
+        ),
+      false,
+    );
   }
 
   /**
@@ -91,11 +98,9 @@ export class Database {
    * @param {string} email - Die E-Mail Adresse des Benutzers.
    */
   public sendEmailForPasswordReset(email: string): void {
-    /*
-     * Wichtig: Bitte nicht verwenden diesse Funktion ist noch nicht fertig
-     *           und ist nicht auf funktionfehigkeit getestet!!!
-     * */
-    return;
+    throw new Error(
+      'Wichtig: Bitte nicht verwenden diesse Funktion ist noch nicht fertig und ist nicht auf funktionfehigkeit getestet!!!',
+    );
 
     this.db_auth.resetPasswordForEmail(email);
   }
@@ -106,11 +111,9 @@ export class Database {
    * @param {string} newPassword - Das neue Passwort.
    */
   public updatePassword(newPassword: string): void {
-    /*
-     * Wichtig: Bitte nicht verwenden diesse Funktion ist noch nicht fertig
-     *           und ist nicht auf funktionfehigkeit getestet!!!
-     * */
-    return;
+    throw new Error(
+      'Wichtig: Bitte nicht verwenden diesse Funktion ist noch nicht fertig und ist nicht auf funktionfehigkeit getestet!!!',
+    );
 
     this.db_auth.changePassword(newPassword);
   }
@@ -121,39 +124,30 @@ export class Database {
    * @param {string} user_password - Das Passwort.
    */
   public async login(user_email: string, user_password: string): Promise<void> {
-    try {
-      await this.db_auth.signInWithEmail(user_email.trim(), user_password.trim());
-    } catch (error) {
-      console.error(error);
-    }
+    await this.safeCall(
+      (): Promise<void> => this.db_auth.signInWithEmail(user_email.trim(), user_password.trim()),
+      undefined,
+    );
   }
 
   /**
    * Meldet einen bestehenden Benutzer mit seinen Google Account an.
    */
   public async loginWithGoogle(): Promise<void> {
-    try {
-      await this.db_auth.signInWithGoogle();
-    } catch (error) {
-      console.error(error);
-    }
+    await this.safeCall((): Promise<void> => this.db_auth.signInWithGoogle(), undefined);
   }
 
   /**
    * Meldet den aktuellen Benutzer ab und leert alle gespeicherten Signals (Caches).
    */
   public async logout(): Promise<void> {
-    try {
-      this.db_profiles._profiles.set([]);
-      this.db_messages._chat_messages.set([]);
-      this.db_messages._channel_messages.set([]);
-      this.db_messages._thread_messages.set([]);
-      this.db_channels._channels.set([]);
-      this.db_channels._channel.set({});
-      await this.db_auth.signOut();
-    } catch (error) {
-      console.error(error);
-    }
+    this.db_profiles._profiles.set([]);
+    this.db_messages._chat_messages.set([]);
+    this.db_messages._channel_messages.set([]);
+    this.db_messages._thread_messages.set([]);
+    this.db_channels._channels.set([]);
+    this.db_channels._channel.set({});
+    await this.safeCall((): Promise<void> => this.db_auth.signOut(), undefined);
   }
 
   /**
@@ -162,12 +156,10 @@ export class Database {
    * @returns {Promise<Profile | null>} Die Profildaten oder null.
    */
   public async getProfile(profileId: string): Promise<Profile | null> {
-    try {
-      return await this.db_profiles.getProfile(profileId);
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
+    return await this.safeCall(
+      (): Promise<Profile | null> => this.db_profiles.getProfile(profileId),
+      null,
+    );
   }
 
   /**
@@ -176,11 +168,10 @@ export class Database {
    * @param {string} value - Der neue Anzeigename.
    */
   public async editProfileName(profileId: string, value: string): Promise<void> {
-    try {
-      await this.db_profiles.updateProfileName(profileId, value.trim());
-    } catch (error) {
-      console.error(error);
-    }
+    await this.safeCall(
+      (): Promise<void> => this.db_profiles.updateProfileName(profileId, value.trim()),
+      undefined,
+    );
   }
 
   /**
@@ -189,12 +180,10 @@ export class Database {
    * @returns {Promise<string>} Die ID des Chats.
    */
   public async getChatId(otherUserId: string): Promise<string> {
-    try {
-      return await this.db_chats.getChatId(this.db_auth.getCurrentUserId(), otherUserId);
-    } catch (error) {
-      console.error(error);
-      return '';
-    }
+    return await this.safeCall(
+      (): Promise<string> => this.db_chats.getChatId(this.db_auth.getCurrentUserId(), otherUserId),
+      '',
+    );
   }
 
   /**
@@ -212,17 +201,17 @@ export class Database {
     senderId: string,
     content: string,
   ): Promise<void> {
-    try {
-      await this.db_messages.createNewMessage(
-        msgType,
-        threadChannelId,
-        id.trim(),
-        senderId.trim(),
-        content.trim(),
-      );
-    } catch (error) {
-      console.error(error);
-    }
+    await this.safeCall(
+      (): Promise<void> =>
+        this.db_messages.createNewMessage(
+          msgType,
+          threadChannelId,
+          id.trim(),
+          senderId.trim(),
+          content.trim(),
+        ),
+      undefined,
+    );
   }
 
   /**
@@ -231,11 +220,10 @@ export class Database {
    * @param {string} newContent - Der neue Text.
    */
   public async editMsg(msgId: string, newContent: string): Promise<void> {
-    try {
-      await this.db_messages.updateMessage(msgId.trim(), newContent.trim());
-    } catch (error) {
-      console.error(error);
-    }
+    await this.safeCall(
+      (): Promise<void> => this.db_messages.updateMessage(msgId.trim(), newContent.trim()),
+      undefined,
+    );
   }
 
   /**
@@ -244,11 +232,10 @@ export class Database {
    * @param {string} id - Die ID der Quelle.
    */
   public async loadMsg(msgType: MsgType, id: string): Promise<void> {
-    try {
-      await this.db_messages.getMessages(msgType, id.trim());
-    } catch (error) {
-      console.error(error);
-    }
+    await this.safeCall(
+      (): Promise<void> => this.db_messages.getMessages(msgType, id.trim()),
+      undefined,
+    );
   }
 
   /**
@@ -263,16 +250,11 @@ export class Database {
     senderId: string,
     emoji: string,
   ): Promise<ReactionResult | null> {
-    try {
-      return await this.db_messages.toggleReaction(
-        msgId.trim(),
-        senderId.trim(),
-        emoji.trim().toLowerCase(),
-      );
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
+    return await this.safeCall(
+      (): Promise<ReactionResult> =>
+        this.db_messages.toggleReaction(msgId.trim(), senderId.trim(), emoji.trim().toLowerCase()),
+      null,
+    );
   }
 
   /**
@@ -283,12 +265,11 @@ export class Database {
    * @returns {Promise<boolean>} - true bei Erfolg oder false bei einem Duplikat.
    */
   public async newChannel(userId: string, title: string, desc: string): Promise<boolean> {
-    try {
-      return await this.db_channels.createNewChannel(userId.trim(), title.trim(), desc.trim());
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
+    return await this.safeCall(
+      (): Promise<boolean> =>
+        this.db_channels.createNewChannel(userId.trim(), title.trim(), desc.trim()),
+      false,
+    );
   }
 
   /**
@@ -298,11 +279,11 @@ export class Database {
    * @param {string} desc - Die neue Beschreibung.
    */
   public async editChannel(channelId: string, title: string, desc: string): Promise<void> {
-    try {
-      await this.db_channels.updateChannelData(channelId.trim(), title.trim(), desc.trim());
-    } catch (error) {
-      console.error(error);
-    }
+    await this.safeCall(
+      (): Promise<void> =>
+        this.db_channels.updateChannelData(channelId.trim(), title.trim(), desc.trim()),
+      undefined,
+    );
   }
 
   /**
@@ -311,11 +292,11 @@ export class Database {
    * @param {string} userId - Die Profil-ID des Benutzers.
    */
   public async addChannelMember(channelId: string, userId: string): Promise<void> {
-    try {
-      await this.db_channels.createNewMember(channelId.trim(), userId.trim(), 'admin');
-    } catch (error) {
-      console.error(error);
-    }
+    await this.safeCall(
+      (): Promise<void> =>
+        this.db_channels.createNewMember(channelId.trim(), userId.trim(), 'admin'),
+      undefined,
+    );
   }
 
   /**
@@ -324,11 +305,10 @@ export class Database {
    * @param {string} userId - Die Profil-ID des Benutzers.
    */
   public async removeChannelMember(channelId: string, userId: string): Promise<void> {
-    try {
-      await this.db_channels.removeMember(channelId.trim(), userId.trim());
-    } catch (error) {
-      console.error(error);
-    }
+    await this.safeCall(
+      (): Promise<void> => this.db_channels.removeMember(channelId.trim(), userId.trim()),
+      undefined,
+    );
   }
 
   /**
@@ -336,11 +316,10 @@ export class Database {
    * @param {string} userId - Die Profil-ID des Benutzers.
    */
   public async getChannels(userId: string): Promise<void> {
-    try {
-      await this.db_channels.getChannelIds(userId.trim());
-    } catch (error) {
-      console.error(error);
-    }
+    await this.safeCall(
+      (): Promise<void> => this.db_channels.getChannelIds(userId.trim()),
+      undefined,
+    );
   }
 
   /**
@@ -348,11 +327,10 @@ export class Database {
    * @param {string} channelId - Die Kanal-ID.
    */
   public async getChannelContent(channelId: string): Promise<void> {
-    try {
-      await this.db_channels.getChannelData(channelId.trim());
-    } catch (error) {
-      console.error(error);
-    }
+    await this.safeCall(
+      (): Promise<void> => this.db_channels.getChannelData(channelId.trim()),
+      undefined,
+    );
   }
 
   /**
@@ -361,11 +339,6 @@ export class Database {
    * @returns {Promise<string>} Die ID des Threads.
    */
   public async getThreadId(messageId: string): Promise<string> {
-    try {
-      return await this.db_threads.getThreadId(messageId);
-    } catch (error) {
-      console.error(error);
-      return '';
-    }
+    return await this.safeCall((): Promise<string> => this.db_threads.getThreadId(messageId), '');
   }
 }
