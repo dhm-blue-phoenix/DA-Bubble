@@ -53,18 +53,16 @@ export class DatabaseAuth {
   private setupAuthListener(): void {
     this.supabase.auth.onAuthStateChange(
       async (event: AuthChangeEvent, session: Session | null): Promise<void> => {
-        if (event === 'SIGNED_OUT') {
+        if (!session?.user) {
           this.currentUserId = '';
           this._isUserLogin.set(false);
           await this.safeNavigate(['/']);
-        } else if (session?.user) {
-          this.currentUserId = session.user.id;
-          this._isUserLogin.set(true);
-          await this.safeNavigate(['/workspace']);
-          if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
-            await this.setStatus('online');
-          }
+          return;
         }
+        this.currentUserId = session.user.id;
+        this._isUserLogin.set(true);
+        await this.safeNavigate(['/workspace']);
+        if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') await this.setStatus('online');
       },
     );
   }
