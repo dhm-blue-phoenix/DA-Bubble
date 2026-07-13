@@ -2,11 +2,12 @@ import { Component, inject, signal } from '@angular/core';
 import { Workspace } from '../../ui/workspace/workspace'
 import { Channels } from '../../ui/channels/channels'
 import { Chat } from '../../ui/chat/chat'
+import { Input } from '../../ui/input/input';
 import { Database } from '../../../services/db';
 
 @Component({
   selector: 'app-main-component',
-  imports: [Workspace, Channels, Chat],
+  imports: [Workspace, Channels, Chat, Input],
   templateUrl: './main-component.html',
   styleUrl: './main-component.css',
 })
