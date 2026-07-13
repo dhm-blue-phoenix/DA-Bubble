@@ -24,7 +24,8 @@ all_user = this.db.profiles
 all_channels = this.db.channels
 
 channel_id = '' 
-channel_content = this.db.channel
+channel_info = this.db.channel
+channel_content = this.db.channelMsg
 
 constructor(){
     this.db.getChannels('631b4bad-b6ee-439a-b9e8-e366d03afa39')
@@ -41,6 +42,7 @@ Open_Chat (id:string){
     this.channel_id = id
     console.log('channelid = ' + this.channel_id)
     this.db.getChannelContent(id)
+    this.db.loadMsg('channel', id)
 }
 
 }

@@ -55,20 +55,22 @@
     <section class="chat flex flex-col bg-white flex-1">
         <div class="chat_header flex justify-between px-[42px] py-[24px] border-b-2 border-black/10 shadow-sm">
             <div class="flex items-center gap-2">
-                <h2>{{ channel_content()?.name}} </h2>
+                <h2>{{ channel_info()?.name}} </h2>
                 <button><img class="size-24px" src="assets/svg/icons/icon_black/dropdown_black.svg" alt="dropdown-arrow"></button>
             </div>
             <div class="flex items-center gap-4">
                 <div class="flex items-center gap-2">
                     <div class="flex ">
-                            @for (member of channel_content()?.channel_members ?? []; track member.user_id) {
+                            @for (member of channel_info()?.channel_members ?? []; track member.user_id) {
                                 <img class="size-[40px] -ml-3 border-2 rounded-full border-white" src="assets/svg/avatar/avatar_small/1.svg" alt="avatar">
                             }
                     </div>
                 </div>
 
                 <div>
-                    <span class="text-xl">{{ channel_content()?.channel_members?.length ?? 0 }}</span>
+                    @if (channel_info()?.channel_members?.length ?? 0 > 0 ) {
+                        <span class="text-xl">{{ channel_info()?.channel_members?.length ?? 0 }}</span>
+                    }
                 </div>
 
                 <button class="add_member size-[40px] rounded-full">
@@ -78,11 +80,12 @@
         </div>
 
         <div class="chat_container w-full p-[20px] flex flex-col ">
-    
-        <app-chat></app-chat>
+        @for (message of channel_content(); track message.id) {
+            <app-chat></app-chat>
 
-        <!-- chat input -->
+        }
         <app-input></app-input>
+
         </div>
     </section>
 
@@ -142,10 +145,9 @@
                         </div>
                     </div>
                 </div>
-    
-            <!-- chat input -->
+
             <app-input></app-input>
-            
+
             </div>
         </section>
     }
