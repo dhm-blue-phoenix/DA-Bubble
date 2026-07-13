@@ -1,8 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject,signal, effect } from '@angular/core';
 import { Router } from '@angular/router';
-import { ProcessedData } from '../../../services/processed_data';
 import { Database } from '../../../services/db';
 import { FormsModule, NgModel } from '@angular/forms';
+import { Profile } from '../../../interfaces/profile';
 
 
 @Component({
@@ -13,15 +13,18 @@ import { FormsModule, NgModel } from '@angular/forms';
 })
 export class HeaderComponent {
 
+  constructor() {
+  this.db.getProfile('631b4bad-b6ee-439a-b9e8-e366d03afa39').then(profile => this.currentUser.set(profile));
+}
+
   dialog_open = false
   profile_open = false
   edit_profile = false
   router = inject(Router)
-  user = inject(ProcessedData)
   db = inject(Database)
 
+  currentUser = signal<Profile | null>(null)
   new_Username:string = ""
-
 
   toggle_Dialog() {
     this.dialog_open = ! this.dialog_open
@@ -35,22 +38,18 @@ export class HeaderComponent {
     this.edit_profile = !this.edit_profile
   }
 
-  ngOnInit() {
-    this.user.loadCurrentUser();
-  }
-
   logout(){
-    this.user.logoutCurrentUser() ;
+    this.db.logout();
     this.router.navigate(['/'])
   }
 
-edit_Name(){
-  const profile = this.user.currentUser()
-  if (profile) {
-    this.db.editProfileName(profile.id, this.new_Username)
-    this.user.currentUser.set({...profile, name: this.new_Username })
-    this.toggle_Profile()
-    this.edit_profile = false
-  }
-}
+// edit_Name(){
+//   const profile = this.currentUser()
+//   if (profile) {
+//     this.db.editProfileName(profile.id, this.new_Username)
+//     this.toggle_Profile()
+//     this.edit_profile = false
+//   }
+// }
+
 }
