@@ -43,13 +43,13 @@ export class HeaderComponent {
     this.router.navigate(['/'])
   }
 
-// edit_Name(){
-//   const profile = this.currentUser()
-//   if (profile) {
-//     this.db.editProfileName(profile.id, this.new_Username)
-//     this.toggle_Profile()
-//     this.edit_profile = false
-//   }
-// }
+edit_Name(){
+  const profile = this.currentUser()
+  if (profile) {
+    this.db.editProfileName(profile.id, this.new_Username)
+    this.toggle_Profile()
+    this.edit_profile = false
+  }
+}
 
 }

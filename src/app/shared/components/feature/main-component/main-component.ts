@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { Workspace } from '../../ui/workspace/workspace'
 import { Channels } from '../../ui/channels/channels'
 import { Profile } from '../../../interfaces/profile';
+import { Database } from '../../../services/db';
 
 
 
@@ -40,6 +41,9 @@ channelOpen = true
 dmOpen = true
 workspace_Open = true
 thread_Open = true
+
+db = inject(Database)
+all_user = this.db.profiles
 
 
 
