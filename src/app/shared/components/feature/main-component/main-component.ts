@@ -1,36 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
 import { Workspace } from '../../ui/workspace/workspace'
 import { Channels } from '../../ui/channels/channels'
+import { Chat } from '../../ui/chat/chat'
 import { Database } from '../../../services/db';
 
-
-
-interface ChannelInterface{
-    id: string;
-    name: string;
-    description: string;
-    created_at: string;
-    edited_at: string;
-    members: Member[];
-    messages: Message[];
-}
-
-interface Member{
-    user_id: string;
-    role: 'admin' | 'member';
-}
-interface Message{
-    id: string;
-    sender_id: string;
-    content: string;
-    timestamp: string;
-    edited_at: string;
-    // reactions: Reaction[];
-    threads_id: string;
-}
 @Component({
   selector: 'app-main-component',
-  imports: [Workspace, Channels],
+  imports: [Workspace, Channels, Chat],
   templateUrl: './main-component.html',
   styleUrl: './main-component.css',
 })
@@ -46,10 +22,12 @@ db = inject(Database)
 all_user = this.db.profiles
 all_channels = this.db.channels
 
+channel_id = '' 
+channel_content = this.db.channel
+
 constructor(){
     this.db.getChannels('631b4bad-b6ee-439a-b9e8-e366d03afa39')
 }
-
 
 toggleMenu(menu: 'dmOpen' | 'channelOpen' | 'workspace' | 'thread') {
     if (menu === 'dmOpen') this.dmOpen = !this.dmOpen;
@@ -58,7 +36,12 @@ toggleMenu(menu: 'dmOpen' | 'channelOpen' | 'workspace' | 'thread') {
     if (menu === 'thread') this.thread_Open = !this.thread_Open;
 }
 
+Open_Chat (id:string){
+    this.channel_id = id
+    console.log('channelid = ' + this.channel_id)
+    this.db.getChannelContent(id)
+}
 
 }
-export type Channel = ChannelInterface;
+
 
