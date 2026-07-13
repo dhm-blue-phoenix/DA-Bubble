@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Channel } from '../../feature/main-component/main-component';
+import { ChannelIdAndName } from '../../../interfaces/db/db-channels';
 
 @Component({
   selector: 'app-channels',
@@ -8,5 +8,5 @@ import { Channel } from '../../feature/main-component/main-component';
   styleUrl: './channels.css',
 })
 export class Channels {
-  @Input() ch!: Channel
+  @Input() ch!: ChannelIdAndName
 }

@@ -9,7 +9,7 @@ import { DatabaseThreads } from './db/db-threads';
 
 import { Profiles, Profile } from '../interfaces/profile';
 import { Messages } from '../interfaces/messages';
-import { ReturnFromCreateNewChannel, SignalChannel } from '../interfaces/db/db-channels';
+import { ReturnFromCreateNewChannel, SignalChannel, SignalChannels } from '../interfaces/db/db-channels';
 import { MsgType, ReactionResult } from '../interfaces/db/db-messages';
 
 @Injectable({
@@ -34,7 +34,7 @@ export class Database {
   /** Ein Read-Only Signal mit den Nachrichten des aktuellen Threads. */
   public readonly threadMsg: Signal<Messages> = this.db_messages._thread_messages.asReadonly();
   /** Ein Read-Only Signal mit einer Liste der Kanäle (IDs und Namen), in denen der Benutzer Mitglied ist. */
-  public readonly channels: Signal<SignalChannel> = this.db_channels._channels.asReadonly();
+  public readonly channels: Signal<SignalChannels> = this.db_channels._channels.asReadonly();
   /** Ein Read-Only Signal mit den detaillierten Daten des aktuell geöffneten Kanals. */
   public readonly channel: Signal<SignalChannel> = this.db_channels._channel.asReadonly();
 
