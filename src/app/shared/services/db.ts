@@ -111,7 +111,7 @@ export class Database {
     this.db_messages._channel_messages.set([]);
     this.db_messages._thread_messages.set([]);
     this.db_channels._channels.set([]);
-    this.db_channels._channel.set({});
+    this.db_channels._channel.set(null);
     this.db_auth.signOut();
   }
 

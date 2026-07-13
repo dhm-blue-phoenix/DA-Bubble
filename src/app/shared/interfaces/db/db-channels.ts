@@ -31,4 +31,4 @@ export interface ChannelMember {
   role: string;
 }
 
-export type SignalChannel = Channel | object;
+export type SignalChannel = Channel | null;
