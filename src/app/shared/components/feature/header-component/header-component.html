@@ -15,8 +15,8 @@
     <div class="flex gap-2 items-center">
         <h2>{{ currentUser()?.name }}</h2>
         <div class="flex relative">
-            <img class="size-[70px] " [src]='"assets/svg/avatar/avatar_small/" + (currentUser()?.avatar || "assets/svg/avatar/avatar_small/1") + ".svg"' alt="avatar">
-            <div class="status_User online"></div>
+            <img class="size-[70px]" [src]='"assets/svg/avatar/avatar_small/" + (currentUser()?.avatar || "assets/svg/avatar/avatar_small/1") + ".svg"' alt="avatar">
+            <div class="status_User" [class]="currentUser()?.status"></div>
         </div>
         <button (click)="toggle_Dialog()">
             <img class="size-[30px]" src="assets/svg/icons/icon_black/dropdown_black.svg" alt="">
@@ -62,9 +62,13 @@
                             <div class="status_currentUser bg-[var(--status-online)]"></div>
                             <span class="text-xl text-[var(--status-online)]">Aktiv</span>
                         }
+                        @else if(currentUser()?.status === "away"){
+                            <div class="status_currentUser bg-[var(--status-away)]"></div>
+                            <span class="text-xl text-[var(--status-away)]">Abwesend</span>
+                        }
                         @else {
                             <div class="status_currentUser bg-[var(--status-offline)]"></div>
-                            <span class="text-xl text-[var(--status-offline)]">Abwesend</span>
+                            <span class="text-xl text-[var(--status-offline)]">Offline</span>
                         }
                     </div>
     
