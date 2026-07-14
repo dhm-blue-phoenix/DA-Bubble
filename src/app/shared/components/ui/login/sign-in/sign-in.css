@@ -1,2 +1,19 @@
 @import '../../../../../app.css';
 @import '../../../feature/login-component/login-component.css';
+
+.checkbox{
+    accent-color: var(--link);
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--link);
+
+    &:hover{
+        border-color: var(--border-aktiv);
+    }
+    &:checked{
+        border-color: var(--border-aktiv);
+    }
+}

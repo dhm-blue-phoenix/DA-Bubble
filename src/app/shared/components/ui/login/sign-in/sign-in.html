@@ -51,11 +51,11 @@
 
         <div class="w-full">
             <div class="flex items-center w-full justify-start px-2 gap-2" >
-                <input type="checkbox" name="privacy" required [(ngModel)]="this.checkbox" #checkbox="ngModel">
+                <input class="checkbox" type="checkbox" name="privacy" required [(ngModel)]="this.checkbox" #checkbox="ngModel">
                 <div>
-                    <span >Ich stimme der </span>
+                    <span class="text-l">Ich stimme der </span>
                     <a class="text-[var(--link)] text-l" routerLink="Datenschutzerklärung">Datenschutzerklärung </a>
-                    <span>zu.</span>
+                    <span class="text-l">zu.</span>
                 </div>         
             </div>
                 <div class="errorContainer">
