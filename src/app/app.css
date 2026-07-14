@@ -22,8 +22,16 @@ border-radius: 24px;
 font-size: 18px;
 }
 
-.btn:hover {
+.btnHover:hover {
     filter: invert(44%) sepia(69%) saturate(2878%) hue-rotate(225deg) brightness(99%) contrast(93%);
+}
+
+.back_btn{
+    padding: 8px;
+    border-radius: 50%;
+    :hover{
+        background-color: var(--hover-bg);
+    }
 }
 
 :disabled{
