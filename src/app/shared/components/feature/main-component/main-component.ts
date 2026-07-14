@@ -17,7 +17,7 @@ export class MainComponent {
 channelOpen = true
 dmOpen = true
 workspace_Open = true
-thread_Open = true
+thread_Open = false
 
 db = inject(Database)
 
