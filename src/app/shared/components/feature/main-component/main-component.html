@@ -42,7 +42,7 @@
     
                 <div [style.display]="dmOpen ? 'flex' : 'none'" class=" w-full flex items-start px-6 gap-4 flex-col overflow-y-auto flex-1 ">
                     @for (user of all_user(); track user.id) {
-                    <app-workspace [user]="user"></app-workspace>
+                    <app-workspace class="w-full" [user]="user"></app-workspace>
                     }
                 </div>
             </section>
