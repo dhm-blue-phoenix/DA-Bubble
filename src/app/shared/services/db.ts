@@ -43,6 +43,14 @@ export class Database {
   }
 
   /**
+   * Gibt die ID des aktuell angemeldeten Benutzers zurück.
+   * @returns {string} Die Profil-ID oder ein leerer String.
+   */
+  public getCurrentUserId(): string {
+    return this.db_auth.getCurrentUserId();
+  }
+
+  /**
    * Registriert einen neuen Benutzer.
    * @param {string} user_email - Die E-Mail Adresse.
    * @param {string} user_password - Das Passwort.

@@ -1,4 +1,4 @@
-import { Component, inject, signal, WritableSignal } from '@angular/core';
+import { Component, inject, signal, WritableSignal, computed } from '@angular/core';
 import { Workspace } from '../../ui/workspace/workspace'
 import { Channels } from '../../ui/channels/channels'
 import { Chat } from '../../ui/chat/chat'
@@ -55,6 +55,12 @@ async Open_Chat(id: string) {
 
     this.channel_member_profiles.set(profiles)
 }
+messages_with_sender = computed(() =>
+    this.channel_content().map(message => ({
+        message,
+        sender: this.all_user().find(u => u.id === message.sender_id)
+    }))
+);
 
 }
 

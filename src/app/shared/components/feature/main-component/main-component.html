@@ -80,10 +80,12 @@
         </div>
 
         <div class="chat_container w-full p-[20px] flex flex-col ">
-        @for (message of channel_content(); track message.id) {
-            <app-chat [message]="message"></app-chat>
+        <div class="chat_history w-full flex-1 overflow-y-auto">
+        @for (item of messages_with_sender(); track item.message.id) {
+            <app-chat [message]="item.message" [sender]="item.sender"></app-chat>
 
         }
+        </div>
         <app-input></app-input>
 
         </div>
