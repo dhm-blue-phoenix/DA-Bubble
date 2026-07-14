@@ -41,3 +41,13 @@
 *, *::before, *::after {
     font-family: 'Nunito', sans-serif;
 }
+
+input{
+    outline: none;
+    font-family: 'Nunito';
+    font-weight: 700;
+    color: var(--highligh-color);
+    &::placeholder{
+        color: grey
+    }
+}
