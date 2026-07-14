@@ -8,11 +8,11 @@
                         <div class="flex items-center gap-6">
                             <!-- Member Informations -->
                             <span class="chat_name">Noah Braun</span>
-                            <span class="timestamp">14:25 Uhr</span>
+                            <span class="timestamp">{{message.created_at}}</span>
                         </div>
                         <div class="message_member">
                             <!-- Member text -->
-                            <span>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Omnis minus nihil sequi sed totam amet placeat officiis voluptatum excepturi obcaecati eveniet accusantium doloremque, autem id aperiam repudiandae fuga, sunt harum!</span>
+                            <span>{{message.content}}</span>
                         </div>
                         <div class="flex gap-6 items-center">
                             <!-- Member actions -->

@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { Message } from '../../../interfaces/messages'
 
 @Component({
   selector: 'app-chat',
@@ -6,4 +7,7 @@ import { Component } from '@angular/core';
   templateUrl: './chat.html',
   styleUrl: './chat.css',
 })
-export class Chat {}
+export class Chat {
+  @Input() message!: Message
+
+}

@@ -249,8 +249,8 @@ export class Database {
    * Lädt die Detaildaten eines bestimmten Kanals in das `channel` Signal.
    * @param {string} channelId - Die Kanal-ID.
    */
-  public getChannelContent(channelId: string): void {
-    this.db_channels.getChannelData(channelId.trim());
+  public async getChannelContent(channelId: string): Promise<void> {
+    return this.db_channels.getChannelData(channelId.trim());
   }
 
   /**

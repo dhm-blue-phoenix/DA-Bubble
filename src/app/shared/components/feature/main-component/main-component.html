@@ -61,8 +61,8 @@
             <div class="flex items-center gap-4">
                 <div class="flex items-center gap-2">
                     <div class="flex ">
-                            @for (member of channel_info()?.channel_members ?? []; track member.user_id) {
-                                <img class="size-[40px] -ml-3 border-2 rounded-full border-white" src="assets/svg/avatar/avatar_small/1.svg" alt="avatar">
+                            @for (member of channel_member_profiles(); track member.id) {
+                                <img class="size-[40px] -ml-3 border-2 rounded-full border-white" [src]="'assets/svg/avatar/avatar_small/' + (member.avatar || '1') + '.svg'" alt="avatar">
                             }
                     </div>
                 </div>
@@ -81,7 +81,7 @@
 
         <div class="chat_container w-full p-[20px] flex flex-col ">
         @for (message of channel_content(); track message.id) {
-            <app-chat></app-chat>
+            <app-chat [message]="message"></app-chat>
 
         }
         <app-input></app-input>
