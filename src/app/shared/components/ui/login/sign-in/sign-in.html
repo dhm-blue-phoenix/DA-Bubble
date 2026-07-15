@@ -1,6 +1,11 @@
 
 <div class="flex flex-col gap-[30px] items-center">
-    <h2>Konto erstellen</h2>
+    <div class="relative flex items-center w-full">
+        <a routerLink="/" class="absolute left-0 back_btn">
+            <img class="back_btn" src="assets/svg/icons/icon_black/arrow_back_black.svg" alt="back_arrow">
+        </a>
+        <h2 class="w-full text-center">Konto erstellen</h2>
+    </div>
     <span class="text-xl text-center">Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.</span>
 
     <form class="flex justify-center items-center flex-col w-full gap-[12px]" #signInForm="ngForm" (ngSubmit)="setSignInData(signInForm)">
@@ -11,9 +16,9 @@
 
             </div>
             <div class="errorContainer">
-                        @if (!name.valid && name.touched) {
-                        <span class="errorMassage">Bitte schreiben Sie einen Namen.</span>
-                        }
+                @if (!name.valid && name.touched) {
+                    <span class="errorMassage">Bitte schreiben Sie einen Namen.</span>
+                }
             </div>
         </div>
 
@@ -25,9 +30,9 @@
 
             </div>
             <div class="errorContainer">
-                        @if (!email.valid && email.touched) {
-                        <span class="errorMassage">*Diese E-Mail ist leider ungültig.</span>
-                        }
+                @if (!email.valid && email.touched) {
+                    <span class="errorMassage">*Diese E-Mail ist leider ungültig.</span>
+                }
             </div>
         </div>
 
@@ -38,25 +43,25 @@
                             
             </div>
             <div class="errorContainer">
-                        @if (!password.valid && password.touched) {
-                        <span class="errorMassage">Bitte geben Sie ein Passwort ein.</span>
-                        }
+                @if (!password.valid && password.touched) {
+                    <span class="errorMassage">Bitte geben Sie ein Passwort ein.</span>
+                }
             </div>
         </div>
 
         <div class="w-full">
             <div class="flex items-center w-full justify-start px-2 gap-2" >
-                <input type="checkbox" name="privacy" required [(ngModel)]="this.checkbox" #checkbox="ngModel">
+                <input class="checkbox" type="checkbox" name="privacy" required [(ngModel)]="this.checkbox" #checkbox="ngModel">
                 <div>
-                    <span >Ich stimme der </span>
+                    <span class="text-l">Ich stimme der </span>
                     <a class="text-[var(--link)] text-l" routerLink="Datenschutzerklärung">Datenschutzerklärung </a>
-                    <span>zu.</span>
+                    <span class="text-l">zu.</span>
                 </div>         
             </div>
                 <div class="errorContainer">
-                        @if (submitted && checkbox.invalid) {
+                    @if (submitted && checkbox.invalid) {
                         <span class="errorMassage">Bitte Akzeptieren sie die Datenschutzerklärung</span>
-                        }
+                    }
             </div>
         </div>
         

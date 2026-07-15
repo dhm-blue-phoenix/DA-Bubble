@@ -60,6 +60,3 @@ top: 96px;
     border-radius: 30px;
     border: 1px solid #ADB0D9
 }
-button:hover img {
-    filter: invert(44%) sepia(69%) saturate(2878%) hue-rotate(225deg) brightness(99%) contrast(93%);
-}

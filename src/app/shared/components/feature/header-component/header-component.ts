@@ -1,8 +1,8 @@
-import { Component, inject,signal, effect } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Database } from '../../../services/db';
 import { FormsModule, NgModel } from '@angular/forms';
-import { Profile } from '../../../interfaces/profile';
+import { ActiveService } from '../../../services/set_aktiv_service';
 
 
 @Component({
@@ -13,17 +13,15 @@ import { Profile } from '../../../interfaces/profile';
 })
 export class HeaderComponent {
 
-  constructor() {
-  this.db.getProfile('631b4bad-b6ee-439a-b9e8-e366d03afa39').then(profile => this.currentUser.set(profile));
-}
-
   dialog_open = false
   profile_open = false
   edit_profile = false
+
   router = inject(Router)
   db = inject(Database)
+  active = inject(ActiveService);
 
-  currentUser = signal<Profile | null>(null)
+  currentUser = computed(() => this.db.profiles().find(p => p.id === this.db.getCurrentUserId()) ?? null)
   new_Username:string = ""
 
   toggle_Dialog() {
