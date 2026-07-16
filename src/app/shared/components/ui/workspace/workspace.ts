@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Profile } from '../../../interfaces/profile';
 import { ActiveService } from '../../../services/set_aktiv_service';
+import { Database } from '../../../services/db';
 import { inject} from '@angular/core';
 
 
@@ -16,6 +17,7 @@ export class Workspace {
 @Input() user!: Profile
 
 active = inject(ActiveService);
+db = inject(Database);
 
 }
 

@@ -4,7 +4,7 @@
         <div class="status" [class]="user.status"></div>
         
     </div>
-    <span class="dm_user">{{user.name}}</span>
+    <span class="dm_user">{{ user.name }}{{ user.id === db.getCurrentUserId() ? ' (Du)' : '' }}</span>
 </div>
 
 <!-- <div (click)="active.setAktivDM(user.id)" class="flex items-center justify-items-start gap-2 cursor-pointer user_container" [class.aktiv]="user.id === active.aktivDM()"> -->

@@ -57,7 +57,7 @@
             @if (active_type() === 'chat') {
                 <div class="flex items-center gap-2">
                     <img class="size-[40px] rounded-full" [src]="'assets/svg/avatar/avatar_small/' + (dm_partner()?.avatar || '1') + '.svg'" alt="avatar">
-                    <h2>{{ dm_partner()?.name }}</h2>
+                    <h2>{{ dm_partner()?.name }}{{ is_self_chat() ? ' (Du)' : '' }}</h2>
                 </div>
             } @else {
                 <div class="flex items-center gap-2">

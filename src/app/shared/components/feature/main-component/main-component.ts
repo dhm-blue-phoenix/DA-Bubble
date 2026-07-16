@@ -40,6 +40,8 @@ active_content = computed(() =>
     this.active_type() === 'chat' ? this.chat_content() : this.channel_content()
 )
 
+is_self_chat = computed(() => this.dm_partner()?.id === this.db.getCurrentUserId())
+
 constructor(){
     this.db.getChannels(this.db.getCurrentUserId())
 }
