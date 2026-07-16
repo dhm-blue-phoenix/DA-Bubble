@@ -97,12 +97,8 @@ export class Database {
    * Wichtig: Diese Funktion ist derzeit noch in Arbeit und deaktiviert.
    * @param {string} email - Die E-Mail Adresse des Benutzers.
    */
-  public sendEmailForPasswordReset(email: string): void {
-    throw new Error(
-      'Wichtig: Bitte nicht verwenden diesse Funktion ist noch nicht fertig und ist nicht auf funktionfehigkeit getestet!!!',
-    );
-
-    this.db_auth.resetPasswordForEmail(email);
+  public async sendEmailForPasswordReset(email: string): Promise<void> {
+    await this.safeCall(() => this.db_auth.resetPasswordForEmail(email), undefined);
   }
 
   /**
@@ -110,12 +106,8 @@ export class Database {
    * Wichtig: Diese Funktion ist derzeit noch in Arbeit und deaktiviert.
    * @param {string} newPassword - Das neue Passwort.
    */
-  public updatePassword(newPassword: string): void {
-    throw new Error(
-      'Wichtig: Bitte nicht verwenden diesse Funktion ist noch nicht fertig und ist nicht auf funktionfehigkeit getestet!!!',
-    );
-
-    this.db_auth.changePassword(newPassword);
+  public async updatePassword(newPassword: string): Promise<void> {
+    await  this.safeCall(() => this.db_auth.changePassword(newPassword), undefined);
   }
 
   /**
@@ -123,10 +115,10 @@ export class Database {
    * @param {string} user_email - Die E-Mail Adresse.
    * @param {string} user_password - Das Passwort.
    */
-  public async login(user_email: string, user_password: string): Promise<void> {
-    await this.safeCall(
-      (): Promise<void> => this.db_auth.signInWithEmail(user_email.trim(), user_password.trim()),
-      undefined,
+  public async login(user_email: string, user_password: string): Promise<boolean> {
+    return await this.safeCall(
+      (): Promise<boolean> => this.db_auth.signInWithEmail(user_email.trim(), user_password.trim()),
+      false,
     );
   }
 
