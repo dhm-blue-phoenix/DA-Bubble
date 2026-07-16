@@ -98,7 +98,7 @@ export class Database {
    * @param {string} email - Die E-Mail Adresse des Benutzers.
    */
   public async sendEmailForPasswordReset(email: string): Promise<void> {
-    await this.safeCall(() => this.db_auth.resetPasswordForEmail(email), undefined);
+    await this.safeCall((): Promise<void> => this.db_auth.resetPasswordForEmail(email), undefined);
   }
 
   /**
@@ -107,7 +107,7 @@ export class Database {
    * @param {string} newPassword - Das neue Passwort.
    */
   public async updatePassword(newPassword: string): Promise<void> {
-    await  this.safeCall(() => this.db_auth.changePassword(newPassword), undefined);
+    await this.safeCall((): Promise<void> => this.db_auth.changePassword(newPassword), undefined);
   }
 
   /**
@@ -115,11 +115,9 @@ export class Database {
    * @param {string} user_email - Die E-Mail Adresse.
    * @param {string} user_password - Das Passwort.
    */
-  public async login(user_email: string, user_password: string): Promise<boolean> {
-    return await this.safeCall(
-      (): Promise<boolean> => this.db_auth.signInWithEmail(user_email.trim(), user_password.trim()),
-      false,
-    );
+  public async login(user_email: string, user_password: string): Promise<void> {
+    await this.safeCall(
+      (): Promise<void> => this.db_auth.signInWithEmail(user_email.trim(), user_password.trim()), undefined);
   }
 
   /**
