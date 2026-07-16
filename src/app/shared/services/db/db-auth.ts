@@ -59,6 +59,10 @@ export class DatabaseAuth {
           await this.safeNavigate(['/']);
           return;
         }
+        if (event === 'PASSWORD_RECOVERY') {
+          await this.safeNavigate(['/reset-password']);
+          return;
+        }
         this.currentUserId = session.user.id;
         this._isUserLogin.set(true);
         await this.safeNavigate(['/workspace']);
@@ -174,7 +178,7 @@ export class DatabaseAuth {
    * @param {string} user_password - Passwort.
    * @returns {Promise<void>}
    */
-  public async signInWithEmail(user_email: string, user_password: string): Promise<void> {
+  public async signInWithEmail(user_email: string, user_password: string): Promise<boolean> {
     const { error }: DbAuthError = await this.supabase.auth.signInWithPassword({
       email: user_email,
       password: user_password,
@@ -182,6 +186,7 @@ export class DatabaseAuth {
     if (error) throw new Error(
       `[ DB_CODE:${error['code']} ] MSG: ${error['message']}`,
     );
+    return true;
   }
 
   /**
