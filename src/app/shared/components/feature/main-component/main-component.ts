@@ -34,6 +34,7 @@ channel_info = this.db.channel
 channel_content = this.db.channelMsg
 
 channel_member_profiles: WritableSignal<Profile[]> = signal<Profile[]>([])
+dm_partner: WritableSignal<Profile | null> = signal<Profile | null>(null)
 
 active_content = computed(() =>
     this.active_type() === 'chat' ? this.chat_content() : this.channel_content()
@@ -59,7 +60,8 @@ messages_with_sender = computed(() =>
 
 async open_Dm(id:string){
     this.active_type.set('chat')
-    
+    this.dm_partner.set(this.all_user().find(u => u.id === id) ?? null)
+
     const dm = await this.db.getChatId(id)
     this.db.loadMsg('chat', dm)
 }
