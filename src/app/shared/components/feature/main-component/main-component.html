@@ -85,7 +85,7 @@
                     <app-chat [message]="item.message" [sender]="item.sender"></app-chat>
                 }
             </div>
-            <app-input></app-input>
+            <app-input (sent)="send_channel_content($event)"></app-input>
         </div>
     </section>
 

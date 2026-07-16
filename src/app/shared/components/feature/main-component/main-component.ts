@@ -25,6 +25,7 @@ all_user = this.db.profiles
 all_channels = this.db.channels
 all_channel_members = ""
 
+
 channel_id = ''
 channel_info = this.db.channel
 channel_content = this.db.channelMsg
@@ -32,7 +33,7 @@ channel_content = this.db.channelMsg
 channel_member_profiles: WritableSignal<Profile[]> = signal<Profile[]>([])
 
 constructor(){
-    this.db.getChannels('631b4bad-b6ee-439a-b9e8-e366d03afa39')
+    this.db.getChannels(this.db.getCurrentUserId())
 }
 
 toggleMenu(menu: 'dmOpen' | 'channelOpen' | 'workspace' | 'thread') {
@@ -62,6 +63,15 @@ messages_with_sender = computed(() =>
     }))
 );
 
+send_channel_content(content:string){
+    const senderId = this.db.getCurrentUserId()
+
+    if (senderId) {
+        this.db.newMsg('channel', null, this.channel_id, senderId, content)
+    }
+    else
+        console.log('fehler beim senden der daten')
+}
 }
 
 
