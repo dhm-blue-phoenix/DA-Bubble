@@ -25,12 +25,19 @@ all_user = this.db.profiles
 all_channels = this.db.channels
 all_channel_members = ""
 
+active_type: WritableSignal<'channel' | 'chat'> = signal('channel')
+
+chat_content = this.db.chatMsg
 
 channel_id = ''
 channel_info = this.db.channel
 channel_content = this.db.channelMsg
 
 channel_member_profiles: WritableSignal<Profile[]> = signal<Profile[]>([])
+
+active_content = computed(() =>
+    this.active_type() === 'chat' ? this.chat_content() : this.channel_content()
+)
 
 constructor(){
     this.db.getChannels(this.db.getCurrentUserId())
@@ -43,42 +50,45 @@ toggleMenu(menu: 'dmOpen' | 'channelOpen' | 'workspace' | 'thread') {
     if (menu === 'thread') this.thread_Open = !this.thread_Open;
 }
 
-async Open_Chat(id: string) {
-    this.channel_id = id
-    this.db.loadMsg('channel', id)
-
-    await this.db.getChannelContent(id)
-
-    const members = this.channel_info()?.channel_members ?? []
-    const profiles = members
-        .map(m => this.all_user().find(u => u.id === m.user_id))
-        .filter((p): p is Profile => p !== undefined)
-
-    this.channel_member_profiles.set(profiles)
-}
 messages_with_sender = computed(() =>
-    this.channel_content().map(message => ({
+    this.active_content().map(message => ({
         message,
         sender: this.all_user().find(u => u.id === message.sender_id)
     }))
 );
 
+async open_Dm(id:string){
+    this.active_type.set('chat')
+    
+    const dm = await this.db.getChatId(id)
+    this.db.loadMsg('chat', dm)
+}
+
+async open_Chat(id: string) {
+    this.active_type.set('channel')
+    this.channel_id = id
+    this.db.loadMsg('channel', id)
+    await this.db.getChannelContent(id)
+
+    this.channel_member_profiles.set(this.resolveMemberProfiles())
+}
+
+resolveMemberProfiles(): Profile[] {
+    const members = this.channel_info()?.channel_members ?? []
+    return members
+        .map(m => this.all_user().find(u => u.id === m.user_id))
+        .filter((p): p is Profile => p !== undefined)
+}
+
 send_channel_content(content:string){
     const senderId = this.db.getCurrentUserId()
-
     if (senderId) 
         this.db.newMsg('channel', null, this.channel_id, senderId, content) 
     else
-        console.log('fehler beim senden der daten')
+        console.error('not sending')
 }
 
 
-async open_Dm(id:string){
-    console.log('test')
-   const dm = await this.db.getChatId(id)
-   await console.log(dm)
-   await this.Open_Chat(dm)
-}
 
 }
 

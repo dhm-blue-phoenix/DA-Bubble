@@ -22,7 +22,7 @@
     
             <div [style.display]="channelOpen ? 'flex' : 'none'" class="w-full flex flex-col gap-2 p-2 overflow-y-auto max-h-48">
                 @for (ch of all_channels(); track ch.id;) {
-                    <app-channels (click)="Open_Chat(ch.id)" [ch]="ch"></app-channels>
+                    <app-channels (click)="open_Chat(ch.id)" [ch]="ch"></app-channels>
                 }
     
                 <div>
@@ -124,7 +124,7 @@
 
 
 
-    
+
 
     @if(thread_Open){
 
