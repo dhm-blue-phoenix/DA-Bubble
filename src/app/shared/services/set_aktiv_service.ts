@@ -6,6 +6,5 @@ export class ActiveService {
 
     setAktivDM(id: string) {
         this.aktivDM.set(id);
-        console.log(id)
     }
 }

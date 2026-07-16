@@ -5,7 +5,7 @@ import { Chat } from '../../ui/chat/chat'
 import { Input } from '../../ui/input/input';
 import { Database } from '../../../services/db';
 import { Profile } from '../../../interfaces/profile';
-
+import { ActiveService } from '../../../services/set_aktiv_service';
 @Component({
   selector: 'app-main-component',
   imports: [Workspace, Channels, Chat, Input],
@@ -66,12 +66,20 @@ messages_with_sender = computed(() =>
 send_channel_content(content:string){
     const senderId = this.db.getCurrentUserId()
 
-    if (senderId) {
-        this.db.newMsg('channel', null, this.channel_id, senderId, content)
-    }
+    if (senderId) 
+        this.db.newMsg('channel', null, this.channel_id, senderId, content) 
     else
         console.log('fehler beim senden der daten')
 }
+
+
+async open_Dm(id:string){
+    console.log('test')
+   const dm = await this.db.getChatId(id)
+   await console.log(dm)
+   await this.Open_Chat(dm)
+}
+
 }
 
 
