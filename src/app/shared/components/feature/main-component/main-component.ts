@@ -21,20 +21,22 @@ thread_Open = false
 
 db = inject(Database)
 
+active_type: WritableSignal<'channel' | 'chat'> = signal('channel')
+channel_member_profiles: WritableSignal<Profile[]> = signal<Profile[]>([])
+dm_partner: WritableSignal<Profile | null> = signal<Profile | null>(null)
+
 all_user = this.db.profiles
 all_channels = this.db.channels
 all_channel_members = ""
 
-active_type: WritableSignal<'channel' | 'chat'> = signal('channel')
 
 chat_content = this.db.chatMsg
 
 channel_id = ''
+chat_id = ''
 channel_info = this.db.channel
 channel_content = this.db.channelMsg
 
-channel_member_profiles: WritableSignal<Profile[]> = signal<Profile[]>([])
-dm_partner: WritableSignal<Profile | null> = signal<Profile | null>(null)
 
 active_content = computed(() =>
     this.active_type() === 'chat' ? this.chat_content() : this.channel_content()
@@ -65,6 +67,7 @@ async open_Dm(id:string){
     this.dm_partner.set(this.all_user().find(u => u.id === id) ?? null)
 
     const dm = await this.db.getChatId(id)
+    this.chat_id = dm
     this.db.loadMsg('chat', dm)
 }
 
@@ -84,10 +87,11 @@ resolveMemberProfiles(): Profile[] {
         .filter((p): p is Profile => p !== undefined)
 }
 
-send_channel_content(content:string){
+send_Content(content:string){
     const senderId = this.db.getCurrentUserId()
-    if (senderId) 
-        this.db.newMsg('channel', null, this.channel_id, senderId, content) 
+    const id = this.active_type() === 'chat' ? this.chat_id : this.channel_id
+    if (senderId)
+        this.db.newMsg(this.active_type(), null, id, senderId, content)
     else
         console.error('not sending')
 }
