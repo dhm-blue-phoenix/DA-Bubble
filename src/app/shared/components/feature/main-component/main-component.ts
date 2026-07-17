@@ -7,9 +7,11 @@ import { Input } from '../../ui/input/input';
 import { ChatHeader } from '../../ui/chat-header/chat-header';
 import { Database } from '../../../services/db';
 import { Profile } from '../../../interfaces/profile';
+import { Dialog } from '../../ui/dialog/dialog';
+
 @Component({
   selector: 'app-main-component',
-  imports: [Workspace, Channels, Chat, Input, Thread, ChatHeader],
+  imports: [Workspace, Channels, Chat, Input, Thread, ChatHeader, Dialog],
   templateUrl: './main-component.html',
   styleUrl: './main-component.css',
 })
