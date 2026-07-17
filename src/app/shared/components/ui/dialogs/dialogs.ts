@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { DialogChannel } from './dialog-channel/dialog-channel';
-import { Channels } from "../channels/channels";
+import { SignalChannel } from '../../../interfaces/db/db-channels';
 
 @Component({
   selector: 'app-dialogs',
@@ -8,4 +8,7 @@ import { Channels } from "../channels/channels";
   templateUrl: './dialogs.html',
   styleUrl: './dialogs.css',
 })
-export class Dialogs {}
+export class Dialogs {
+  @Input() channelInfo: SignalChannel = null
+  @Output() closed = new EventEmitter<void>()
+}

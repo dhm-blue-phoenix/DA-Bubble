@@ -3,9 +3,9 @@
     <div class="flex justify-between items-center">
         <div class="flex items-center gap-2">
             <span class="text-2xl font-bold">#</span>
-            <span class="text-2xl font-bold">Entwicklerteam</span>
+            <span class="text-2xl font-bold">{{ channelInfo?.name }}</span>
         </div>
-        <button class="size-[40px] rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]"><img class="size-5" src="assets/svg/icons/icon_black/close.svg" alt=""></button>
+        <button (click)="closed.emit()" class="size-[40px] rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]"><img class="size-5" src="assets/svg/icons/icon_black/close.svg" alt=""></button>
     </div>
 
     <div class="border border-black/15 rounded-2xl p-6 flex flex-col gap-4">
@@ -15,7 +15,7 @@
         </div>
         <div class="flex items-center gap-2">
             <span class="text-lg">#</span>
-            <span class="text-lg">Entwicklerteam</span>
+            <span class="text-lg">{{ channelInfo?.name }}</span>
         </div>
     </div>
 
@@ -25,12 +25,7 @@
             <button class="text-[var(--hover-text)] font-semibold hover:font-bold">Bearbeiten</button>
         </div>
         <div>
-            <span class="text-black/70">klasöhdndashndföoakjhsföoalkjdlöaskjdöläaksjdälajmdäöals</span>
-        </div>
-        <div class="separator h-0 overflow-hidden text-transparent border-t border-black/15">---------</div>
-        <div class="flex flex-col gap-1">
-            <span class="font-bold">Erstellt von</span>
-            <h3 class="text-[var(--hover-text)]">Noah Braun</h3>
+            <span class="text-black/70">{{ channelInfo?.description }}</span>
         </div>
     </div>
     <div class="bg-white rounded-b-3xl w-full max-w-[720px] px-10 pb-10 flex justify-end">

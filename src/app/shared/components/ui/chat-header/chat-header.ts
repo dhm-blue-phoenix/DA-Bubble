@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Profile } from '../../../interfaces/profile';
 import { SignalChannel } from '../../../interfaces/db/db-channels';
 
@@ -14,4 +14,6 @@ export class ChatHeader {
   @Input() isSelfChat: boolean = false
   @Input() channelInfo: SignalChannel = null
   @Input() memberProfiles: Profile[] = []
+
+  @Output() openChannelInfo = new EventEmitter<void>()
 }

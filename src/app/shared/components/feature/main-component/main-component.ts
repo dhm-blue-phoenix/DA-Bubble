@@ -27,6 +27,7 @@ db = inject(Database)
 active_type: WritableSignal<'channel' | 'chat'> = signal('channel')
 channel_member_profiles: WritableSignal<Profile[]> = signal<Profile[]>([])
 dm_partner: WritableSignal<Profile | null> = signal<Profile | null>(null)
+channel_dialog_open: WritableSignal<boolean> = signal(false)
 
 all_user = this.db.profiles
 all_channels = this.db.channels
