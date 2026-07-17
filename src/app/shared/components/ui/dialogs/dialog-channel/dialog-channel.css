@@ -1,0 +1,21 @@
+@import '../../../../../app.css';
+
+.dialog_bg{
+position: absolute;
+background-color: rgba(0, 0, 0, 0.2);
+z-index: 1;
+height: 100vh;
+width: 100vw;
+top: 0px;
+left: 0px;
+}
+
+.dialog_content{
+
+border-radius: 30px;
+background-color: white;
+position: absolute;
+left: 50%;
+top: 50%;
+transform: translate(-50%, -50%);
+    }
