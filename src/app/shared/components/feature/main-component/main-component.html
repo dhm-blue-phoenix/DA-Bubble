@@ -22,7 +22,7 @@
     
             <div [style.display]="channelOpen ? 'flex' : 'none'" class="w-full flex flex-col gap-2 p-2 overflow-y-auto max-h-48">
                 @for (ch of all_channels(); track ch.id;) {
-                    <app-channels (click)="open_Chat(ch.id)" [ch]="ch"></app-channels>
+                    <app-channels (click)="open_Chat(ch.id)" [ch]="ch" [isActive]="active_type() === 'channel' && channel_id === ch.id"></app-channels>
                 }
     
                 <div>
@@ -42,7 +42,7 @@
     
                 <div [style.display]="dmOpen ? 'flex' : 'none'" class=" w-full flex items-start px-6 gap-4 flex-col overflow-y-auto flex-1 ">
                     @for (user of all_user(); track user.id) {
-                    <app-workspace (click)="open_Dm(user.id)" class="w-full" [user]="user"></app-workspace>
+                    <app-workspace (click)="open_Dm(user.id)" class="w-full" [user]="user" [isActive]="active_type() === 'chat' && dm_partner()?.id === user.id"></app-workspace>
                     }
                 </div>
             </section>
@@ -87,7 +87,7 @@
         </div>
 
         <div class="chat_container w-full p-[20px] flex flex-col ">
-            <div class="chat_history w-full flex-1 overflow-y-auto">
+            <div #chatHistory class="chat_history w-full flex-1 overflow-y-auto ">
                 @for (item of messages_with_sender(); track item.message.id) {
                     <app-chat [message]="item.message" [sender]="item.sender"></app-chat>
                 }

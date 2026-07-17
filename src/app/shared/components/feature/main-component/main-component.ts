@@ -1,11 +1,10 @@
-import { Component, inject, signal, WritableSignal, computed } from '@angular/core';
+import { Component, inject, signal, WritableSignal, computed, effect, viewChild, ElementRef } from '@angular/core';
 import { Workspace } from '../../ui/workspace/workspace'
 import { Channels } from '../../ui/channels/channels'
 import { Chat } from '../../ui/chat/chat'
 import { Input } from '../../ui/input/input';
 import { Database } from '../../../services/db';
 import { Profile } from '../../../interfaces/profile';
-import { ActiveService } from '../../../services/set_aktiv_service';
 @Component({
   selector: 'app-main-component',
   imports: [Workspace, Channels, Chat, Input],
@@ -38,22 +37,23 @@ channel_info = this.db.channel
 channel_content = this.db.channelMsg
 
 
-active_content = computed(() =>
-    this.active_type() === 'chat' ? this.chat_content() : this.channel_content()
-)
-
-is_self_chat = computed(() => this.dm_partner()?.id === this.db.getCurrentUserId())
+chatHistory = viewChild<ElementRef<HTMLDivElement>>('chatHistory')
 
 constructor(){
     this.db.getChannels(this.db.getCurrentUserId())
-}
 
-toggleMenu(menu: 'dmOpen' | 'channelOpen' | 'workspace' | 'thread') {
-    if (menu === 'dmOpen') this.dmOpen = !this.dmOpen;
-    if (menu === 'channelOpen') this.channelOpen = !this.channelOpen;
-    if (menu === 'workspace') this.workspace_Open = !this.workspace_Open;
-    if (menu === 'thread') this.thread_Open = !this.thread_Open;
+    effect(() => {
+        this.messages_with_sender()
+        queueMicrotask(() => {
+            const el = this.chatHistory()?.nativeElement
+            if (el) el.scrollTop = el.scrollHeight
+        })
+    })
 }
+active_content = computed(() =>
+    this.active_type() === 'chat' ? this.chat_content() : this.channel_content())
+
+is_self_chat = computed(() => this.dm_partner()?.id === this.db.getCurrentUserId())
 
 messages_with_sender = computed(() =>
     this.active_content().map(message => ({
@@ -62,39 +62,46 @@ messages_with_sender = computed(() =>
     }))
 );
 
-async open_Dm(id:string){
-    this.active_type.set('chat')
-    this.dm_partner.set(this.all_user().find(u => u.id === id) ?? null)
+    toggleMenu(menu: 'dmOpen' | 'channelOpen' | 'workspace' | 'thread') {
+        if (menu === 'dmOpen') this.dmOpen = !this.dmOpen;
+        if (menu === 'channelOpen') this.channelOpen = !this.channelOpen;
+        if (menu === 'workspace') this.workspace_Open = !this.workspace_Open;
+        if (menu === 'thread') this.thread_Open = !this.thread_Open;
+    }
 
-    const dm = await this.db.getChatId(id)
-    this.chat_id = dm
-    this.db.loadMsg('chat', dm)
-}
+    async open_Dm(id:string){
+        this.active_type.set('chat')
+        this.dm_partner.set(this.all_user().find(u => u.id === id) ?? null)
 
-async open_Chat(id: string) {
-    this.active_type.set('channel')
-    this.channel_id = id
-    this.db.loadMsg('channel', id)
-    await this.db.getChannelContent(id)
+        const dm = await this.db.getChatId(id)
+        this.chat_id = dm
+        this.db.loadMsg('chat', dm)
+    }
 
-    this.channel_member_profiles.set(this.resolveMemberProfiles())
-}
+    async open_Chat(id: string) {
+        this.active_type.set('channel')
+        this.channel_id = id
+        this.db.loadMsg('channel', id)
+        await this.db.getChannelContent(id)
 
-resolveMemberProfiles(): Profile[] {
-    const members = this.channel_info()?.channel_members ?? []
-    return members
-        .map(m => this.all_user().find(u => u.id === m.user_id))
-        .filter((p): p is Profile => p !== undefined)
-}
+        this.channel_member_profiles.set(this.resolveMemberProfiles())
+    }
 
-send_Content(content:string){
-    const senderId = this.db.getCurrentUserId()
-    const id = this.active_type() === 'chat' ? this.chat_id : this.channel_id
-    if (senderId)
-        this.db.newMsg(this.active_type(), null, id, senderId, content)
-    else
-        console.error('not sending')
-}
+    resolveMemberProfiles(): Profile[] {
+        const members = this.channel_info()?.channel_members ?? []
+        return members
+            .map(m => this.all_user().find(u => u.id === m.user_id))
+            .filter((p): p is Profile => p !== undefined)
+    }
+
+    send_Content(content:string){
+        const senderId = this.db.getCurrentUserId()
+        const id = this.active_type() === 'chat' ? this.chat_id : this.channel_id
+        if (senderId)
+            this.db.newMsg(this.active_type(), null, id, senderId, content)
+        else
+            console.error('not sending')
+    }
 
 
 

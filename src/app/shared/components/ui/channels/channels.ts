@@ -9,4 +9,5 @@ import { ChannelIdAndName } from '../../../interfaces/db/db-channels';
 })
 export class Channels {
   @Input() ch!: ChannelIdAndName
+  @Input() isActive: boolean = false
 }
