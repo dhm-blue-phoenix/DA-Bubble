@@ -53,7 +53,7 @@ export class DatabaseAuth {
   private setupAuthListener(): void {
     this.supabase.auth.onAuthStateChange(
       async (event: AuthChangeEvent, session: Session | null): Promise<void> => {
-        if (!session?.user) {
+        if (event === 'SIGNED_OUT' || !session?.user) {
           this.currentUserId = '';
           this._isUserLogin.set(false);
           await this.safeNavigate(['/']);
@@ -66,7 +66,7 @@ export class DatabaseAuth {
         this.currentUserId = session.user.id;
         this._isUserLogin.set(true);
         await this.safeNavigate(['/workspace']);
-        if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') await this.setStatus('online');
+        if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') this.setStatus('online').catch(console.error);
       },
     );
   }
@@ -122,9 +122,10 @@ export class DatabaseAuth {
       .update({ status: value })
       .eq('id', profileId)
       .select();
-    if (error) throw new Error(
-      `[ DB_CODE:${error['code']} ] MSG: ${error['message']} | HINT: ${error['hint']}`,
-    );
+    if (error)
+      throw new Error(
+        `[ DB_CODE:${error['code']} ] MSG: ${error['message']} | HINT: ${error['hint']}`,
+      );
   }
 
   /**
@@ -138,19 +139,20 @@ export class DatabaseAuth {
       .select('id')
       .eq('email', email)
       .limit(1);
-    if (error) throw new Error(
-      `[ DB_CODE:${error['code']} ] MSG: ${error['message']} | HINT: ${error['hint']}`,
-    );
+    if (error)
+      throw new Error(
+        `[ DB_CODE:${error['code']} ] MSG: ${error['message']} | HINT: ${error['hint']}`,
+      );
     return Array.isArray(data) && data.length > 0;
   }
 
   /**
    * Registriert einen neuen Benutzer und loggt ihn bei Erfolg direkt ein.
-   * @param {string} user_email - E-Mail Adresse.
+   * @param {string} user_email - E-Mail-Adresse.
    * @param {string} user_password - Passwort.
    * @param {string} user_name - Anzeigename.
    * @param {string} user_avatar - Avatar-URL oder -Name.
-   * @returns {Promise<boolean>} - Gibt ein false zurück wenn ein Duplikat vorliegt ansonsten true.
+   * @returns {Promise<boolean>} - Gibt ein false zurück, wenn ein Duplikat vorliegt ansonsten true.
    */
   public async signUpNewUser(
     user_email: string,
@@ -166,9 +168,7 @@ export class DatabaseAuth {
         data: { name: user_name, avatar: user_avatar },
       },
     });
-    if (error) throw new Error(
-      `[ DB_CODE:${error['code']} ] MSG: ${error['message']}`,
-    );
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
     return true;
   }
 
@@ -183,9 +183,7 @@ export class DatabaseAuth {
       email: user_email,
       password: user_password,
     });
-    if (error) throw new Error(
-      `[ DB_CODE:${error['code']} ] MSG: ${error['message']}`,
-    );
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
   }
 
   /**
@@ -199,9 +197,7 @@ export class DatabaseAuth {
         redirectTo: window.location.origin,
       },
     });
-    if (error) throw new Error(
-      `[ DB_CODE:${error['code']} ] MSG: ${error['message']}`,
-    );
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
   }
 
   /**
@@ -213,9 +209,7 @@ export class DatabaseAuth {
     const { error }: DbAuthError = await this.supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
     });
-    if (error) throw new Error(
-      `[ DB_CODE:${error['code']} ] MSG: ${error['message']}`,
-    );
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
   }
 
   /**
