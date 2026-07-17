@@ -2,12 +2,14 @@ import { Component, inject, signal, WritableSignal, computed, effect, viewChild,
 import { Workspace } from '../../ui/workspace/workspace'
 import { Channels } from '../../ui/channels/channels'
 import { Chat } from '../../ui/chat/chat'
+import { Thread } from '../../ui/thread/thread';
 import { Input } from '../../ui/input/input';
+import { ChatHeader } from '../../ui/chat-header/chat-header';
 import { Database } from '../../../services/db';
 import { Profile } from '../../../interfaces/profile';
 @Component({
   selector: 'app-main-component',
-  imports: [Workspace, Channels, Chat, Input],
+  imports: [Workspace, Channels, Chat, Input, Thread, ChatHeader],
   templateUrl: './main-component.html',
   styleUrl: './main-component.css',
 })

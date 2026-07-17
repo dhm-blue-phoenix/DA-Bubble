@@ -1,15 +1,14 @@
 <main class="flex gap-8 px-8 py-4 justify-between" >
+
     @if(workspace_Open){
         <section class="channel flex-col bg-white flex items-center gap-4 p-4">
             <div class="flex justify-between w-full">
                 <div class="flex items-center gap-4">
                     <img class="size-60px" src="assets/svg/devspace/Workspace logo.svg" alt="workspace">
-                    <!-- Name Dynamisch and edeting -->
                     <h2>Devspace</h2>
                 </div>
                 <button><img src="assets/svg/icons/icon_black/edit_square_black.svg" alt="edit"></button>
             </div>
-    
             <div class="flex justify-between w-full items-center">
                 <div class="flex gap-1 items-center">
                     <button class="flex gap-2 items-center hover:text-[var(--hover-text)] group " (click)="toggleMenu('channelOpen')" id="channel"><img class="size-24px" [class]="channelOpen ? 'rotated0' : 'rotated-90' " src="assets/svg/icons/icon_black/arrow_drop_down_black.svg" alt="dropdown-arrow">
@@ -19,12 +18,10 @@
                 </div>
                 <button><img class="size-24px" src="assets/svg/icons/icon_black/add_black.svg" alt="workspace"></button>
             </div>
-    
             <div [style.display]="channelOpen ? 'flex' : 'none'" class="w-full flex flex-col gap-2 p-2 overflow-y-auto max-h-48">
                 @for (ch of all_channels(); track ch.id;) {
                     <app-channels (click)="open_Chat(ch.id)" [ch]="ch" [isActive]="active_type() === 'channel' && channel_id === ch.id"></app-channels>
                 }
-    
                 <div>
                     <button class="flex gap-2 px-3 py-2 items-center">
                         <img class="size-24px" src="assets/svg/icons/icon_black/add_circle_black.svg" alt="add-channel">
@@ -32,109 +29,40 @@
                     </button>
                 </div>
             </div>
-    
             <div class="flex w-full items-center gap-2 justify-start">
                 <button class="flex gap-2 items-center hover:text-[var(--hover-text)]" (click)="toggleMenu('dmOpen')" id="dm"><img class="size-24px" [class]="dmOpen ? 'rotated0' : 'rotated-90' " src="assets/svg/icons/icon_black/arrow_drop_down_black.svg" alt="dropdown-arrow">
                     <img class="size-24px" src="assets/svg/icons/icon_black/account_circle_black.svg" alt="add-channel">
                     <h3>Direktnachrichten</h3>
                 </button>
             </div>
-    
                 <div [style.display]="dmOpen ? 'flex' : 'none'" class=" w-full flex items-start px-6 gap-4 flex-col overflow-y-auto flex-1 ">
                     @for (user of all_user(); track user.id) {
                     <app-workspace (click)="open_Dm(user.id)" class="w-full" [user]="user" [isActive]="active_type() === 'chat' && dm_partner()?.id === user.id"></app-workspace>
                     }
                 </div>
-            </section>
+        </section>
         } 
+
         <button (click)="toggleMenu('workspace')" class="workspace_button flex items-center bg-color-white hover:text-[var(--hover-text)] group">
             <span>{{workspace_Open ? 'Workspace-Menü schließen' : 'Workspace-Menü öffnen'}}</span>
             <img class="size-[32px]" [src]="workspace_Open ? 'assets/svg/icons/icon_black/hide_navigation_left_black.svg' : 'assets/svg/icons/icon_black/hide_navigation_right_black.svg'" [alt]="workspace_Open ? 'close Icon' : 'open Icon'">
         </button>
 
-    <section class="chat flex flex-col bg-white flex-1">
-        <div class="chat_header flex justify-between px-[42px] py-[24px] border-b-2 border-black/10 shadow-sm">
-            @if (active_type() === 'chat') {
-                <div class="flex items-center gap-2">
-                    <img class="size-[40px] rounded-full" [src]="'assets/svg/avatar/avatar_small/' + (dm_partner()?.avatar || '1') + '.svg'" alt="avatar">
-                    <h2>{{ dm_partner()?.name }}{{ is_self_chat() ? ' (Du)' : '' }}</h2>
-                </div>
-            } @else {
-                <div class="flex items-center gap-2">
-                    <h2>{{ channel_info()?.name}} </h2>
-                    <button><img class="size-24px" src="assets/svg/icons/icon_black/dropdown_black.svg" alt="dropdown-arrow"></button>
-                </div>
-                <div class="flex items-center gap-4">
-                    <div class="flex items-center gap-2">
-                        <div class="flex ">
-                                @for (member of channel_member_profiles(); track member.id) {
-                                    <img class="size-[40px] -ml-3 border-2 rounded-full border-white" [src]="'assets/svg/avatar/avatar_small/' + (member.avatar || '1') + '.svg'" alt="avatar">
-                                }
-                        </div>
-                    </div>
-
-                    <div>
-                        @if (channel_info()?.channel_members?.length ?? 0 > 0 ) {
-                            <span class="text-xl">{{ channel_info()?.channel_members?.length ?? 0 }}</span>
-                        }
-                    </div>
-
-                    <button class="add_member size-[40px] rounded-full">
-                        <img src="assets/svg/icons/icon_black/add_member_black.svg" alt="add_member">
-                    </button>
-                </div>
-            }
-        </div>
-
-        <div class="chat_container w-full p-[20px] flex flex-col ">
-            <div #chatHistory class="chat_history w-full flex-1 overflow-y-auto ">
-                @for (item of messages_with_sender(); track item.message.id) {
-                    <app-chat [message]="item.message" [sender]="item.sender"></app-chat>
-                }
+        <section class="chat flex flex-col bg-white flex-1">
+            <div class="chat_header flex justify-between px-[42px] py-[24px] border-b-2 border-black/10 shadow-sm">
+                <app-chat-header class ="contents" [type]="active_type()" [dmPartner]="dm_partner()" [isSelfChat]="is_self_chat()" [channelInfo]="channel_info()" [memberProfiles]="channel_member_profiles()"></app-chat-header>
             </div>
-            <app-input (sent)="send_Content($event)"></app-input>
-        </div>
-    </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            <div class="chat_container w-full p-[20px] flex flex-col ">
+                <div #chatHistory class="chat_history w-full flex-1 overflow-y-auto ">
+                    @for (item of messages_with_sender(); track item.message.id) {
+                        <app-chat [message]="item.message" [sender]="item.sender"></app-chat>
+                    }
+                </div>
+                <app-input (sent)="send_Content($event)"></app-input>
+            </div>
+        </section>
 
     @if(thread_Open){
-
         <section class="thread bg-white flex flex-col">
                 <div class="chat_header flex justify-between px-[42px] py-[24px] border-b-2 border-black/10 shadow-sm">
                     <div class="flex items-center gap-2">
@@ -144,54 +72,12 @@
                     <button (click)="toggleMenu('thread')" class="size-[40px]"><img src="assets/svg/icons/icon_black/close.svg" alt=""></button>
                 </div>
             <div class="chat_container w-full p-[20px] flex flex-col ">
-            <!-- chat history loop -->
-                <div class="chat_history w-full flex-1 overflow-y-auto">
-                    <div class="separator flex items-center justify-center"><span class="bg-white px-2 border border-black/20 rounded-full absolute">heute 27.10.2026</span></div>
-                    
-                    <!-- Member Text -->
-                    <div class="flex py-6 gap-8">
-                        <img class="size-[70px]" src="assets/svg/avatar/avatar_small/1.svg" alt="">
-                        <div class="flex flex-col gap-2">
-                            <div class="flex items-center gap-6">
-                                <!-- Member Informations -->
-                                <span class="chat_name">Noah Braun</span>
-                                <span class="timestamp">14:25 Uhr</span>
-                            </div>
-                            <div class="message_member">
-                                <!-- Member text -->
-                                <span>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Omnis minus nihil sequi sed totam amet placeat officiis voluptatum excepturi obcaecati eveniet accusantium doloremque, autem id aperiam repudiandae fuga, sunt harum!</span>
-                            </div>
-                            <button (click)="toggleMenu('thread')" class="flex gap-4 items-center">
-                                <!-- Member actions -->
-                                <span class="feedback">2 Antworten</span>
-                                <span class="timestamp">Letzte Antwort 14:56</span>
-                            </button>
-                        </div>
-                    </div>
-    
-                    <!-- user Text -->
-                    <div class="flex flex-row-reverse py-6 gap-8">
-                        <img class="size-[70px]" src="assets/svg/avatar/avatar_small/1.svg" alt="">
-                        <div class="flex flex-col gap-2 items-end">
-                            <div class="flex items-center gap-6">
-                                <!-- user Informations -->
-                                <span class="timestamp">14:37 Uhr</span>
-                                <span class="chat_name">Frederik Beck</span>
-                            </div>
-                            <div class="message_user">
-                                <!-- user text -->
-                                <span>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Omnis minus nihil sequi sed totam amet placeat officiis voluptatum excepturi obcaecati eveniet accusantium doloremque, autem id aperiam repudiandae fuga, sunt harum!</span>
-                            </div>
-                            <div class="flex gap-6 items-center">
-                                <!-- user actions -->
-                                <button><img src="assets/svg/icons/icon_black/add_reaction.svg" alt=""></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-            <app-input></app-input>
-
+            <div class="chat_history w-full flex-1 overflow-y-auto ">
+            <!--  Theard Chat            -->
+                <app-thread></app-thread>   
+            </div> 
+                <app-input></app-input>
             </div>
         </section>
     }
