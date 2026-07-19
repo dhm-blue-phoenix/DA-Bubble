@@ -7,9 +7,11 @@ import { Input } from '../../ui/input/input';
 import { ChatHeader } from '../../ui/chat-header/chat-header';
 import { Database } from '../../../services/db';
 import { Profile } from '../../../interfaces/profile';
+import { Dialogs } from '../../ui/dialogs/dialogs';
+
 @Component({
   selector: 'app-main-component',
-  imports: [Workspace, Channels, Chat, Input, Thread, ChatHeader],
+  imports: [Workspace, Channels, Chat, Input, Thread, ChatHeader, Dialogs],
   templateUrl: './main-component.html',
   styleUrl: './main-component.css',
 })
@@ -22,9 +24,10 @@ thread_Open = false
 
 db = inject(Database)
 
-active_type: WritableSignal<'channel' | 'chat'> = signal('channel')
+active_type: WritableSignal<'channel' | 'chat' | null> = signal(null)
 channel_member_profiles: WritableSignal<Profile[]> = signal<Profile[]>([])
 dm_partner: WritableSignal<Profile | null> = signal<Profile | null>(null)
+channel_dialog_open: WritableSignal<boolean> = signal(false)
 
 all_user = this.db.profiles
 all_channels = this.db.channels
@@ -52,10 +55,16 @@ constructor(){
         })
     })
 }
-active_content = computed(() =>
-    this.active_type() === 'chat' ? this.chat_content() : this.channel_content())
+active_content = computed(() => {
+    if (this.active_type() === 'chat') return this.chat_content()
+    if (this.active_type() === 'channel') return this.channel_content()
+    return []
+})
 
 is_self_chat = computed(() => this.dm_partner()?.id === this.db.getCurrentUserId())
+
+channel_creator = computed(() =>
+    this.all_user().find(u => u.id === this.channel_info()?.created_by) ?? null)
 
 messages_with_sender = computed(() =>
     this.active_content().map(message => ({
@@ -96,11 +105,27 @@ messages_with_sender = computed(() =>
             .filter((p): p is Profile => p !== undefined)
     }
 
+    editChannel(data: { name: string; description: string }) {
+        this.db.editChannel(this.channel_id, data.name, data.description)
+    }
+
+    leaveChannel() {
+        this.db.removeChannelMember(this.channel_id, this.db.getCurrentUserId())
+        this.channel_dialog_open.set(false)
+        this.channel_id = ''
+        this.channel_member_profiles.set([])
+        this.active_type.set(null)
+        this.db.getChannels(this.db.getCurrentUserId())
+    }
+
     send_Content(content:string){
+        const type = this.active_type()
+        if (!type) return
+
         const senderId = this.db.getCurrentUserId()
-        const id = this.active_type() === 'chat' ? this.chat_id : this.channel_id
+        const id = type === 'chat' ? this.chat_id : this.channel_id
         if (senderId)
-            this.db.newMsg(this.active_type(), null, id, senderId, content)
+            this.db.newMsg(type, null, id, senderId, content)
         else
             console.error('not sending')
     }
