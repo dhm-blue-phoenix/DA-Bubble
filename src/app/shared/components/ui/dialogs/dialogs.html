@@ -1,5 +1,5 @@
 <section class="dialog_bg fixed inset-0 bg-black/50 flex flex-col items-center justify-center">
     <div class="dialog_content bg-white rounded-t-3xl w-full max-w-[720px]">
-        <app-dialogchannel [channelInfo]="channelInfo" [channelCreator]="channelCreator" (closed)="closed.emit()" (save)="save.emit($event)"></app-dialogchannel>
+        <app-dialogchannel [channelInfo]="channelInfo" [channelCreator]="channelCreator" (closed)="closed.emit()" (save)="save.emit($event)" (leave)="leave.emit()"></app-dialogchannel>
     </div>
 </section>

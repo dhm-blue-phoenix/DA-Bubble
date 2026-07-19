@@ -24,7 +24,7 @@ thread_Open = false
 
 db = inject(Database)
 
-active_type: WritableSignal<'channel' | 'chat'> = signal('channel')
+active_type: WritableSignal<'channel' | 'chat' | null> = signal(null)
 channel_member_profiles: WritableSignal<Profile[]> = signal<Profile[]>([])
 dm_partner: WritableSignal<Profile | null> = signal<Profile | null>(null)
 channel_dialog_open: WritableSignal<boolean> = signal(false)
@@ -55,8 +55,11 @@ constructor(){
         })
     })
 }
-active_content = computed(() =>
-    this.active_type() === 'chat' ? this.chat_content() : this.channel_content())
+active_content = computed(() => {
+    if (this.active_type() === 'chat') return this.chat_content()
+    if (this.active_type() === 'channel') return this.channel_content()
+    return []
+})
 
 is_self_chat = computed(() => this.dm_partner()?.id === this.db.getCurrentUserId())
 
@@ -106,11 +109,23 @@ messages_with_sender = computed(() =>
         this.db.editChannel(this.channel_id, data.name, data.description)
     }
 
+    leaveChannel() {
+        this.db.removeChannelMember(this.channel_id, this.db.getCurrentUserId())
+        this.channel_dialog_open.set(false)
+        this.channel_id = ''
+        this.channel_member_profiles.set([])
+        this.active_type.set(null)
+        this.db.getChannels(this.db.getCurrentUserId())
+    }
+
     send_Content(content:string){
+        const type = this.active_type()
+        if (!type) return
+
         const senderId = this.db.getCurrentUserId()
-        const id = this.active_type() === 'chat' ? this.chat_id : this.channel_id
+        const id = type === 'chat' ? this.chat_id : this.channel_id
         if (senderId)
-            this.db.newMsg(this.active_type(), null, id, senderId, content)
+            this.db.newMsg(type, null, id, senderId, content)
         else
             console.error('not sending')
     }

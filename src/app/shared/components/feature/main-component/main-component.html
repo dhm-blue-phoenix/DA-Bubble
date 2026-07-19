@@ -58,7 +58,9 @@
                         <app-chat [message]="item.message" [sender]="item.sender"></app-chat>
                     }
                 </div>
-                <app-input (sent)="send_Content($event)"></app-input>
+                @if (active_type()) {
+                    <app-input (sent)="send_Content($event)"></app-input>
+                }
             </div>
         </section>
 
@@ -85,5 +87,5 @@
 
 
 @if (channel_dialog_open()) {
-    <app-dialogs [channelInfo]="channel_info()" [channelCreator]="channel_creator()" (closed)="channel_dialog_open.set(false)" (save)="editChannel($event)"></app-dialogs>
+    <app-dialogs [channelInfo]="channel_info()" [channelCreator]="channel_creator()" (closed)="channel_dialog_open.set(false)" (save)="editChannel($event)" (leave)="leaveChannel()"></app-dialogs>
 }

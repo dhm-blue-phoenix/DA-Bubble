@@ -14,4 +14,5 @@ export class Dialogs {
   @Input() channelCreator: Profile | null = null
   @Output() closed = new EventEmitter<void>()
   @Output() save = new EventEmitter<{ name: string; description: string }>()
+  @Output() leave = new EventEmitter<void>()
 }

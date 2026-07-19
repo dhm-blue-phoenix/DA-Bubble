@@ -9,7 +9,7 @@ import { SignalChannel } from '../../../interfaces/db/db-channels';
   styleUrl: './chat-header.css',
 })
 export class ChatHeader {
-  @Input() type: 'channel' | 'chat' = 'channel'
+  @Input() type: 'channel' | 'chat' | null = null
   @Input() dmPartner: Profile | null = null
   @Input() isSelfChat: boolean = false
   @Input() channelInfo: SignalChannel = null
