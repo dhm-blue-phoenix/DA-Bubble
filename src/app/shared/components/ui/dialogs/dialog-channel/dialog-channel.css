@@ -21,7 +21,7 @@ transform: translate(-50%, -50%);
     }
 
 .separator{
-    height: 2px;
+    height: 1px;
     width: 100%;
     background-color: rgba(0, 0, 0, 0.2);
 }
