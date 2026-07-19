@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SignalChannel } from '../../../../interfaces/db/db-channels';
+import { Profile } from '../../../../interfaces/profile';
 
 @Component({
   selector: 'app-dialogchannel',
@@ -9,6 +10,7 @@ import { SignalChannel } from '../../../../interfaces/db/db-channels';
   styleUrl: './dialog-channel.css',
 })
 export class DialogChannel {
+  @Input() channelCreator: Profile | null = null
   @Output() closed = new EventEmitter<void>()
   @Output() save = new EventEmitter<{ name: string; description: string }>()
 

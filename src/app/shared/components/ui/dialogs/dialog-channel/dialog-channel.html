@@ -36,7 +36,16 @@
             </div>
         }
     </div>
-    <div class="bg-white rounded-b-3xl w-full max-w-[720px] px-10 pb-10 flex justify-end">
+
+    <div class="w-full flex justify-center">
+        <div class="separator border-t border-black/15 w-full"></div>
+    </div>
+
+    <div class="w-full flex flex-col gap-3">
+        <span class="font-bold">Erstellt von</span>
+        <span class="text-[var(--hover-text)] text-2xl font-bold">{{ channelCreator?.name }}</span>
+    </div>
+    <div class="bg-white rounded-b-3xl w-full max-w-[720px] pb-10 flex justify-end">
         <button class="btn_raw bg-[var(--highligh-color)] text-white font-bold">Channel verlassen</button>
     </div>
 </div>

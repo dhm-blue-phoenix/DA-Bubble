@@ -60,6 +60,9 @@ active_content = computed(() =>
 
 is_self_chat = computed(() => this.dm_partner()?.id === this.db.getCurrentUserId())
 
+channel_creator = computed(() =>
+    this.all_user().find(u => u.id === this.channel_info()?.created_by) ?? null)
+
 messages_with_sender = computed(() =>
     this.active_content().map(message => ({
         message,

@@ -85,5 +85,5 @@
 
 
 @if (channel_dialog_open()) {
-    <app-dialogs [channelInfo]="channel_info()" (closed)="channel_dialog_open.set(false)" (save)="editChannel($event)"></app-dialogs>
+    <app-dialogs [channelInfo]="channel_info()" [channelCreator]="channel_creator()" (closed)="channel_dialog_open.set(false)" (save)="editChannel($event)"></app-dialogs>
 }

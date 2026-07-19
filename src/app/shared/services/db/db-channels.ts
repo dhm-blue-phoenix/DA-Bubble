@@ -170,7 +170,7 @@ export class DatabaseChannels {
   public async getChannelData(channelId: string): Promise<void> {
     const { data } = await this.supabase
       .from('channels')
-      .select('id, name, description, created_at, channel_members(user_id)')
+      .select('id, name, description, created_by, created_at, channel_members(user_id)')
       .eq('id', channelId);
     if (data && data.length > 0) {
       this._channel.set(data[0]);
