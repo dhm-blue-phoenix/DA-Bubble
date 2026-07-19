@@ -11,4 +11,5 @@ import { SignalChannel } from '../../../interfaces/db/db-channels';
 export class Dialogs {
   @Input() channelInfo: SignalChannel = null
   @Output() closed = new EventEmitter<void>()
+  @Output() save = new EventEmitter<{ name: string; description: string }>()
 }

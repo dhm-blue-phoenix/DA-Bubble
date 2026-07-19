@@ -99,6 +99,10 @@ messages_with_sender = computed(() =>
             .filter((p): p is Profile => p !== undefined)
     }
 
+    editChannel(data: { name: string; description: string }) {
+        this.db.editChannel(this.channel_id, data.name, data.description)
+    }
+
     send_Content(content:string){
         const senderId = this.db.getCurrentUserId()
         const id = this.active_type() === 'chat' ? this.chat_id : this.channel_id

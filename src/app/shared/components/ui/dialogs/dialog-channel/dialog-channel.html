@@ -11,22 +11,30 @@
     <div class="border border-black/15 rounded-2xl p-6 flex flex-col gap-4">
         <div class="flex justify-between items-center">
             <span class="font-bold text-lg">Channel-Name</span>
-            <button class="text-[var(--hover-text)] font-semibold hover:font-bold">Bearbeiten</button>
+            <button (click)="toggleEditName()" class="text-[var(--hover-text)] font-semibold hover:font-bold">{{ editingName ? 'Speichern' : 'Bearbeiten' }}</button>
         </div>
-        <div class="flex items-center gap-2">
-            <span class="text-lg">#</span>
-            <span class="text-lg">{{ channelInfo?.name }}</span>
-        </div>
+        @if (editingName) {
+            <input [(ngModel)]="nameDraft" name="channelName" type="text" class="text-lg outline-none border-b border-black/20 w-full">
+        } @else {
+            <div class="flex items-center gap-2">
+                <span class="text-lg">#</span>
+                <span class="text-lg">{{ channelInfo?.name }}</span>
+            </div>
+        }
     </div>
 
     <div class="border border-black/15 rounded-2xl p-6 flex flex-col gap-4">
         <div class="flex justify-between items-center">
             <span class="font-bold text-lg">Beschreibung</span>
-            <button class="text-[var(--hover-text)] font-semibold hover:font-bold">Bearbeiten</button>
+            <button (click)="toggleEditDescription()" class="text-[var(--hover-text)] font-semibold hover:font-bold">{{ editingDescription ? 'Speichern' : 'Bearbeiten' }}</button>
         </div>
-        <div>
-            <span class="text-black/70">{{ channelInfo?.description }}</span>
-        </div>
+        @if (editingDescription) {
+            <textarea [(ngModel)]="descriptionDraft" name="channelDescription" class="text-black/70 outline-none border border-black/20 rounded-lg p-2 w-full resize-none" rows="3"></textarea>
+        } @else {
+            <div>
+                <span class="text-black/70">{{ channelInfo?.description }}</span>
+            </div>
+        }
     </div>
     <div class="bg-white rounded-b-3xl w-full max-w-[720px] px-10 pb-10 flex justify-end">
         <button class="btn_raw bg-[var(--highligh-color)] text-white font-bold">Channel verlassen</button>
