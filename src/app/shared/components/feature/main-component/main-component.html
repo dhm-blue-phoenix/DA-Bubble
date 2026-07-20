@@ -16,7 +16,7 @@
                         <h3>Channels</h3>
                     </button>
                 </div>
-                <button><img class="size-24px" src="assets/svg/icons/icon_black/add_black.svg" alt="workspace"></button>
+                <button (click)="dialog_mode.set('addChannel')"><img class="size-24px" src="assets/svg/icons/icon_black/add_black.svg" alt="workspace"></button>
             </div>
             <div [style.display]="channelOpen ? 'flex' : 'none'" class="w-full flex flex-col gap-2 p-2 overflow-y-auto max-h-48">
                 @for (ch of all_channels(); track ch.id;) {

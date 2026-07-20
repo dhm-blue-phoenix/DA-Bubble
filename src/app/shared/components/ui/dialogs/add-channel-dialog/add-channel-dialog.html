@@ -13,13 +13,13 @@
         </span>
     </div>
 
-    <div class="flex flex-col gap-3">
+    <form class="flex flex-col gap-3">
         <div>
             <span class="font-bold text-lg">Channel-Name</span>
         </div>
             <div class="border border-black/15 rounded-2xl px-4 py-3 flex items-center gap-2">
                 <span class="text-lg font-bold text text-black/50">#</span>
-                <input [(ngModel)]="channel_name" name="channelName" type="text" placeholder="z.B. Kooperationsprojekte" placeholder="Channel-Name" class="text-lg outline-none w-full" required>
+                <input [(ngModel)]="channel_name" #channelname="ngModel" name="channelName" minlength="1" max="30" type="text" placeholder="z.B. Kooperationsprojekte" placeholder="Channel-Name" class="text-lg outline-none w-full" required>
             </div>
 
             <div class="flex gap-2 items-center">
@@ -30,11 +30,11 @@
             <div class="border border-black/15 rounded-2xl px-4 py-3 flex items-center gap-2">
                 <input [(ngModel)]="channel_descritpion" name="channeldescroption" type="text" placeholder="Dein Text hier" class="text-lg outline-none w-full">
             </div>
-    </div>
-
-    <div class="bg-white rounded-b-3xl w-full max-w-[720px] pb-10 flex justify-end">
-        <button (click)="add_new_Channel ()" class="btn_raw bg-[var(--highligh-color)] text-white font-bold">Erstellen</button>
-    </div>
+            
+            <div class="bg-white rounded-b-3xl w-full max-w-[720px] pb-10 flex justify-end">
+                <button (click)="add_new_Channel ()"[disabled]="channelname.invalid" class="btn_raw bg-[var(--highligh-color)] text-white font-bold">Erstellen</button>
+            </div>
+    </form>
 </div>
 
 
