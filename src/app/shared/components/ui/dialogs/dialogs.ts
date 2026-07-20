@@ -12,9 +12,7 @@ import { Profile } from '../../../interfaces/profile';
 })
 export class Dialogs {
 
-  edit_dialog = false
-  add_channel = true
-
+  @Input() mode: 'editChannel' | 'addChannel' | null = null
   @Input() channelInfo: SignalChannel = null
   @Input() channelCreator: Profile | null = null
   @Output() closed = new EventEmitter<void>()

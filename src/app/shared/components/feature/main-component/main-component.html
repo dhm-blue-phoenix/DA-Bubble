@@ -23,7 +23,7 @@
                     <app-channels (click)="open_Chat(ch.id)" [ch]="ch" [isActive]="active_type() === 'channel' && channel_id === ch.id"></app-channels>
                 }
                 <div>
-                    <button class="flex gap-2 px-3 py-2 items-center">
+                    <button (click)="dialog_mode.set('addChannel')" class="flex gap-2 px-3 py-2 items-center">
                         <img class="size-24px" src="assets/svg/icons/icon_black/add_circle_black.svg" alt="add-channel">
                         <span>Channel hinzufügen</span>
                     </button>
@@ -50,7 +50,7 @@
 
         <section class="chat flex flex-col bg-white flex-1">
             <div class="chat_header flex justify-between px-[42px] py-[24px] border-b-2 border-black/10 shadow-sm">
-                <app-chat-header class ="contents" [type]="active_type()" [dmPartner]="dm_partner()" [isSelfChat]="is_self_chat()" [channelInfo]="channel_info()" [memberProfiles]="channel_member_profiles()" (openChannelInfo)="channel_dialog_open.set(true)"></app-chat-header>
+                <app-chat-header class ="contents" [type]="active_type()" [dmPartner]="dm_partner()" [isSelfChat]="is_self_chat()" [channelInfo]="channel_info()" [memberProfiles]="channel_member_profiles()" (openChannelInfo)="dialog_mode.set('editChannel')"></app-chat-header>
             </div>
             <div class="chat_container w-full p-[20px] flex flex-col ">
                 <div #chatHistory class="chat_history w-full flex-1 overflow-y-auto ">
@@ -86,6 +86,6 @@
 </main>
 
 
-@if (channel_dialog_open()) {
-    <app-dialogs [channelInfo]="channel_info()" [channelCreator]="channel_creator()" (closed)="channel_dialog_open.set(false)" (save)="editChannel($event)" (leave)="leaveChannel()"></app-dialogs>
+@if (dialog_mode()) {
+    <app-dialogs [mode]="dialog_mode()" [channelInfo]="channel_info()" [channelCreator]="channel_creator()" (closed)="dialog_mode.set(null)" (save)="editChannel($event)" (leave)="leaveChannel()"></app-dialogs>
 }

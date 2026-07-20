@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Output, EventEmitter } from '@angular/core';
 import { FormsModule, NgModel } from '@angular/forms';
 import { Database } from '../../../../services/db';
 
@@ -14,6 +14,8 @@ export class AddChannelDialog {
   channel_descritpion = ""
 
   db = inject(Database)
+
+  @Output() closed = new EventEmitter<void>()
 
   add_new_Channel (){
     this.db.newChannel(this.db.getCurrentUserId(), this.channel_name, this.channel_descritpion)
