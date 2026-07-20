@@ -4,12 +4,12 @@ import { SignalChannel } from '../../../../interfaces/db/db-channels';
 import { Profile } from '../../../../interfaces/profile';
 
 @Component({
-  selector: 'app-dialogchannel',
+  selector: 'app-edit-channel-dialog',
   imports: [FormsModule],
-  templateUrl: './dialog-channel.html',
-  styleUrl: './dialog-channel.css',
+  templateUrl: './edit-channel-dialog.html',
+  styleUrl: './edit-channel-dialog.css',
 })
-export class DialogChannel {
+export class EdithannelDialog {
   @Input() channelCreator: Profile | null = null
   @Output() closed = new EventEmitter<void>()
   @Output() save = new EventEmitter<{ name: string; description: string }>()

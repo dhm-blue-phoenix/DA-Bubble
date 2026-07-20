@@ -1,7 +1,7 @@
 <section class="dialog_bg fixed inset-0 bg-black/50 flex flex-col items-center justify-center">
     <div class="dialog_content bg-white rounded-t-3xl w-full max-w-[720px]">
         @if (mode === 'editChannel') {
-            <app-dialogchannel [channelInfo]="channelInfo" [channelCreator]="channelCreator" (closed)="closed.emit()" (save)="save.emit($event)" (leave)="leave.emit()"></app-dialogchannel>
+            <app-edit-channel-dialog [channelInfo]="channelInfo" [channelCreator]="channelCreator" (closed)="closed.emit()" (save)="save.emit($event)" (leave)="leave.emit()"></app-edit-channel-dialog>
         }
         @else if (mode === 'addChannel') {
             <app-add-channel-dialog (closed)="closed.emit()"></app-add-channel-dialog>

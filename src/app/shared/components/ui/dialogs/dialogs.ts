@@ -1,12 +1,12 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { DialogChannel } from './dialog-channel/dialog-channel';
+import { EdithannelDialog } from './edit-channel-dialog/edit-channel-dialog';
 import { AddChannelDialog } from './add-channel-dialog/add-channel-dialog';
 import { SignalChannel } from '../../../interfaces/db/db-channels';
 import { Profile } from '../../../interfaces/profile';
 
 @Component({
   selector: 'app-dialogs',
-  imports: [DialogChannel, AddChannelDialog],
+  imports: [EdithannelDialog, AddChannelDialog],
   templateUrl: './dialogs.html',
   styleUrl: './dialogs.css',
 })
