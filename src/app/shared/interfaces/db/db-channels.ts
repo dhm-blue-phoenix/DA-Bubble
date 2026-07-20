@@ -8,6 +8,13 @@ export interface ChannelIdAndName {
   name: string;
 }
 
+interface ReturnErrorFromCreateNewChannel {
+  success: false;
+  msg: 'Duplicate found';
+}
+
+export type ReturnFromCreateNewChannel = void | ReturnErrorFromCreateNewChannel;
+
 export type SignalChannels = ChannelIdAndName[];
 
 export interface Channel {

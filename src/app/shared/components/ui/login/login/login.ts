@@ -19,22 +19,15 @@ export class Login {
     password: '',
   };
 
-  guest_Data = {
-    email: environment.guest_email,
-    password: environment.guest_password,
-  };
-
   public googleLogin(): void {
     this.db.loginWithGoogle();
   }
 
 async login(){
   await this.db.login(this.login_Data.email, this.login_Data.password)
-  if (this.db.isLogin()) {
-    this.router.navigate(['/workspace'])
-  }
+
 }
-login_as_guest(){
-  this.router.navigate(['/workspace'])
+async login_as_guest(){
+  await this.db.login(environment.guest_email, environment.guest_password)
 }
 }

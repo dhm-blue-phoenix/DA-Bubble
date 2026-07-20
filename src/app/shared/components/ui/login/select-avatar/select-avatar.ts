@@ -29,17 +29,13 @@ export class SelectAvatar {
     })
     }
 
-    singin(){
-      console.log(this.signin.data())
-    //   this.db.register(
-    //     this.signin.data().email,
-    //     this.signin.data().password,
-    //     this.signin.data().name,
-    //     this.signin.data().avatar,
-    // )
+    async singin(){
+    const { email, password, name, avatar } = this.signin.data()
+    await this.db.register(email, password, name, avatar)
+
     this.show_feedback.set(true)
     setTimeout(() => {
-      this.show_feedback.set(false), 
+      this.show_feedback.set(false),
       this.router.navigate(['/'])
     },
       3000)
