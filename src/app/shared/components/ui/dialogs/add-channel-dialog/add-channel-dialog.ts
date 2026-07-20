@@ -17,7 +17,8 @@ export class AddChannelDialog {
 
   @Output() closed = new EventEmitter<void>()
 
-  add_new_Channel (){
-    this.db.newChannel(this.db.getCurrentUserId(), this.channel_name, this.channel_descritpion)
+  async add_new_Channel (){
+    const success = await this.db.newChannel(this.db.getCurrentUserId(), this.channel_name, this.channel_descritpion)
+    if (success) this.closed.emit()
   }
 }
