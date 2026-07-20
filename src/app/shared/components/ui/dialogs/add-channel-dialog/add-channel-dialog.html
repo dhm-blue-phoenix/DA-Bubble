@@ -1,1 +1,44 @@
-<p>add-channel-dialog works!</p>
+
+<div class="p-10 flex flex-col gap-8">
+    <div class="flex justify-between items-center">
+        <div class="flex items-center gap-2">
+
+            <span class="text-2xl font-bold">Channel erstellen</span>
+        </div>
+        <button  class="size-[40px] rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]"><img class="size-5" src="assets/svg/icons/icon_black/close.svg" alt=""></button>
+    </div>
+
+    <div class="w-full flex justify-start">
+        <span class="text-lg font-semibold">
+            Channels dienen deinem Team zur Kommunikation. Am besten sollten sie themenbezogen sein #marketing zum Beispiel.
+        </span>
+    </div>
+
+    <div class="flex flex-col gap-3">
+        <div>
+            <span class="font-bold text-lg">Channel-Name</span>
+
+        </div>
+        <div class="border border-black/15 rounded-2xl px-4 py-3 flex items-center gap-2">
+                <span class="text-lg font-bold text text-black/50">#</span>
+                <input  ame="channelName" type="text" placeholder="z.B. Kooperationsprojekte" placeholder="Channel-Name" class="text-lg outline-none w-full">
+            </div>
+
+            <div class="flex gap-2 items-center">
+                <span class="font-bold text-lg">Beschreibung</span>
+                <span class="text-black/50 text-lg font-semibold">(optional)</span>
+            </div>
+            <div class="border border-black/15 rounded-2xl px-4 py-3 flex items-center gap-2">
+                <input  name="channelName" type="text" placeholder="Dein Text hier" class="text-lg outline-none w-full">
+            </div>
+    </div>
+
+    
+    <div class="bg-white rounded-b-3xl w-full max-w-[720px] pb-10 flex justify-end">
+        <button  class="btn_raw bg-[var(--highligh-color)] text-white font-bold">Erstellen</button>
+    </div>
+</div>
+
+
+
+
