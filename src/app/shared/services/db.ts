@@ -9,7 +9,7 @@ import { DatabaseThreads } from './db/db-threads';
 
 import { Profile, Profiles } from '../interfaces/profile';
 import { Messages } from '../interfaces/messages';
-import { SignalChannel } from '../interfaces/db/db-channels';
+import { ReturnFromCreateNewChannel, SignalChannel, SignalChannels } from '../interfaces/db/db-channels';
 import { MsgType, ReactionResult } from '../interfaces/db/db-messages';
 import { isPlatformBrowser } from '@angular/common';
 
@@ -37,7 +37,7 @@ export class Database {
   /** Ein Read-Only Signal mit den Nachrichten des aktuellen Threads. */
   public readonly threadMsg: Signal<Messages> = this.db_messages._thread_messages.asReadonly();
   /** Ein Read-Only Signal mit einer Liste der Kanäle (IDs und Namen), in denen der Benutzer Mitglied ist. */
-  public readonly channels: Signal<SignalChannel> = this.db_channels._channels.asReadonly();
+  public readonly channels: Signal<SignalChannels> = this.db_channels._channels.asReadonly();
   /** Ein Read-Only Signal mit den detaillierten Daten des aktuell geöffneten Kanals. */
   public readonly channel: Signal<SignalChannel> = this.db_channels._channel.asReadonly();
 
@@ -64,6 +64,14 @@ export class Database {
    */
   private async loadProfiles(): Promise<void> {
     await this.safeCall((): Promise<void> => this.db_profiles.getProfiles(), undefined);
+  }
+
+  /**
+   * Gibt die ID des aktuell angemeldeten Benutzers zurück.
+   * @returns {string} Die Profil-ID oder ein leerer String.
+   */
+  public getCurrentUserId(): string {
+    return this.db_auth.getCurrentUserId();
   }
 
   /**
@@ -135,7 +143,8 @@ export class Database {
     this.db_messages._channel_messages.set([]);
     this.db_messages._thread_messages.set([]);
     this.db_channels._channels.set([]);
-    this.db_channels._channel.set({});
+    this.db_channels._channel.set(null);
+    this.db_auth.signOut();
     await this.safeCall((): Promise<void> => this.db_auth.signOut(), undefined);
   }
 

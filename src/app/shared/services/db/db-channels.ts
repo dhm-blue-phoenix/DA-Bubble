@@ -32,7 +32,7 @@ export class DatabaseChannels {
   public readonly _channels: WritableSignal<SignalChannels> = signal<SignalChannels>([]);
 
   /** Signal, das die Detaildaten des aktuell geöffneten Kanals hält. */
-  public readonly _channel: WritableSignal<SignalChannel> = signal<SignalChannel>({});
+  public readonly _channel: WritableSignal<SignalChannel> = signal<SignalChannel>(null);
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
@@ -85,7 +85,7 @@ export class DatabaseChannels {
   private insertEventChannel(payload: RealtimePostgresChangesPayload<object>): void {
     const channel = payload.new as Channel;
     const currentChannel: SignalChannel = this._channel();
-    if ('id' in currentChannel && currentChannel.id === channel.id) {
+    if (currentChannel !== null && currentChannel.id === channel.id) {
       this._channel.set({ ...currentChannel, ...channel });
     }
   }
@@ -97,7 +97,7 @@ export class DatabaseChannels {
   private updateEventChannel(payload: RealtimePostgresChangesPayload<object>): void {
     const channel = payload.new as Channel;
     const currentChannel: SignalChannel = this._channel();
-    if ('id' in currentChannel && currentChannel.id === channel.id) {
+    if (currentChannel !== null && currentChannel.id === channel.id) {
       this._channel.set({ ...currentChannel, ...channel });
     }
     this._channels.update((channels: SignalChannels): ChannelIdAndName[] =>
@@ -115,7 +115,7 @@ export class DatabaseChannels {
   private insertEventMember(payload: RealtimePostgresChangesPayload<object>): void {
     const member = payload.new as ChannelMember;
     const currentChannel: SignalChannel = this._channel();
-    if ('id' in currentChannel && currentChannel.id === member.channel_id) {
+    if (currentChannel !== null && currentChannel.id === member.channel_id) {
       const members: { user_id: string }[] = currentChannel.channel_members || [];
       if (!members.some((m: { user_id: string }): boolean => m.user_id === member.user_id)) {
         this._channel.set({
@@ -133,7 +133,7 @@ export class DatabaseChannels {
   private deleteEventMembers(payload: RealtimePostgresChangesPayload<object>): void {
     const member = payload.old as Partial<ChannelMember>;
     const currentChannel: SignalChannel = this._channel();
-    if ('id' in currentChannel && currentChannel.id === member.channel_id) {
+    if (currentChannel !== null && currentChannel.id === member.channel_id) {
       this._channel.set({
         ...currentChannel,
         channel_members: (currentChannel.channel_members || []).filter(
@@ -176,7 +176,7 @@ export class DatabaseChannels {
   public async getChannelData(channelId: string): Promise<void> {
     const { data, error }: PostgrestSingleResponse<any> = await this.supabase
       .from('channels')
-      .select('id, name, description, created_by, channel_members(user_id)')
+      .select('id, name, description, created_by, created_at, channel_members(user_id)')
       .eq('id', channelId);
     if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
     if (data && data.length > 0) {

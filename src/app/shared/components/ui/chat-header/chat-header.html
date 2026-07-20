@@ -1,0 +1,28 @@
+@if (type === 'chat') {
+    <div class="flex items-center gap-2">
+        <img class="size-[40px] rounded-full" [src]="'assets/svg/avatar/avatar_small/' + (dmPartner?.avatar || '1') + '.svg'" alt="avatar">
+        <h2>{{ dmPartner?.name }}{{ isSelfChat ? ' (Du)' : '' }}</h2>
+    </div>
+} @else if (type === 'channel') {
+    <div class="flex items-center gap-2">
+        <h2>{{ channelInfo?.name }} </h2>
+        <button (click)="openChannelInfo.emit()"><img class="size-24px" src="assets/svg/icons/icon_black/dropdown_black.svg" alt="dropdown-arrow"></button>
+    </div>
+    <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2">
+            <div class="flex ">
+                    @for (member of memberProfiles; track member.id) {
+                        <img class="size-[40px] -ml-3 border-2 rounded-full border-white" [src]="'assets/svg/avatar/avatar_small/' + (member.avatar || '1') + '.svg'" alt="avatar">
+                    }
+            </div>
+        </div>
+        <div>
+            @if (channelInfo?.channel_members?.length ?? 0 > 0 ) {
+                <span class="text-xl">{{ channelInfo?.channel_members?.length ?? 0 }}</span>
+            }
+        </div>
+        <button class="add_member size-[40px] rounded-full">
+            <img src="assets/svg/icons/icon_black/add_member_black.svg" alt="add_member">
+        </button>
+    </div>
+}

@@ -1,10 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { Profile } from '../../../interfaces/profile';
-import { ActiveService } from '../../../services/set_aktiv_service';
-import { inject} from '@angular/core';
-
-
-
+import { Database } from '../../../services/db';
 
 @Component({
   selector: 'app-workspace',
@@ -14,8 +10,9 @@ import { inject} from '@angular/core';
 })
 export class Workspace {
 @Input() user!: Profile
+@Input() isActive: boolean = false
 
-active = inject(ActiveService);
+db = inject(Database);
 
 }
 

@@ -20,6 +20,8 @@
 
     --status-offline: rgba(104, 104, 104, 1);
     --status-online: rgba(146, 200, 62, 1);
+    --status-away: orange;
+    --link-profile: #1381FF;
 }
 
 @font-face {
@@ -38,4 +40,13 @@
 
 *, *::before, *::after {
     font-family: 'Nunito', sans-serif;
+}
+
+input{
+    outline: none;
+    font-family: 'Nunito';
+    font-weight: 700;
+    &::placeholder{
+        color: grey
+    }
 }

@@ -13,10 +13,10 @@
     </div>
 
     <div class="flex gap-2 items-center">
-        <h2>Frederik Beck</h2>
+        <h2>{{ currentUser()?.name }}</h2>
         <div class="flex relative">
-            <img class="size-[70px] " src="assets/svg/avatar/avatar_small/1.svg" alt="">
-            <div class="status_User online"></div>
+            <img class="size-[70px]" [src]='"assets/svg/avatar/avatar_small/" + (currentUser()?.avatar || "assets/svg/avatar/avatar_small/1") + ".svg"' alt="avatar">
+            <div class="status_User" [class]="currentUser()?.status"></div>
         </div>
         <button (click)="toggle_Dialog()">
             <img class="size-[30px]" src="assets/svg/icons/icon_black/dropdown_black.svg" alt="">
@@ -28,8 +28,77 @@
     @if (dialog_open) {
         <div class="profil_overlay" (click)="toggle_Dialog()">
             <div (click)="$event.stopPropagation()" class="flex flex-col items-center bg-color-white profil_content justify-center gap-4">
-                <button class="w-5/6"><span class="font-semibold text-2xl">Profil</span></button>
-                <button class="w-5/6"><span class="font-semibold text-2xl">Log out</span></button>
+                <button class="w-5/6" (click)="toggle_Profile()"><span class="font-semibold text-2xl">Profil</span></button>
+                <button class="w-5/6" (click)="logout()"><span class="font-semibold text-2xl" >Log out</span></button>
             </div>
         </div>
     }
+
+    @if(profile_open){
+        <div class="profil_overlay" >
+            <div class="flex flex-col justify-start bg-color-white profile_Dialog justify-center gap-[32px] p-[42px]">
+
+                <div class="flex items-center justify-between w-full">
+                    @if (!edit_profile) {
+                        <span class="text-2xl font-bold">Profil</span>
+                        } @else {
+                        <span class="text-2xl font-bold">Dein Profil bearbeiten</span>
+                        }
+                    <button class="size-[24px]" (click)="toggle_Profile()"><img src="assets/svg/icons/icon_black/close.svg" alt="close"></button>
+                </div>
+
+                <div class="w-full flex justify-center">
+                    <img class="size-[200px]" [src]='"assets/svg/avatar/avatar_small/" + (currentUser()?.avatar || "assets/svg/avatar/avatar_small/1") + ".svg"' alt="avatar">
+                </div>
+
+                @if(!edit_profile){
+                    <div class="w-full flex justify-between">
+                        <span class="text-3xl font-bold">{{ currentUser()?.name }}</span>
+                        <button class="text-[20px] text-[var(--hover-text)] hover:font-bold" (click)="toggle_EditProfile()">Bearbeiten</button>
+                    </div>
+    
+                    <div class="justify-start w-full flex items-center gap-[16px]">
+                        @if(currentUser()?.status === "online"){
+                            <div class="status_currentUser bg-[var(--status-online)]"></div>
+                            <span class="text-xl text-[var(--status-online)]">Aktiv</span>
+                        }
+                        @else if(currentUser()?.status === "away"){
+                            <div class="status_currentUser bg-[var(--status-away)]"></div>
+                            <span class="text-xl text-[var(--status-away)]">Abwesend</span>
+                        }
+                        @else {
+                            <div class="status_currentUser bg-[var(--status-offline)]"></div>
+                            <span class="text-xl text-[var(--status-offline)]">Offline</span>
+                        }
+                    </div>
+    
+                    <div class="w-full flex items-center gap-[16px] justify-start">
+                        <img class="size-[32px]" src="assets/svg/icons/icon_black/mail_black.svg" alt="email_icon">
+                        <span class="font-bold text-xl">E-Mail-Adresse</span>
+                    </div>
+                    <div  class="w-full">
+                        <span class="px-[48px] text-[20px] text-[var(--link-profile)]">{{ currentUser()?.email }}</span>
+                    </div>
+                }
+                @else {
+                    <form action="" class="flex flex-col gap-8">
+                        <div class="flex flex-col gap-2">
+                            <div class="flex gap-[32px]">
+                                <img class="size-[30px]" src="assets/svg/icons/icon_black/account_circle_black.svg" alt="profil_Icon">
+                                <span class="text-xl font-bold">Vollständiger Name</span>
+                            </div>
+                            <div class="edit_name flex px-4 w-full">
+                                <input name="new_Username" minlength="2" maxlength="40" #new_name="ngModel" required [(ngModel)]="new_Username" class="w-full" type="text" placeholder="{{ currentUser()?.name }}">
+                            </div>
+                        </div>
+                        <div class="flex gap-[30px] w-full justify-center">
+                            <button class="btn_raw text-[var(--highligh-color)] border font-bold" (click)="toggle_EditProfile()">Abbrechen</button>
+                            <button [disabled]="new_name.invalid" class="btn_raw bg-[var(--highligh-color)] text-white font-bold" (click)="edit_Name()">Speichern</button>
+                        </div>
+                    </form>
+                }
+            </div>
+        </div>
+    }
+
+

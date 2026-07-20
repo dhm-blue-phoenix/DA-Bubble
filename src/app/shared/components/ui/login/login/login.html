@@ -27,8 +27,8 @@
     </button>
 
     <div class="flex gap-[30px]">
-        <button (click)="test()" class="btn_raw bg-[var(--highligh-color)] text-white font-bold" [disabled]="email.invalid || password.invalid">Anmelden</button>
-        <button (click)="testguest()" class="btn_raw text-[var(--highligh-color)] border font-bold">Gäste-Login</button>
+        <button (click)="login()" class="btn_raw bg-[var(--highligh-color)] text-white font-bold" [disabled]="email.invalid || password.invalid">Anmelden</button>
+        <button (click)="login_as_guest()" class="btn_raw text-[var(--highligh-color)] border font-bold">Gäste-Login</button>
     </div>
 </div>
 

@@ -14,6 +14,7 @@ export interface Channel {
   id: string;
   name: string;
   description: string;
+  created_by: string;
   created_at: string;
   channel_members: { user_id: string }[];
 }
@@ -24,4 +25,4 @@ export interface ChannelMember {
   role: string;
 }
 
-export type SignalChannel = Channel | object;
+export type SignalChannel = Channel | null;

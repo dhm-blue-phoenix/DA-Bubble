@@ -28,13 +28,13 @@ export class Login {
     this.db.loginWithGoogle();
   }
 
-  test() {
-    console.log('email: ' + this.login_Data.email, 'password: ' + this.login_Data.password);
-    this.db.login(this.login_Data.email, this.login_Data.password);
-    this.router.navigate(['/workspace']);
+async login(){
+  await this.db.login(this.login_Data.email, this.login_Data.password)
+  if (this.db.isLogin()) {
+    this.router.navigate(['/workspace'])
   }
-  testguest() {
-    console.log('email: ' + this.guest_Data.email, 'password: ' + this.guest_Data.password);
-    this.router.navigate(['/workspace']);
-  }
+}
+login_as_guest(){
+  this.router.navigate(['/workspace'])
+}
 }

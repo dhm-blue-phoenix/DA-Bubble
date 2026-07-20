@@ -27,14 +27,10 @@ section{
     border-radius: 30px;
 }
 
-
-
 .dm_user{
     font-size: 18px;
     line-height: 100%;
 }
-
-
 
 .add_member{
 background-color: rgba(236, 238, 254, 1);
@@ -80,9 +76,6 @@ color: rgba(104, 104, 104, 1);
     }
 }
 
-button:hover img {
-    filter: invert(44%) sepia(69%) saturate(2878%) hue-rotate(225deg) brightness(99%) contrast(93%);
-}
 
 .workspace_button{
 padding: 12px 8px;
