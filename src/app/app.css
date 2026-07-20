@@ -26,6 +26,13 @@ font-size: 18px;
     filter: invert(44%) sepia(69%) saturate(2878%) hue-rotate(225deg) brightness(99%) contrast(93%);
 }
 
+.hover_btn:hover {
+    color: var(--hover-text);
+}
+.hover_btn:hover img {
+    filter: invert(44%) sepia(69%) saturate(2878%) hue-rotate(225deg) brightness(99%) contrast(93%);
+}
+
 .back_btn{
     padding: 8px;
     border-radius: 50%;

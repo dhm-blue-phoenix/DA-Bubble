@@ -27,7 +27,7 @@ db = inject(Database)
 active_type: WritableSignal<'channel' | 'chat' | null> = signal(null)
 channel_member_profiles: WritableSignal<Profile[]> = signal<Profile[]>([])
 dm_partner: WritableSignal<Profile | null> = signal<Profile | null>(null)
-channel_dialog_open: WritableSignal<boolean> = signal(false)
+dialog_mode: WritableSignal<'editChannel' | 'addChannel' | null> = signal(null)
 
 all_user = this.db.profiles
 all_channels = this.db.channels
@@ -45,7 +45,9 @@ channel_content = this.db.channelMsg
 chatHistory = viewChild<ElementRef<HTMLDivElement>>('chatHistory')
 
 constructor(){
-    this.db.getChannels(this.db.getCurrentUserId())
+    effect(() => {
+        if (this.db.isLogin()) this.db.getChannels(this.db.getCurrentUserId())
+    })
 
     effect(() => {
         this.messages_with_sender()
@@ -111,7 +113,7 @@ messages_with_sender = computed(() =>
 
     leaveChannel() {
         this.db.removeChannelMember(this.channel_id, this.db.getCurrentUserId())
-        this.channel_dialog_open.set(false)
+        this.dialog_mode.set(null)
         this.channel_id = ''
         this.channel_member_profiles.set([])
         this.active_type.set(null)

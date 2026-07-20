@@ -11,26 +11,26 @@
             </div>
             <div class="flex justify-between w-full items-center">
                 <div class="flex gap-1 items-center">
-                    <button class="flex gap-2 items-center hover:text-[var(--hover-text)] group " (click)="toggleMenu('channelOpen')" id="channel"><img class="size-24px" [class]="channelOpen ? 'rotated0' : 'rotated-90' " src="assets/svg/icons/icon_black/arrow_drop_down_black.svg" alt="dropdown-arrow">
+                    <button class="flex gap-2 items-center hover_btn" (click)="toggleMenu('channelOpen')" id="channel"><img class="size-24px" [class]="channelOpen ? 'rotated0' : 'rotated-90' " src="assets/svg/icons/icon_black/arrow_drop_down_black.svg" alt="dropdown-arrow">
                         <img class="size-24px" src="assets/svg/icons/icon_black/workspaces_black.svg" alt="workspace">
                         <h3>Channels</h3>
                     </button>
                 </div>
-                <button><img class="size-24px" src="assets/svg/icons/icon_black/add_black.svg" alt="workspace"></button>
+                <button (click)="dialog_mode.set('addChannel')" class="hover_btn"><img class="size-24px" src="assets/svg/icons/icon_black/add_black.svg" alt="workspace"></button>
             </div>
             <div [style.display]="channelOpen ? 'flex' : 'none'" class="w-full flex flex-col gap-2 p-2 overflow-y-auto max-h-48">
                 @for (ch of all_channels(); track ch.id;) {
                     <app-channels (click)="open_Chat(ch.id)" [ch]="ch" [isActive]="active_type() === 'channel' && channel_id === ch.id"></app-channels>
                 }
                 <div>
-                    <button class="flex gap-2 px-3 py-2 items-center">
+                    <button (click)="dialog_mode.set('addChannel')" class="flex gap-2 px-3 py-2 items-center hover_btn">
                         <img class="size-24px" src="assets/svg/icons/icon_black/add_circle_black.svg" alt="add-channel">
                         <span>Channel hinzufügen</span>
                     </button>
                 </div>
             </div>
             <div class="flex w-full items-center gap-2 justify-start">
-                <button class="flex gap-2 items-center hover:text-[var(--hover-text)]" (click)="toggleMenu('dmOpen')" id="dm"><img class="size-24px" [class]="dmOpen ? 'rotated0' : 'rotated-90' " src="assets/svg/icons/icon_black/arrow_drop_down_black.svg" alt="dropdown-arrow">
+                <button class="flex gap-2 items-center hover_btn" (click)="toggleMenu('dmOpen')" id="dm"><img class="size-24px" [class]="dmOpen ? 'rotated0' : 'rotated-90' " src="assets/svg/icons/icon_black/arrow_drop_down_black.svg" alt="dropdown-arrow">
                     <img class="size-24px" src="assets/svg/icons/icon_black/account_circle_black.svg" alt="add-channel">
                     <h3>Direktnachrichten</h3>
                 </button>
@@ -50,7 +50,7 @@
 
         <section class="chat flex flex-col bg-white flex-1">
             <div class="chat_header flex justify-between px-[42px] py-[24px] border-b-2 border-black/10 shadow-sm">
-                <app-chat-header class ="contents" [type]="active_type()" [dmPartner]="dm_partner()" [isSelfChat]="is_self_chat()" [channelInfo]="channel_info()" [memberProfiles]="channel_member_profiles()" (openChannelInfo)="channel_dialog_open.set(true)"></app-chat-header>
+                <app-chat-header class ="contents" [type]="active_type()" [dmPartner]="dm_partner()" [isSelfChat]="is_self_chat()" [channelInfo]="channel_info()" [memberProfiles]="channel_member_profiles()" (openChannelInfo)="dialog_mode.set('editChannel')"></app-chat-header>
             </div>
             <div class="chat_container w-full p-[20px] flex flex-col ">
                 <div #chatHistory class="chat_history w-full flex-1 overflow-y-auto ">
@@ -86,6 +86,6 @@
 </main>
 
 
-@if (channel_dialog_open()) {
-    <app-dialogs [channelInfo]="channel_info()" [channelCreator]="channel_creator()" (closed)="channel_dialog_open.set(false)" (save)="editChannel($event)" (leave)="leaveChannel()"></app-dialogs>
+@if (dialog_mode()) {
+    <app-dialogs [mode]="dialog_mode()" [channelInfo]="channel_info()" [channelCreator]="channel_creator()" (closed)="dialog_mode.set(null)" (save)="editChannel($event)" (leave)="leaveChannel()"></app-dialogs>
 }
