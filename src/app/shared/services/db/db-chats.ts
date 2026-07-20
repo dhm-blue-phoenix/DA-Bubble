@@ -5,6 +5,7 @@ import { SupabaseClient, PostgrestSingleResponse } from '@supabase/supabase-js';
 import { Supabase } from './db-superbase';
 
 import { ExistChat, ChatId } from '../../interfaces/db/db-chats';
+import { DbPostgrestError } from '../../interfaces/db-error';
 
 @Injectable({
   providedIn: 'root',
@@ -19,14 +20,14 @@ export class DatabaseChats {
    * @returns {Promise<ExistChat>} Ein Promise, das ein Objekt mit dem Erfolg und ggf. der chat_id zurückgibt.
    */
   private async checkExistChat(currentUserId: string, otherUserId: string): Promise<ExistChat> {
-    const { data: chats }: PostgrestSingleResponse<ChatId[]> = await this.supabase
+    const { data: chats, error }: PostgrestSingleResponse<ChatId[]> = await this.supabase
       .from('chat_members')
       .select('chat_id')
       .eq('user_id', currentUserId);
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
     if (chats && chats.length > 0) {
       const chatIds: string[] = chats.map((chat: ChatId): string => chat.chat_id);
-      const { data: sharedChats }: PostgrestSingleResponse<ChatId[]> =
-        await this.createNewChatMember(otherUserId, chatIds);
+      const sharedChats: ChatId[] = await this.findSharedChat(otherUserId, chatIds);
       if (sharedChats && sharedChats.length > 0) {
         return { success: true, chat_id: sharedChats[0].chat_id };
       }
@@ -38,17 +39,16 @@ export class DatabaseChats {
    * Sucht in einer Liste von Chat-IDs nach einer, bei der der andere Benutzer Mitglied ist.
    * @param {string} otherUserId - Die ID des anderen Benutzers.
    * @param {string[]} chatIds - Liste der Chat-IDs, in denen der aktuelle Benutzer ist.
-   * @returns {Promise<PostgrestSingleResponse<ChatId[]>>} Ein Promise mit der Liste der gemeinsamen Chat-IDs.
+   * @returns {Promise<ChatId[]>} Ein Promise mit der Liste der gemeinsamen Chat-IDs.
    */
-  private async createNewChatMember(
-    otherUserId: string,
-    chatIds: string[],
-  ): Promise<PostgrestSingleResponse<ChatId[]>> {
-    return await this.supabase
+  private async findSharedChat(otherUserId: string, chatIds: string[]): Promise<ChatId[]> {
+    const { data: sharedChats, error }: PostgrestSingleResponse<ChatId[]> = await this.supabase
       .from('chat_members')
       .select('chat_id')
       .eq('user_id', otherUserId)
       .in('chat_id', chatIds);
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
+    return sharedChats ?? [];
   }
 
   /**
@@ -68,6 +68,7 @@ export class DatabaseChats {
       { chat_id: newChat['id'], user_id: currentUserId },
       { chat_id: newChat['id'], user_id: otherUserId },
     ]);
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
     return newChat['id'];
   }
 

@@ -202,7 +202,7 @@ describe('DatabaseChannels', () => {
 
         expect(channelsChain.select).toHaveBeenCalledWith('name');
         expect(channelsChain.eq).toHaveBeenCalledWith('name', 'General');
-        expect(result).toEqual({ success: false, msg: 'Duplicate found' });
+        expect(result).toBe(false);
       });
 
       it('should create a new channel and member if no duplicate', async () => {

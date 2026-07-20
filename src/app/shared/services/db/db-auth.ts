@@ -1,23 +1,23 @@
-import { Injectable, signal, WritableSignal, PLATFORM_ID, inject } from '@angular/core';
+import { inject, Injectable, PLATFORM_ID, signal, WritableSignal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { environment } from '../../../../environment/environment';
 import { Supabase } from './db-superbase';
+import { Router } from '@angular/router';
 
 import {
-  SupabaseClient,
   AuthChangeEvent,
-  Session
+  PostgrestSingleResponse,
+  Session,
+  SupabaseClient,
 } from '@supabase/supabase-js';
-
-import { SupabaseResponseProfiles } from '../../interfaces/db/db-auth';
+import { DbAuthError, DbPostgrestError } from '../../interfaces/db-error';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DatabaseAuth {
   private readonly platformId: Object = inject(PLATFORM_ID);
-  private readonly debug_logs: boolean = environment.debug_logs;
   private readonly supabase: SupabaseClient = inject(Supabase)['supabase'];
+  private readonly router: Router = inject(Router);
 
   /** Signal, das den aktuellen Anmeldestatus des Benutzers hält. */
   public readonly _isUserLogin: WritableSignal<boolean> = signal<boolean>(false);
@@ -29,43 +29,46 @@ export class DatabaseAuth {
     if (isPlatformBrowser(this.platformId)) {
       this.setupAuthListener();
       this.setupWindowFocusListener();
-
-      if (this.debug_logs) {
-        this.debugging();
-      }
     }
   }
 
   /**
-   * Interne Funktion für Debugging-Zwecke.
+   * Navigiert zu einer Route und fängt dabei mögliche Navigations‑Fehler ab.
+   * @param {string[]} commands – Die Router‑Kommandos
+   * @returns {Promise<void>}
    */
-  private async debugging(): Promise<void> {
-    //console.log('environment', environment);
-    //await this.signUpNewUser(environment.debug_user_email, environment.debug_user_password, environment.debug_user_name, 'dummydata');
-    //await this.signUpNewUser(environment.debug_user2_email, environment.debug_user2_password, environment.debug_user2_name);
-    //await this.signInWithEmail(environment.debug_user_email, environment.debug_user_password);
-    //await this.signOut();
+  private async safeNavigate(commands: string[]): Promise<void> {
+    if (this.router && typeof this.router.navigate === 'function') {
+      try {
+        await this.router.navigate(commands);
+      } catch (e) {
+        if (console && console.warn) console.warn('Navigation error suppressed:', e);
+      }
+    }
   }
 
   /**
    * Lauscht auf Änderungen des Authentifizierungsstatus durch Supabase.
    */
   private setupAuthListener(): void {
-    this.supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session: Session | null): Promise<void> => {
-      if (this.debug_logs) {
-        console.log('Auth state change:', event, session);
-      }
-      if (event === 'SIGNED_OUT') {
-        this.currentUserId = '';
-        this._isUserLogin.set(false);
-      } else if (session?.user) {
+    this.supabase.auth.onAuthStateChange(
+      async (event: AuthChangeEvent, session: Session | null): Promise<void> => {
+        if (event === 'SIGNED_OUT' || !session?.user) {
+          this.currentUserId = '';
+          this._isUserLogin.set(false);
+          await this.safeNavigate(['/']);
+          return;
+        }
+        if (event === 'PASSWORD_RECOVERY') {
+          await this.safeNavigate(['/reset-password']);
+          return;
+        }
         this.currentUserId = session.user.id;
         this._isUserLogin.set(true);
-        if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
-          await this.setStatus('online');
-        }
-      }
-    });
+        await this.safeNavigate(['/workspace']);
+        if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') this.setStatus('online').catch(console.error);
+      },
+    );
   }
 
   /**
@@ -110,15 +113,19 @@ export class DatabaseAuth {
    * @param {'offline' | 'online' | 'away'} value - Der neue Status.
    * @returns {Promise<void>}
    */
-  private async updateProfileStatus(profileId: string, value: 'offline' | 'online' | 'away'): Promise<void> {
-    if (this.debug_logs) console.log('updateProfileStatus', profileId, value);
-    if (profileId.length > 5 && value.length > 1) {
-      await this.supabase
-        .from('profiles')
-        .update({ status: value })
-        .eq('id', profileId)
-        .select();
-    }
+  private async updateProfileStatus(
+    profileId: string,
+    value: 'offline' | 'online' | 'away',
+  ): Promise<void> {
+    const { error }: DbPostgrestError = await this.supabase
+      .from('profiles')
+      .update({ status: value })
+      .eq('id', profileId)
+      .select();
+    if (error)
+      throw new Error(
+        `[ DB_CODE:${error['code']} ] MSG: ${error['message']} | HINT: ${error['hint']}`,
+      );
   }
 
   /**
@@ -127,42 +134,42 @@ export class DatabaseAuth {
    * @returns {Promise<boolean>} True, wenn die E-Mail existiert, sonst false.
    */
   public async checkEmailExists(email: string): Promise<boolean> {
-    const { data } = await this.supabase
+    const { data, error }: PostgrestSingleResponse<any> = await this.supabase
       .from('profiles')
       .select('id')
       .eq('email', email)
-      .maybeSingle();
-    return !!data;
+      .limit(1);
+    if (error)
+      throw new Error(
+        `[ DB_CODE:${error['code']} ] MSG: ${error['message']} | HINT: ${error['hint']}`,
+      );
+    return Array.isArray(data) && data.length > 0;
   }
 
   /**
    * Registriert einen neuen Benutzer und loggt ihn bei Erfolg direkt ein.
-   * @param {string} user_email - E-Mail Adresse.
+   * @param {string} user_email - E-Mail-Adresse.
    * @param {string} user_password - Passwort.
    * @param {string} user_name - Anzeigename.
    * @param {string} user_avatar - Avatar-URL oder -Name.
-   * @returns {Promise<void>}
+   * @returns {Promise<boolean>} - Gibt ein false zurück, wenn ein Duplikat vorliegt ansonsten true.
    */
   public async signUpNewUser(
     user_email: string,
     user_password: string,
     user_name: string,
     user_avatar: string,
-  ): Promise<void> {
-    if (user_email.length > 5 && user_password.length > 5 && user_name.length > 5) {
-      if (await this.checkEmailExists(user_email)) throw new Error('User email already exists');
-      const { data, error } = await this.supabase.auth.signUp({
-        email: user_email,
-        password: user_password,
-        options: {
-          data: { name: user_name, avatar: user_avatar },
-        },
-      });
-      if (this.debug_logs) {
-        if (error) console.error('signUpNewUser_error', error);
-        console.log('signUpNewUser_data', data);
-      }
-    }
+  ): Promise<boolean> {
+    if (await this.checkEmailExists(user_email)) return false;
+    const { error }: DbAuthError = await this.supabase.auth.signUp({
+      email: user_email,
+      password: user_password,
+      options: {
+        data: { name: user_name, avatar: user_avatar },
+      },
+    });
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
+    return true;
   }
 
   /**
@@ -172,27 +179,37 @@ export class DatabaseAuth {
    * @returns {Promise<void>}
    */
   public async signInWithEmail(user_email: string, user_password: string): Promise<void> {
-    if (user_email.length > 5 && user_password.length > 5) {
-      const { data, error } = await this.supabase.auth.signInWithPassword({
-        email: user_email,
-        password: user_password,
-      });
-      if (this.debug_logs) {
-        if (error) console.error('signInWithEmail_error', error);
-        console.log('signInWithEmail_data', data);
-      }
-    }
+    const { error }: DbAuthError = await this.supabase.auth.signInWithPassword({
+      email: user_email,
+      password: user_password,
+    });
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
+  }
+
+  /**
+   * Registriert einen neuen Benutzer mit Google und leitet einen danach zur hauptseite zurück.
+   * @returns {Promise<void>}
+   */
+  public async signInWithGoogle(): Promise<void> {
+    const { error }: DbAuthError = await this.supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
   }
 
   /**
    * Fordert eine E-Mail zum Zurücksetzen des Passworts an.
-   * @param {string} email - Die E-Mail Adresse des Benutzers.
+   * @param {string} email - Die E-Mail-Adresse des Benutzers.
    * @returns {Promise<void>}
    */
   public async resetPasswordForEmail(email: string): Promise<void> {
-    await this.supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: 'http://example.com/account/update-password',
+    const { error }: DbAuthError = await this.supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
     });
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
   }
 
   /**
@@ -201,7 +218,8 @@ export class DatabaseAuth {
    * @returns {Promise<void>}
    */
   public async changePassword(newPassword: string): Promise<void> {
-    await this.supabase.auth.updateUser({ password: newPassword });
+    const { error }: DbAuthError = await this.supabase.auth.updateUser({ password: newPassword });
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
   }
 
   /**
@@ -212,10 +230,9 @@ export class DatabaseAuth {
     const userId: string = this.currentUserId;
     this.currentUserId = '';
     if (userId) await this.updateProfileStatus(userId, 'offline');
-    if (this.debug_logs) console.warn('Logout!!!');
-    const { error } = await this.supabase.auth.signOut();
-    if (this.debug_logs && error) {
-      console.error('signOut_error', error);
-    }
+    const { error }: DbAuthError = await this.supabase.auth.signOut();
+    if (error) throw new Error(
+      `[ DB_CODE:${error['code']} ] MSG: ${error['message']}`,
+    );
   }
 }

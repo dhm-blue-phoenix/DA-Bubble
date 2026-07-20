@@ -10,11 +10,16 @@ Verwaltet die Authentifizierung der Benutzer und deren Online-Status.
 ### `signUpNewUser`
 - **Zweck:** Registriert einen neuen Benutzer.
 - **Eingabe:** `user_email` (string), `user_password` (string), `user_name` (string), `user_avatar` (string)
-- **Ausgabe:** `Promise<void>` (Kein direkter Rückgabewert. Im Erfolgsfall wird der Benutzer automatisch eingeloggt und auf online gesetzt.)
+- **Ausgabe:** `Promise<boolean>` (Gibt ein false zurück wenn ein Duplikat vorliegt ansonsten true.)
 
 ### `signInWithEmail`
 - **Zweck:** Loggt einen bestehenden Benutzer ein.
 - **Eingabe:** `user_email` (string), `user_password` (string)
+- **Ausgabe:** `Promise<void>`
+
+### `signInWithGoogle`
+- **Zweck:** Loggt einen bestehenden oder neuen Benutzer mit seinen Google Account an.
+- **Eingabe:** Keine.
 - **Ausgabe:** `Promise<void>`
 
 ### `signOut`
@@ -43,7 +48,7 @@ Verwaltet Kanäle (Channels) und deren Mitglieder. Hält über Angular Signals d
 ### `createNewChannel`
 - **Zweck:** Erstellt einen neuen Kanal und fügt den Ersteller als Admin hinzu.
 - **Eingabe:** `userId` (string), `name` (string), `description` (string)
-- **Ausgabe:** `Promise<ReturnFromCreateNewChannel>` (Gibt im Fehlerfall `{ success: false, msg: 'Duplicate found' }` zurück, ansonsten `void`)
+- **Ausgabe:** `Promise<boolean>` (Gibt ein false zurück wenn ein Duplikat vorliegt ansonsten true.)
 
 ### `createNewMember` / `removeMember`
 - **Zweck:** Fügt einen Benutzer zu einem Kanal hinzu oder entfernt ihn.

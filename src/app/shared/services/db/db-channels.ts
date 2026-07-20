@@ -12,13 +12,13 @@ import { Supabase } from './db-superbase';
 
 import {
   ChannelId,
-  ReturnFromCreateNewChannel,
   SignalChannels,
   SignalChannel,
   ChannelIdAndName,
   Channel,
   ChannelMember,
 } from '../../interfaces/db/db-channels';
+import { DbPostgrestError } from '../../interfaces/db-error';
 
 @Injectable({
   providedIn: 'root',
@@ -67,7 +67,7 @@ export class DatabaseChannels {
    * @param {RealtimePostgresChangesPayload<object>} payload - Das Event-Payload von Supabase.
    */
   private handleChannelsEvent(payload: RealtimePostgresChangesPayload<object>): void {
-    const { table, eventType }: { table: string, eventType: string} = payload;
+    const { table, eventType }: { table: string; eventType: string } = payload;
     if (table === 'channels') {
       if (eventType === 'INSERT') this.insertEventChannel(payload);
       if (eventType === 'UPDATE') this.updateEventChannel(payload);
@@ -101,7 +101,10 @@ export class DatabaseChannels {
       this._channel.set({ ...currentChannel, ...channel });
     }
     this._channels.update((channels: SignalChannels): ChannelIdAndName[] =>
-      channels.map((c: ChannelIdAndName): ChannelIdAndName => (c.id === channel.id ? { ...c, name: channel.name } : c))
+      channels.map(
+        (c: ChannelIdAndName): ChannelIdAndName =>
+          c.id === channel.id ? { ...c, name: channel.name } : c,
+      ),
     );
   }
 
@@ -117,7 +120,7 @@ export class DatabaseChannels {
       if (!members.some((m: { user_id: string }): boolean => m.user_id === member.user_id)) {
         this._channel.set({
           ...currentChannel,
-          channel_members: [...members, { user_id: member.user_id }]
+          channel_members: [...members, { user_id: member.user_id }],
         });
       }
     }
@@ -133,7 +136,9 @@ export class DatabaseChannels {
     if (currentChannel !== null && currentChannel.id === member.channel_id) {
       this._channel.set({
         ...currentChannel,
-        channel_members: (currentChannel.channel_members || []).filter((m: { user_id: string }) => m.user_id !== member.user_id)
+        channel_members: (currentChannel.channel_members || []).filter(
+          (m: { user_id: string }): boolean => m.user_id !== member.user_id,
+        ),
       });
     }
   }
@@ -149,10 +154,11 @@ export class DatabaseChannels {
    * @returns {Promise<void>}
    */
   public async getChannelIds(userId: string): Promise<void> {
-    const { data }: PostgrestSingleResponse<ChannelId[] | []> = await this.supabase
+    const { data, error }: PostgrestSingleResponse<ChannelId[] | []> = await this.supabase
       .from('channel_members')
       .select('channel_id, channels(name)')
       .eq('user_id', userId);
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
     if (data && data.length > 0) {
       const channels: ChannelIdAndName[] = data.map((channel: ChannelId): ChannelIdAndName => {
         const channelName: { name: string } = channel['channels'] as { name: string };
@@ -168,10 +174,11 @@ export class DatabaseChannels {
    * @returns {Promise<void>}
    */
   public async getChannelData(channelId: string): Promise<void> {
-    const { data } = await this.supabase
+    const { data, error }: PostgrestSingleResponse<any> = await this.supabase
       .from('channels')
       .select('id, name, description, created_by, created_at, channel_members(user_id)')
       .eq('id', channelId);
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
     if (data && data.length > 0) {
       this._channel.set(data[0]);
     }
@@ -182,16 +189,15 @@ export class DatabaseChannels {
    * @param {string} userId - Die ID des erstellenden Benutzers.
    * @param {string} name - Der Name des neuen Kanals.
    * @param {string} description - Die Beschreibung des Kanals.
-   * @returns {Promise<ReturnFromCreateNewChannel>} void im Erfolgsfall, ansonsten ein Objekt mit Fehlermeldung.
+   * @returns {Promise<boolean>} - Gibt ein false zurück wenn ein Duplikat vorliegt ansonsten true.
    */
   public async createNewChannel(
     userId: string,
     name: string,
     description: string,
-  ): Promise<ReturnFromCreateNewChannel> {
-    if (await this.checkDuplicateCannelName(name))
-      return { success: false, msg: 'Duplicate found' };
-    const { data }: PostgrestSingleResponse<{ id: string }[]> = await this.supabase
+  ): Promise<boolean> {
+    if (await this.checkDuplicateChannelName(name)) return false;
+    const { data, error }: PostgrestSingleResponse<{ id: string }[]> = await this.supabase
       .from('channels')
       .insert({
         name: name,
@@ -199,7 +205,9 @@ export class DatabaseChannels {
         created_by: userId,
       })
       .select();
-    if (data && data.length > 0) this.createNewMember(data[0]['id'], userId, 'admin');
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
+    if (data && data.length > 0) await this.createNewMember(data[0]['id'], userId, 'admin');
+    return true;
   }
 
   /**
@@ -207,11 +215,12 @@ export class DatabaseChannels {
    * @param {string} name - Der zu prüfende Kanal-Name.
    * @returns {Promise<boolean>} True, wenn der Name existiert, sonst false.
    */
-  private async checkDuplicateCannelName(name: string): Promise<boolean> {
-    const { data }: PostgrestSingleResponse<Object[]> = await this.supabase
+  private async checkDuplicateChannelName(name: string): Promise<boolean> {
+    const { data, error }: PostgrestSingleResponse<Object[]> = await this.supabase
       .from('channels')
       .select('name')
       .eq('name', name);
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
     return !!(data && data.length > 0);
   }
 
@@ -227,7 +236,7 @@ export class DatabaseChannels {
     userId: string,
     role: 'admin' | 'member',
   ): Promise<void> {
-    await this.supabase
+    const { error }: DbPostgrestError = await this.supabase
       .from('channel_members')
       .insert({
         channel_id: channelId,
@@ -235,6 +244,7 @@ export class DatabaseChannels {
         role: role,
       })
       .select();
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
   }
 
   /**
@@ -244,11 +254,12 @@ export class DatabaseChannels {
    * @returns {Promise<void>}
    */
   public async removeMember(channelId: string, userId: string): Promise<void> {
-    await this.supabase
+    const { error }: DbPostgrestError = await this.supabase
       .from('channel_members')
       .delete()
       .eq('channel_id', channelId)
       .eq('user_id', userId);
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
   }
 
   /**
@@ -263,7 +274,7 @@ export class DatabaseChannels {
     name: string,
     description: string,
   ): Promise<void> {
-    await this.supabase
+    const { error }: DbPostgrestError = await this.supabase
       .from('channels')
       .update({
         name: name,
@@ -272,5 +283,6 @@ export class DatabaseChannels {
       })
       .eq('id', channelId)
       .select();
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
   }
 }
