@@ -3,12 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Supabase } from './db-superbase';
 import { Router } from '@angular/router';
 
-import {
-  AuthChangeEvent,
-  PostgrestSingleResponse,
-  Session,
-  SupabaseClient,
-} from '@supabase/supabase-js';
+import { PostgrestSingleResponse, Session, SupabaseClient } from '@supabase/supabase-js';
 import { DbAuthError, DbPostgrestError } from '../../interfaces/db-error';
 
 @Injectable({
@@ -27,7 +22,6 @@ export class DatabaseAuth {
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
-      this.setupAuthListener();
       this.setupWindowFocusListener();
     }
   }
@@ -48,27 +42,43 @@ export class DatabaseAuth {
   }
 
   /**
-   * Lauscht auf Änderungen des Authentifizierungsstatus durch Supabase.
+   * Handhabt den Abmeldevorgang (Logout).
+   * Setzt die lokale Benutzer-ID zurück, aktualisiert den Login-Status auf 'false'
+   * und leitet den Nutzer sicher auf die Startseite ('/') weiter.
    */
-  private setupAuthListener(): void {
-    this.supabase.auth.onAuthStateChange(
-      async (event: AuthChangeEvent, session: Session | null): Promise<void> => {
-        if (event === 'SIGNED_OUT' || !session?.user) {
-          this.currentUserId = '';
-          this._isUserLogin.set(false);
-          await this.safeNavigate(['/']);
-          return;
-        }
-        if (event === 'PASSWORD_RECOVERY') {
-          await this.safeNavigate(['/reset-password']);
-          return;
-        }
-        this.currentUserId = session.user.id;
-        this._isUserLogin.set(true);
-        await this.safeNavigate(['/workspace']);
-        if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') this.setStatus('online').catch(console.error);
-      },
-    );
+  public async eventHelperSignedOut(): Promise<void> {
+    this.currentUserId = '';
+    this._isUserLogin.set(false);
+    await this.safeNavigate(['/']);
+  }
+
+  /**
+   * Reagiert auf das Password-Recovery-Event.
+   * Leitet den Nutzer direkt auf die Seite zur Passwort-Wiederherstellung ('/reset-password') weiter.
+   */
+  public async eventHelperPasswordRecovery(): Promise<void> {
+    await this.safeNavigate(['/reset-password']);
+  }
+
+  /**
+   * Führt das Haupt-Setup für eine aktive Benutzersitzung aus.
+   * Speichert die aktuelle User-ID, setzt den Login-Status auf 'true'
+   * und leitet den Nutzer in seinen Hauptarbeitsbereich ('/workspace') weiter.
+   *
+   * @param session Die aktuelle Supabase-Sitzung oder null
+   */
+  public async eventHelperMainSetup(session: Session | null): Promise<void> {
+    if (session) this.currentUserId = session.user.id;
+    this._isUserLogin.set(true);
+    await this.safeNavigate(['/workspace']);
+  }
+
+  /**
+   * Führt spezifische Aktionen beim allerersten Laden der Session aus (Initial Session).
+   * Setzt den Systemstatus des Benutzers auf 'online'.
+   */
+  public async eventHelperInitialSession(): Promise<void> {
+    this.setStatus('online');
   }
 
   /**
@@ -174,7 +184,7 @@ export class DatabaseAuth {
 
   /**
    * Meldet einen bestehenden Benutzer mit E-Mail und Passwort an.
-   * @param {string} user_email - E-Mail Adresse.
+   * @param {string} user_email - E-Mail-Adresse.
    * @param {string} user_password - Passwort.
    * @returns {Promise<void>}
    */
@@ -231,8 +241,6 @@ export class DatabaseAuth {
     this.currentUserId = '';
     if (userId) await this.updateProfileStatus(userId, 'offline');
     const { error }: DbAuthError = await this.supabase.auth.signOut();
-    if (error) throw new Error(
-      `[ DB_CODE:${error['code']} ] MSG: ${error['message']}`,
-    );
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
   }
 }

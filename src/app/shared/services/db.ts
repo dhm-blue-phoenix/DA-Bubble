@@ -1,4 +1,7 @@
-import { inject, Injectable, PLATFORM_ID, Signal } from '@angular/core';
+import { effect, inject, Injectable, PLATFORM_ID, Signal } from '@angular/core';
+
+import { Supabase } from './db/db-superbase';
+import { AuthChangeEvent, Session, SupabaseClient } from '@supabase/supabase-js';
 
 import { DatabaseProfiles } from './db/db-profiles';
 import { DatabaseAuth } from './db/db-auth';
@@ -9,7 +12,7 @@ import { DatabaseThreads } from './db/db-threads';
 
 import { Profile, Profiles } from '../interfaces/profile';
 import { Messages } from '../interfaces/messages';
-import { ReturnFromCreateNewChannel, SignalChannel, SignalChannels } from '../interfaces/db/db-channels';
+import { SignalChannel, SignalChannels } from '../interfaces/db/db-channels';
 import { MsgType, ReactionResult } from '../interfaces/db/db-messages';
 import { isPlatformBrowser } from '@angular/common';
 
@@ -17,6 +20,7 @@ import { isPlatformBrowser } from '@angular/common';
   providedIn: 'root',
 })
 export class Database {
+  private readonly supabase: SupabaseClient = inject(Supabase)['supabase'];
   private readonly platformId: Object = inject(PLATFORM_ID);
 
   private readonly db_profiles: DatabaseProfiles = inject(DatabaseProfiles);
@@ -44,7 +48,55 @@ export class Database {
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
       this.loadProfiles();
+      this.setupAuthListener();
     }
+  }
+
+  dummyCode() {
+    const data = effect(() => {
+      const profile = this.db_profiles
+        ._profiles()
+        .find((p) => p.id === this.db_auth.getCurrentUserId());
+
+      console.log('profile', !!profile?.avatar);
+    });
+
+    this.supabase.auth.onAuthStateChange(
+      async (event: AuthChangeEvent, session: Session | null): Promise<void> => {
+        if (event === 'SIGNED_IN') {
+          console.log('DEBUG: EVENT_DATA', event, 'Session', session);
+          console.warn('p', session?.user.app_metadata?.provider);
+          console.warn('i', session?.user.id);
+          const id = session?.user.id;
+          if (!id) return;
+          console.log(data);
+        }
+      },
+    );
+  }
+
+  /**
+   * Lauscht auf Änderungen des Authentifizierungsstatus durch Supabase.
+   */
+  private setupAuthListener(): void {
+    this.supabase.auth.onAuthStateChange(
+      async (event: AuthChangeEvent, session: Session | null): Promise<void> => {
+        if (!session?.user) this.db_auth.eventHelperSignedOut();
+        switch (event) {
+          case 'SIGNED_OUT':
+            this.db_auth.eventHelperSignedOut();
+            break;
+          case 'PASSWORD_RECOVERY':
+            this.db_auth.eventHelperPasswordRecovery();
+            break;
+          case 'INITIAL_SESSION':
+            this.db_auth.eventHelperInitialSession();
+            break;
+          default:
+            this.db_auth.eventHelperMainSetup(session);
+        }
+      },
+    );
   }
 
   /**
@@ -124,7 +176,10 @@ export class Database {
    * @param {string} user_password - Das Passwort.
    */
   public async login(user_email: string, user_password: string): Promise<void> {
-    await this.safeCall((): Promise<void> => this.db_auth.signInWithEmail(user_email.trim(), user_password.trim()), undefined);
+    await this.safeCall(
+      (): Promise<void> => this.db_auth.signInWithEmail(user_email.trim(), user_password.trim()),
+      undefined,
+    );
   }
 
   /**

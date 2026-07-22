@@ -1,0 +1,39 @@
+// Hauptfunktion, die du aufrufst, wenn dein Signal/Event reinkommt
+function zeigeBrowserBenachrichtigung(titel, nachricht) {
+  // 1. Prüfen, ob der Browser das überhaupt unterstützt
+  if (!("Notification" in window)) {
+    console.warn("Dieser Browser unterstützt keine Web-Benachrichtigungen.");
+    return;
+  }
+
+  // 2. Hat der Nutzer Benachrichtigungen bereits erlaubt?
+  if (Notification.permission === "granted") {
+    sendePushWennVersteckt(titel, nachricht);
+  }
+  // 3. Wenn weder erlaubt noch blockiert: Nutzer um Erlaubnis fragen
+  else if (Notification.permission !== "denied") {
+    Notification.requestPermission().then((permission) => {
+      if (permission === "granted") {
+        sendePushWennVersteckt(titel, nachricht);
+      }
+    });
+  }
+}
+
+// Hilfsfunktion, die den eigentlichen Push sendet
+function sendePushWennVersteckt(titel, nachricht) {
+  // document.hidden ist 'true', wenn der Tab im Hintergrund ist oder das Fenster minimiert wurde
+  if (document.hidden) {
+    const notification = new Notification(titel, {
+      body: nachricht,
+      // Optional: Du kannst hier auch ein Icon mitgeben
+      // icon: '/pfad/zu/deinem/logo.png'
+    });
+
+    // Optional: Was passiert, wenn der Nutzer auf die Benachrichtigung klickt?
+    notification.onclick = function() {
+      window.focus(); // Holt den Tab in den Vordergrund
+      this.close();   // Schließt das kleine Popup
+    };
+  }
+}
