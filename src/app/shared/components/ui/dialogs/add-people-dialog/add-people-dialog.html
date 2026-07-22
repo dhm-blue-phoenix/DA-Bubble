@@ -1,0 +1,24 @@
+
+<div class="p-10 flex flex-col gap-8">
+    <div class="flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <span class="text-2xl font-bold">Leute hinzufügen</span>
+        </div>
+        <button (click)="closed.emit()" class="size-[40px] rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]"><img class="size-5" src="assets/svg/icons/icon_black/close.svg" alt=""></button>
+    </div>
+
+    <div class="flex items-center gap-2">
+        <span class="text-2xl font-bold text-[var(--hover-text)]">#</span>
+        <span class="text-2xl font-bold text-[var(--hover-text)]">{{ channelInfo?.name }}</span>
+    </div>
+
+    <form class="flex flex-col gap-4">
+        <div class="border border-black/15 rounded-2xl px-4 py-3 flex items-center gap-2">
+            <input [(ngModel)]="name" name="memberName" type="text" placeholder="Name eingeben" class="text-lg outline-none w-full">
+        </div>
+
+        <div class="bg-white rounded-b-3xl w-full max-w-[720px] pb-10 flex justify-end">
+            <button (click)="addMember()" [disabled]="!name.trim()" class="btn_raw bg-[var(--highligh-color)] text-white font-bold">Hinzufügen</button>
+        </div>
+    </form>
+</div>

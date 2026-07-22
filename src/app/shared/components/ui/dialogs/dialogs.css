@@ -11,7 +11,6 @@ left: 0px;
 }
 
 .dialog_content{
-
 border-radius: 30px;
 background-color: white;
 position: absolute;
@@ -19,3 +18,9 @@ left: 50%;
 top: 50%;
 transform: translate(-50%, -50%);
     }
+
+.dialog_content_add_member{
+top: 45%;
+left: 60%;
+
+}

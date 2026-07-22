@@ -1,10 +1,13 @@
 <section class="dialog_bg fixed inset-0 bg-black/50 flex flex-col items-center justify-center">
-    <div class="dialog_content bg-white rounded-t-3xl w-full max-w-[720px]">
+    <div class="dialog_content bg-white rounded-t-3xl w-full max-w-[720px]" [class.dialog_content_add_member]="mode === 'addMember'">
         @if (mode === 'editChannel') {
             <app-edit-channel-dialog [channelInfo]="channelInfo" [channelCreator]="channelCreator" (closed)="closed.emit()" (save)="save.emit($event)" (leave)="leave.emit()"></app-edit-channel-dialog>
         }
         @else if (mode === 'addChannel') {
             <app-add-channel-dialog (closed)="closed.emit()"></app-add-channel-dialog>
+        }
+        @else if (mode === 'addMember') {
+            <app-add-people-dialog [channelInfo]="channelInfo" (closed)="closed.emit()"></app-add-people-dialog>
         }
         </div>
 </section>

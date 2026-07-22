@@ -21,8 +21,10 @@
                 <span class="text-xl">{{ channelInfo?.channel_members?.length ?? 0 }}</span>
             }
         </div>
-        <button class="add_member size-[40px] rounded-full">
+        <button (click)="openAddMember.emit()" class="add_member size-[40px] rounded-full">
             <img src="assets/svg/icons/icon_black/add_member_black.svg" alt="add_member">
         </button>
     </div>
+
+
 }
