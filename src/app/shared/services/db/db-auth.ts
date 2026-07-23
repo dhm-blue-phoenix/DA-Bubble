@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 
 import { PostgrestSingleResponse, Session, SupabaseClient } from '@supabase/supabase-js';
 import { DbAuthError, DbPostgrestError } from '../../interfaces/db-error';
+import { Profile } from '../../interfaces/profile';
 
 @Injectable({
   providedIn: 'root',
@@ -34,10 +35,26 @@ export class DatabaseAuth {
   private async safeNavigate(commands: string[]): Promise<void> {
     if (this.router && typeof this.router.navigate === 'function') {
       try {
-        await this.router.navigate(commands);
+        if (commands[0] === 'select-avatar') {
+          await this.router.navigate(commands, {
+            state: { provider: 'google' },
+          });
+        } else {
+          await this.router.navigate(commands);
+        }
       } catch (e) {
         if (console && console.warn) console.warn('Navigation error suppressed:', e);
       }
+    }
+  }
+
+  /**
+   * Leitet den Nutzer sicher auf die Startseite ('/select-avatar') weiter wo er dan als
+   * Google User seinen Avatar wehlen kann.
+   */
+  public async eventHelperSignedInIsGoogle(profile: Profile): Promise<void> {
+    if (!profile['avatar']) {
+      this.safeNavigate(['select-avatar']);
     }
   }
 
@@ -67,8 +84,8 @@ export class DatabaseAuth {
    *
    * @param session Die aktuelle Supabase-Sitzung oder null
    */
-  public async eventHelperMainSetup(session: Session | null): Promise<void> {
-    if (session) this.currentUserId = session.user.id;
+  public async eventHelperMainSetup(session: Session): Promise<void> {
+    this.currentUserId = session['user']['id'];
     this._isUserLogin.set(true);
     await this.safeNavigate(['/workspace']);
   }
@@ -193,6 +210,7 @@ export class DatabaseAuth {
       email: user_email,
       password: user_password,
     });
+    window.location.reload();
     if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
   }
 

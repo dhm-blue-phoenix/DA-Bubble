@@ -10,7 +10,7 @@ Verwaltet die Authentifizierung der Benutzer und deren Online-Status.
 ### `signUpNewUser`
 - **Zweck:** Registriert einen neuen Benutzer.
 - **Eingabe:** `user_email` (string), `user_password` (string), `user_name` (string), `user_avatar` (string)
-- **Ausgabe:** `Promise<boolean>` (Gibt ein false zurück wenn ein Duplikat vorliegt ansonsten true.)
+- **Ausgabe:** `Promise<boolean>` (Gibt ein false zurück, wenn ein Duplikat vorliegt ansonsten true.)
 
 ### `signInWithEmail`
 - **Zweck:** Loggt einen bestehenden Benutzer ein.
@@ -102,6 +102,11 @@ Verwaltet Benutzerprofile und hält sie über Signals synchron.
 
 ### `updateProfileName`
 - **Zweck:** Ändert den Namen eines Benutzers.
+- **Eingabe:** `profileId` (string), `value` (string)
+- **Ausgabe:** `Promise<void>`
+
+### `updateProfileAvatar`
+- **Zweck:** Ändert den Avatar eines Benutzers.
 - **Eingabe:** `profileId` (string), `value` (string)
 - **Ausgabe:** `Promise<void>`
 

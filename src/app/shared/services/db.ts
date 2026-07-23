@@ -1,4 +1,4 @@
-import { effect, inject, Injectable, PLATFORM_ID, Signal } from '@angular/core';
+import { inject, Injectable, PLATFORM_ID, Signal } from '@angular/core';
 
 import { Supabase } from './db/db-superbase';
 import { AuthChangeEvent, Session, SupabaseClient } from '@supabase/supabase-js';
@@ -52,37 +52,20 @@ export class Database {
     }
   }
 
-  dummyCode() {
-    const data = effect(() => {
-      const profile = this.db_profiles
-        ._profiles()
-        .find((p) => p.id === this.db_auth.getCurrentUserId());
-
-      console.log('profile', !!profile?.avatar);
-    });
-
-    this.supabase.auth.onAuthStateChange(
-      async (event: AuthChangeEvent, session: Session | null): Promise<void> => {
-        if (event === 'SIGNED_IN') {
-          console.log('DEBUG: EVENT_DATA', event, 'Session', session);
-          console.warn('p', session?.user.app_metadata?.provider);
-          console.warn('i', session?.user.id);
-          const id = session?.user.id;
-          if (!id) return;
-          console.log(data);
-        }
-      },
-    );
-  }
-
   /**
    * Lauscht auf Änderungen des Authentifizierungsstatus durch Supabase.
    */
   private setupAuthListener(): void {
     this.supabase.auth.onAuthStateChange(
       async (event: AuthChangeEvent, session: Session | null): Promise<void> => {
-        if (!session?.user) this.db_auth.eventHelperSignedOut();
+        if (!session?.user) return this.db_auth.eventHelperSignedOut();
+
+        this.db_auth.eventHelperMainSetup(session);
+
         switch (event) {
+          case 'SIGNED_IN':
+            this.eventHelperSignedIn(session);
+            break;
           case 'SIGNED_OUT':
             this.db_auth.eventHelperSignedOut();
             break;
@@ -92,11 +75,23 @@ export class Database {
           case 'INITIAL_SESSION':
             this.db_auth.eventHelperInitialSession();
             break;
-          default:
-            this.db_auth.eventHelperMainSetup(session);
         }
       },
     );
+  }
+
+  /**
+   * Helper Funktion fürs Anmelden
+   */
+  private async eventHelperSignedIn(session: Session): Promise<void> {
+    const provider: string | undefined = session['user']['app_metadata']['provider'];
+    const profile: Profile | null = await this.db_profiles.getProfile(
+      this.db_auth.getCurrentUserId(),
+    );
+    this.db_auth.eventHelperInitialSession();
+    if (provider === 'google' && profile) {
+      this.db_auth.eventHelperSignedInIsGoogle(profile);
+    }
   }
 
   /**
@@ -128,7 +123,7 @@ export class Database {
 
   /**
    * Registriert einen neuen Benutzer.
-   * @param {string} user_email - Die E-Mail Adresse.
+   * @param {string} user_email - Die E-Mail-Adresse.
    * @param {string} user_password - Das Passwort.
    * @param {string} user_name - Der Anzeigename.
    * @param {string} user_avatar - URL oder Pfad zum Profilbild (Avatar).
@@ -155,7 +150,7 @@ export class Database {
   /**
    * Sendet eine E-Mail zum Zurücksetzen des Passworts.
    * Wichtig: Diese Funktion ist derzeit noch in Arbeit und deaktiviert.
-   * @param {string} email - Die E-Mail Adresse des Benutzers.
+   * @param {string} email - Die E-Mail-Adresse des Benutzers.
    */
   public async sendEmailForPasswordReset(email: string): Promise<void> {
     await this.safeCall((): Promise<void> => this.db_auth.resetPasswordForEmail(email), undefined);
@@ -172,7 +167,7 @@ export class Database {
 
   /**
    * Meldet einen bestehenden Benutzer an.
-   * @param {string} user_email - Die E-Mail Adresse.
+   * @param {string} user_email - Die E-Mail-Adresse.
    * @param {string} user_password - Das Passwort.
    */
   public async login(user_email: string, user_password: string): Promise<void> {
@@ -223,6 +218,19 @@ export class Database {
   public async editProfileName(profileId: string, value: string): Promise<void> {
     await this.safeCall(
       (): Promise<void> => this.db_profiles.updateProfileName(profileId, value.trim()),
+      undefined,
+    );
+  }
+
+  /**
+   * Aktualisiert den Avatar eines Profils.
+   * @param {string} profileId - Die ID des Profils.
+   * @param {string} value - Der neue Avatar.
+   * @returns {Promise<void>}
+   */
+  public async editProfileAvatar(profileId: string, value: string): Promise<void> {
+    await this.safeCall(
+      (): Promise<void> => this.db_profiles.updateProfileAvatar(profileId, value),
       undefined,
     );
   }
