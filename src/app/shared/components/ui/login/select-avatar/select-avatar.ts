@@ -34,10 +34,5 @@ export class SelectAvatar {
     await this.db.register(email, password, name, avatar)
 
     this.show_feedback.set(true)
-    setTimeout(() => {
-      this.show_feedback.set(false),
-      this.router.navigate(['/'])
-    },
-      3000)
     }
 }
