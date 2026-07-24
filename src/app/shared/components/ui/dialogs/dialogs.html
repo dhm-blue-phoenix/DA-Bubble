@@ -11,8 +11,13 @@
             </div>
         }
         @else if (mode === 'addMember') {
-            <div class="dialog_content_add_member bg-white  w-full max-w-[540px]">
+            <div class="dialog_content_side bg-white  w-full max-w-[540px]">
                 <app-add-people-dialog [channelInfo]="channelInfo" (closed)="closed.emit()"></app-add-people-dialog>
+            </div>
+        }
+        @else if (mode === 'members') {
+            <div class="dialog_content_side bg-white  w-full max-w-[540px]">
+                <app-members-dialog [memberProfiles]="memberProfiles" (closed)="closed.emit()" (addMember)="addMember.emit()"></app-members-dialog>
             </div>
         }
 

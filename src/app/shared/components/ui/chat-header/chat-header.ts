@@ -17,4 +17,5 @@ export class ChatHeader {
 
   @Output() openChannelInfo = new EventEmitter<void>()
   @Output() openAddMember = new EventEmitter<void>()
+  @Output() openMembers = new EventEmitter<void>()
 }

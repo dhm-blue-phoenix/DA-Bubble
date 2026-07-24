@@ -9,18 +9,16 @@
         <button (click)="openChannelInfo.emit()"><img class="size-24px" src="assets/svg/icons/icon_black/dropdown_black.svg" alt="dropdown-arrow"></button>
     </div>
     <div class="flex items-center gap-4">
-        <div class="flex items-center gap-2">
+        <button (click)="openMembers.emit()" class="flex items-center gap-2 rounded-full px-2 py-1 hover:bg-[var(--hover-bg)]">
             <div class="flex ">
                     @for (member of memberProfiles; track member.id) {
                         <img class="size-[40px] -ml-3 border-2 rounded-full border-white" [src]="'assets/svg/avatar/avatar_small/' + (member.avatar || '1') + '.svg'" alt="avatar">
                     }
             </div>
-        </div>
-        <div>
-            @if (channelInfo?.channel_members?.length ?? 0 > 0 ) {
+            @if ((channelInfo?.channel_members?.length ?? 0) > 0) {
                 <span class="text-xl">{{ channelInfo?.channel_members?.length ?? 0 }}</span>
             }
-        </div>
+        </button>
         <button (click)="openAddMember.emit()" class="add_member size-[40px] rounded-full">
             <img src="assets/svg/icons/icon_black/add_member_black.svg" alt="add_member">
         </button>
