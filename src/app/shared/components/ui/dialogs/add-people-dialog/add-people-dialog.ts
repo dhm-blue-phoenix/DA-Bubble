@@ -22,8 +22,14 @@ export class AddPeopleDialog {
   name: WritableSignal<string> = signal('')
   selectedProfile: WritableSignal<Profile | null> = signal(null)
 
-  suggestions = computed(() =>
-    this.selectedProfile() ? [] : this.mention.filterProfiles(this.name()))
+  suggestions = computed(() => {
+    if (this.selectedProfile()) return []
+    return this.mention.filterProfiles(this.name()).filter(p => !this.isMember(p.id))
+  })
+
+  isMember(profileId: string): boolean {
+    return this.channelInfo?.channel_members?.some(m => m.user_id === profileId) ?? false
+  }
 
   onNameChange(value: string) {
     this.name.set(value)
@@ -41,7 +47,7 @@ export class AddPeopleDialog {
 
     const profile = this.selectedProfile()
       ?? this.db.profiles().find(p => p.name.trim().toLowerCase() === this.name().trim().toLowerCase())
-    if (profile) await this.db.addChannelMember(channelId, profile.id)
+    if (profile && !this.isMember(profile.id)) await this.db.addChannelMember(channelId, profile.id)
 
     this.closed.emit()
   }
