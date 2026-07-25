@@ -11,12 +11,11 @@ import {
 } from '@supabase/supabase-js';
 
 import { Supabase } from './db-superbase';
+import { DatabaseMessageHelper } from './db-message-helper';
 
 import { Message, Messages, Reaction } from '../../interfaces/messages';
 import { MsgType, NewMessage, ReactionResult } from '../../interfaces/db/db-messages';
 import { DbPostgrestError } from '../../interfaces/db-error';
-
-import { DatabaseAuth } from './db-auth';
 
 @Injectable({
   providedIn: 'root',
@@ -24,7 +23,7 @@ import { DatabaseAuth } from './db-auth';
 export class DatabaseMessages implements OnDestroy {
   private readonly platformId: Object = inject(PLATFORM_ID);
   private readonly supabase: SupabaseClient = inject(Supabase)['supabase'];
-  private readonly db_auth: DatabaseAuth = inject(DatabaseAuth);
+  private readonly db_msg_helper: DatabaseMessageHelper = inject(DatabaseMessageHelper);
   private readonly channels?: RealtimeChannel;
 
   /** Signal für direkte Chat-Nachrichten */
@@ -33,6 +32,8 @@ export class DatabaseMessages implements OnDestroy {
   public readonly _channel_messages: WritableSignal<Messages> = signal<Messages>([]);
   /** Signal für Thread-Nachrichten */
   public readonly _thread_messages: WritableSignal<Messages> = signal<Messages>([]);
+
+  public currentChatId: string = '';
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
@@ -80,12 +81,13 @@ export class DatabaseMessages implements OnDestroy {
    * Behandelt ein INSERT-Event für Nachrichten und aktualisiert des passenden Signals.
    * @param {RealtimePostgresChangesPayload<object>} payload - Das Event-Payload.
    */
-  private insertEventMessage(payload: RealtimePostgresChangesPayload<object>): void {
+  private async insertEventMessage(payload: RealtimePostgresChangesPayload<object>): Promise<void> {
     const message: Message = payload.new as Message;
-    if (message.chat_id)
+    if (message.chat_id && this.db_msg_helper.checkChat(this.currentChatId, message)) {
       this._chat_messages.update(
         (list: Messages): Messages => this.eventHelperInsertMessage(list, message),
       );
+    }
     if (message.channel_id)
       this._channel_messages.update(
         (list: Messages): Messages => this.eventHelperInsertMessage(list, message),
@@ -94,9 +96,7 @@ export class DatabaseMessages implements OnDestroy {
       this._thread_messages.update(
         (list: Messages): Messages => this.eventHelperInsertMessage(list, message),
       );
-    if (message['sender_id'] != this.db_auth.getCurrentUserId()) {
-      this.sendPushNotification('Neue Nachricht', message['content']);
-    }
+    this.db_msg_helper.checkCurrentChat(message);
   }
 
   /**
@@ -235,31 +235,6 @@ export class DatabaseMessages implements OnDestroy {
     return (isChat && 'chat') || (isChannel && 'channel') || (isThread && 'thread') || 'none';
   }
 
-  // Diese Funktion befindet sich noch in der entwicklung
-  public async setBrowserNotification(title: string, description: string): Promise<void> {
-    if (!('Notification' in window)) throw new Error('Browser Notifications are not supported!');
-
-    if (Notification.permission === 'default') {
-      await Notification.requestPermission();
-    }
-
-    if (Notification.permission === 'granted') {
-      this.sendPushNotification(title, description);
-      console.warn('Benachrichtigunen sind erlaubt');
-    }
-  }
-
-  private sendPushNotification(title: string, description: string): void {
-    const notification = new Notification(title, {
-      body: description,
-      icon: 'assets/svg/logo/Logo.svg',
-    });
-
-    notification.onclick = (): void => {
-      window.focus();
-    };
-  }
-
   /** Beendet die Realtime-Verbindung beim Zerstören des Services. */
   public ngOnDestroy(): void {
     if (this.channels) this.supabase.removeChannel(this.channels);
@@ -272,6 +247,7 @@ export class DatabaseMessages implements OnDestroy {
    * @returns {Promise<void>}
    */
   public async getMessages(msgType: MsgType, id: string): Promise<void> {
+    this.currentChatId = id;
     const { data: messages, error }: PostgrestResponse<any> = await this.supabase
       .from('messages')
       .select(
