@@ -11,7 +11,7 @@
     <div class="flex items-center gap-4">
         <button (click)="openMembers.emit()" class="flex items-center gap-2 rounded-full px-3 py-1 w-fit hover:bg-[var(--hover-bg)]">
             <div class="flex -space-x-3">
-                    @for (member of memberProfiles; track member.id) {
+                    @for (member of memberProfiles.slice(0, 3); track member.id) {
                         <img class="size-[40px] border-1 rounded-full border-white" [src]="'assets/svg/avatar/avatar_small/' + (member.avatar || '1') + '.svg'" alt="avatar">
                     }
             </div>
@@ -23,6 +23,4 @@
             <img src="assets/svg/icons/icon_black/add_member_black.svg" alt="add_member">
         </button>
     </div>
-
-
 }

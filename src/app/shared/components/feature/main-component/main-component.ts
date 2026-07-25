@@ -28,6 +28,7 @@ active_type: WritableSignal<'channel' | 'chat' | null> = signal(null)
 channel_member_profiles: WritableSignal<Profile[]> = signal<Profile[]>([])
 dm_partner: WritableSignal<Profile | null> = signal<Profile | null>(null)
 dialog_mode: WritableSignal<'editChannel' | 'addChannel' | 'addMember' | 'members' | null> = signal(null)
+profile_user: WritableSignal<Profile | null> = signal(null)
 
 all_user = this.db.profiles
 all_channels = this.db.channels
@@ -118,6 +119,12 @@ messages_with_sender = computed(() =>
         this.channel_member_profiles.set([])
         this.active_type.set(null)
         this.db.getChannels(this.db.getCurrentUserId())
+    }
+
+    openProfileChat(id: string) {
+        this.profile_user.set(null)
+        this.dialog_mode.set(null)
+        this.open_Dm(id)
     }
 
     send_Content(content:string){

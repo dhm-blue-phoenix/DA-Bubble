@@ -12,6 +12,7 @@ export class MembersDialog {
   @Input() memberProfiles: Profile[] = []
   @Output() closed = new EventEmitter<void>()
   @Output() addMember = new EventEmitter<void>()
+  @Output() openProfile = new EventEmitter<Profile>()
 
   db = inject(Database)
 }

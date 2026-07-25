@@ -1,0 +1,11 @@
+@import '../../../../../app.css';
+
+.profil_container{
+    width: 540px;
+}
+
+.status_dot{
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+}

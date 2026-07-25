@@ -87,5 +87,5 @@
 
 
 @if (dialog_mode()) {
-    <app-dialogs [mode]="dialog_mode()" [channelInfo]="channel_info()" [channelCreator]="channel_creator()" [memberProfiles]="channel_member_profiles()" (closed)="dialog_mode.set(null)" (save)="editChannel($event)" (leave)="leaveChannel()" (addMember)="dialog_mode.set('addMember')"></app-dialogs>
+    <app-dialogs [mode]="dialog_mode()" [channelInfo]="channel_info()" [channelCreator]="channel_creator()" [memberProfiles]="channel_member_profiles()" [profileUser]="profile_user()" (closed)="dialog_mode.set(null)" (save)="editChannel($event)" (leave)="leaveChannel()" (addMember)="dialog_mode.set('addMember')" (openProfile)="profile_user.set($event)" (closedProfile)="profile_user.set(null)" (message)="openProfileChat($event)"></app-dialogs>
 }
