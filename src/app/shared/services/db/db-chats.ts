@@ -5,7 +5,6 @@ import { SupabaseClient, PostgrestSingleResponse } from '@supabase/supabase-js';
 import { Supabase } from './db-superbase';
 
 import { ExistChat, ChatId } from '../../interfaces/db/db-chats';
-import { DbPostgrestError } from '../../interfaces/db-error';
 
 @Injectable({
   providedIn: 'root',
