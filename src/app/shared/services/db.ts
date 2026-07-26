@@ -101,7 +101,7 @@ export class Database {
     try {
       return await fn();
     } catch (error) {
-      throw error;
+      if(error) throw error;
       return fallback;
     }
   }
@@ -127,7 +127,7 @@ export class Database {
    * @param {string} user_password - Das Passwort.
    * @param {string} user_name - Der Anzeigename.
    * @param {string} user_avatar - URL oder Pfad zum Profilbild (Avatar).
-   * @return {boolean} - true bei Erfolg oder false bei einem Duplikat.
+   * @returns {Promise<boolean>} - true bei Erfolg oder false bei einem Duplikat.
    */
   public async register(
     user_email: string,
@@ -149,7 +149,6 @@ export class Database {
 
   /**
    * Sendet eine E-Mail zum Zurücksetzen des Passworts.
-   * Wichtig: Diese Funktion ist derzeit noch in Arbeit und deaktiviert.
    * @param {string} email - Die E-Mail-Adresse des Benutzers.
    */
   public async sendEmailForPasswordReset(email: string): Promise<void> {
@@ -158,7 +157,6 @@ export class Database {
 
   /**
    * Aktualisiert das Passwort des aktuell angemeldeten Benutzers.
-   * Wichtig: Diese Funktion ist derzeit noch in Arbeit und deaktiviert.
    * @param {string} newPassword - Das neue Passwort.
    */
   public async updatePassword(newPassword: string): Promise<void> {
@@ -194,7 +192,6 @@ export class Database {
     this.db_messages._thread_messages.set([]);
     this.db_channels._channels.set([]);
     this.db_channels._channel.set(null);
-    this.db_auth.signOut();
     await this.safeCall((): Promise<void> => this.db_auth.signOut(), undefined);
   }
 

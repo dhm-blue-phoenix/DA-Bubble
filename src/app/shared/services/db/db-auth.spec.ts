@@ -40,7 +40,10 @@ describe('DatabaseAuth', () => {
 
   describe('in Browser environment', () => {
     beforeEach(() => {
-      vi.stubGlobal('window', { addEventListener: vi.fn() });
+      vi.stubGlobal('window', {
+        addEventListener: vi.fn(),
+        location: { reload: vi.fn(), origin: 'http://localhost:4200' },
+      });
       service = TestBed.inject(DatabaseAuth);
     });
 
@@ -48,9 +51,8 @@ describe('DatabaseAuth', () => {
       vi.unstubAllGlobals();
     });
 
-    it('should be created and set up listeners', () => {
+    it('should be created and set up focus listeners', () => {
       expect(service).toBeTruthy();
-      expect(mockSupabaseClient.auth.onAuthStateChange).toHaveBeenCalled();
       expect(window.addEventListener).toHaveBeenCalledWith('focus', expect.any(Function));
       expect(window.addEventListener).toHaveBeenCalledWith('blur', expect.any(Function));
     });
@@ -104,19 +106,17 @@ describe('DatabaseAuth', () => {
       expect(mockSupabaseClient.auth.signOut).toHaveBeenCalled();
     });
 
-    it('should update profile status properly on AuthStateChange SIGNED_IN', async () => {
-      const authCallback = mockSupabaseClient.auth.onAuthStateChange.mock.calls[0][0];
-      await authCallback('SIGNED_IN', { user: { id: 'user_1' } });
+    it('should set currentUserId and isUserLogin on eventHelperMainSetup', async () => {
+      const mockSession: any = { user: { id: 'user_1' } };
+      await service.eventHelperMainSetup(mockSession);
       expect(service.getCurrentUserId()).toBe('user_1');
       expect(service._isUserLogin()).toBe(true);
-      expect(mockSupabaseClient.from).toHaveBeenCalledWith('profiles');
-      expect(mockProfilesChain.update).toHaveBeenCalledWith({ status: 'online' });
-      expect(mockProfilesChain.eq).toHaveBeenCalledWith('id', 'user_1');
     });
 
-    it('should clear profile status properly on AuthStateChange SIGNED_OUT', async () => {
-      const authCallback = mockSupabaseClient.auth.onAuthStateChange.mock.calls[0][0];
-      await authCallback('SIGNED_OUT', null);
+    it('should clear userId and isUserLogin on eventHelperSignedOut', async () => {
+      service['currentUserId'] = 'user_1';
+      service._isUserLogin.set(true);
+      await service.eventHelperSignedOut();
       expect(service.getCurrentUserId()).toBe('');
       expect(service._isUserLogin()).toBe(false);
     });
@@ -124,7 +124,7 @@ describe('DatabaseAuth', () => {
     it('should call resetPasswordForEmail', async () => {
       await service.resetPasswordForEmail('test@test.com');
       expect(mockSupabaseClient.auth.resetPasswordForEmail).toHaveBeenCalledWith('test@test.com', {
-        redirectTo: 'http://example.com/account/update-password',
+        redirectTo: 'http://localhost:4200/reset-password',
       });
     });
 

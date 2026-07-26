@@ -32,14 +32,12 @@ export class DatabaseMessageHelper {
    * @returns {Promise<void>}
    */
   public async checkCurrentChat(message: Message): Promise<void> {
+    if (!message || !message['chat_id']) return;
     const { data, error }: PostgrestSingleResponse<SenderIds> = await this.supabase
       .from('chat_members')
       .select('user_id')
       .eq('chat_id', message['chat_id']);
-
     if (error) throw new Error(`[ DB_CODE:${error.code} ] MSG: ${error.message}`);
-    if (!data) throw new Error('DB_SERVICE: No such chat');
-
     const recipient: SenderId | undefined = data.find((chat: SenderId): boolean => {
       return chat['user_id'] != message['sender_id'];
     });
