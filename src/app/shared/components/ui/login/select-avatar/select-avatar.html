@@ -1,8 +1,10 @@
 <div class="flex flex-col gap-[30px] items-center">
     <div class="grid grid-cols-3 items-center w-full">
-        <a routerLink="/sign-in" class="back_btn justify-self-start">
+      <a routerLink="/sign-in" class="back_btn justify-self-start">
+        @if (!this.provider) {
             <img class="back_btn" src="assets/svg/icons/icon_black/arrow_back_black.svg" alt="back_arrow">
-        </a>
+        }
+      </a>
         <h2 class="justify-self-center text-center">Wähle deinen Avatar</h2>
     </div>
 
@@ -12,7 +14,13 @@
         }@else {
             <img class="size-[168px]" [src]="'assets/svg/avatar/avatar_small/' + sel_avatar + '.svg'" alt="select_avatar">
         }
-        <h2>{{signin.data().name || 'Unbekannt'}}</h2>
+      @if(signin.data().name) {
+        <h2>{{signin.data().name}}</h2>
+      } @else if (googleProfileName) {
+        <h2>{{ this.googleProfileName }}</h2>
+      } @else {
+        <h2>Unbekannt</h2>
+      }
     </div>
 
     <div class="flex w-full gap-[8px] flex-col" action="">

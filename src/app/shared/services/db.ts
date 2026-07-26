@@ -101,7 +101,7 @@ export class Database {
     try {
       return await fn();
     } catch (error) {
-      if(error) throw error;
+      if (error) throw error;
       return fallback;
     }
   }
@@ -220,14 +220,13 @@ export class Database {
   }
 
   /**
-   * Aktualisiert den Avatar eines Profils.
-   * @param {string} profileId - Die ID des Profils.
+   * Aktualisiert den Avatar des aktuellen Userprofils.
    * @param {string} value - Der neue Avatar.
    * @returns {Promise<void>}
    */
-  public async editProfileAvatar(profileId: string, value: string): Promise<void> {
+  public async editProfileAvatar(value: string): Promise<void> {
     await this.safeCall(
-      (): Promise<void> => this.db_profiles.updateProfileAvatar(profileId, value),
+      (): Promise<void> => this.db_profiles.updateProfileAvatar(this.db_auth.getCurrentUserId(), value),
       undefined,
     );
   }
