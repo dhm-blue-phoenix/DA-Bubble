@@ -210,8 +210,8 @@ export class DatabaseAuth {
       email: user_email,
       password: user_password,
     });
-    window.location.reload();
     if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
+    window.location.reload();
   }
 
   /**
