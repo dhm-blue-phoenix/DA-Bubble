@@ -156,7 +156,7 @@ export class DatabaseMessages implements OnDestroy {
         (list: Messages): Messages => this.eventHelperInsertReaction(list, reaction),
       );
     if (this.eventHelperIsMsgType(reaction) === 'thread')
-      this._channel_messages.update(
+      this._thread_messages.update(
         (list: Messages): Messages => this.eventHelperInsertReaction(list, reaction),
       );
   }
