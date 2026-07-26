@@ -185,7 +185,7 @@ describe('DatabaseChannels', () => {
         await service.getChannelData('chan_1');
 
         expect(mockSupabaseClient.from).toHaveBeenCalledWith('channels');
-        expect(channelsChain.select).toHaveBeenCalledWith('id, name, description, created_by, channel_members(user_id)');
+        expect(channelsChain.select).toHaveBeenCalledWith('id, name, description, created_by, created_at, channel_members(user_id)');
         expect(channelsChain.eq).toHaveBeenCalledWith('id', 'chan_1');
         expect(service._channel()).toEqual({ id: 'chan_1', name: 'General', channel_members: [{ user_id: 'user_1' }] });
       });
