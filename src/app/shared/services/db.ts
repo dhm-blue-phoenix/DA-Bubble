@@ -235,7 +235,7 @@ export class Database {
   /**
    * Gibt die ID des gemeinsamen Chats zwischen dem angemeldeten und einem anderen Benutzer zurück (erstellt bei Bedarf einen neuen).
    * @param {string} otherUserId - Die Profil-ID des Gesprächspartners.
-   * @returns {Promise<string>} Die ID des Chats.
+   * @returns {Promise<string>} Die ID des Chats oder ein leerer string: "".
    */
   public async getChatId(otherUserId: string): Promise<string> {
     return await this.safeCall(

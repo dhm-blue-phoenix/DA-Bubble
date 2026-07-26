@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --configuration production --base-href incandescent-rugelach-2a0160.netlify.app/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:da_bubble": "node dist/da_bubble/server/server.mjs"
