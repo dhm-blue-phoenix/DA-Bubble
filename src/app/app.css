@@ -79,6 +79,11 @@ cursor: not-allowed;
     border-radius: 50%;
     border: 2px solid white;
 }
+.status_dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+}
 
 .errorContainer {
     height: 16px;

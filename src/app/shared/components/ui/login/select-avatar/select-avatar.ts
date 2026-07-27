@@ -44,6 +44,7 @@ export class SelectAvatar {
     });
   }
 
+    this.show_feedback.set(true)
   async singin(): Promise<void> {
     if(this.provider === 'google') {
       this.db.editProfileAvatar(this.sel_avatar);

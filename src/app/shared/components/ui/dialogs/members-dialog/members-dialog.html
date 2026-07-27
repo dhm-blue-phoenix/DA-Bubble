@@ -1,0 +1,30 @@
+
+<div class="p-10 flex flex-col gap-6">
+    <div class="flex justify-between items-center">
+        <span class="text-2xl font-bold">Mitglieder</span>
+        <button (click)="closed.emit()" class="size-[40px] hover_btn rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]">
+            <img class="size-[32px]" src="assets/svg/icons/icon_black/close.svg" alt="">
+        </button>
+    </div>
+
+    <div class="flex flex-col gap-1">
+        @for (member of memberProfiles; track member.id) {
+            <button (click)="openProfile.emit(member)" class="flex items-center gap-3 px-2 py-2 rounded-2xl pointer hover:bg-[var(--hover-bg)]">
+                <div class="relative size-[48px]">
+                    <img class="size-[48px] rounded-full" [src]="'assets/svg/avatar/avatar_small/' + (member.avatar || '1') + '.svg'" alt="avatar">
+                    <div class="status" [class]="member.status"></div>
+                </div>
+                <span class="text-xl font-semibold">{{ member.name }}{{ member.id === db.getCurrentUserId() ? ' (Du)' : '' }}</span>
+            </button>
+        }
+    </div>
+
+    <div class="w-full flex justify-center">
+        <button (click)="addMember.emit()" class="flex hover_btn items-center gap-3 px-2 py-2 rounded-2xl hover:bg-[var(--hover-bg)] w-fit">
+            <div class="size-[40px] rounded-full bg-[var(--hover-bg)] flex items-center justify-center">
+                <img class="size-[32px] " src="assets/svg/icons/icon_black/add_member_black.svg" alt="add_member">
+            </div>
+            <span class="text-lg font-bold">Mitglieder hinzufügen</span>
+        </button>
+    </div>
+</div>

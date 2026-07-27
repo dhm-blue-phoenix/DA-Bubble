@@ -1,0 +1,29 @@
+
+<div class="profil_container p-10 flex flex-col items-center gap-6 w-full">
+    <div class="flex items-center justify-between w-full">
+        <span class="text-2xl font-bold">Profil</span>
+        <button (click)="closed.emit()" class="hover_btn size-[40px] rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]"><img class="size-5" src="assets/svg/icons/icon_black/close.svg" alt=""></button>
+    </div>
+
+    <img class="size-[170px]" [src]="'assets/svg/avatar/avatar_small/' + (profile?.avatar || '1') + '.svg'" alt="avatar">
+
+    <span class="text-3xl font-bold">{{ profile?.name }}</span>
+
+    <div class="flex items-center gap-4 w-full">
+        <div class="status_dot" [class]="profile?.status"></div>
+        <span class="text-xl" [style.color]="'var(--status-' + (profile?.status || 'offline') + ')'">{{ profile?.status === 'online' ? 'Aktiv' : profile?.status === 'away' ? 'Abwesend' : 'Offline' }}</span>
+    </div>
+
+    <div class="w-full flex flex-col gap-2">
+        <div class="flex items-center gap-4">
+            <img class="size-[24px]" src="assets/svg/icons/icon_black/mail_black.svg" alt="email_icon">
+            <span class="font-bold text-xl">E-Mail-Adresse</span>
+        </div>
+        <a [href]="'mailto:' + profile?.email" class="text-[var(--hover-text)] text-lg">{{ profile?.email }}</a>
+    </div>
+
+    <button (click)="sendMessage()" class="btn_raw bg-[var(--highligh-color)] text-white font-bold rounded-full flex items-center gap-2">
+        <img class="size-5" src="assets/svg/icons/icon_white/mode_comment_white.svg" alt="">
+        Nachricht
+    </button>
+</div>
