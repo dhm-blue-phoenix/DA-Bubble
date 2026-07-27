@@ -101,7 +101,7 @@ export class Database {
     try {
       return await fn();
     } catch (error) {
-      if (error) throw error;
+      if (error) console.error(error);
       return fallback;
     }
   }
