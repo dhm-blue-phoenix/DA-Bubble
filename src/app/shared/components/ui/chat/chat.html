@@ -2,7 +2,23 @@
     <div class="separator flex items-center justify-center">
     </div>
     
-    <div class="flex py-6 gap-8" [class.flex-row-reverse]="isOwnMessage()">
+    <div class="chat_message group relative flex py-6 gap-2 cursor-pointer hover:bg-[var(--hover-bg)] my-2" [class.flex-row-reverse]="isOwnMessage()">
+        <div class="reaction_bar absolute opacity-0 group-hover:opacity-100 transition bg-white border border-black/10 rounded-full shadow-md flex items-center gap-3 px-2 py-1" [class.right-4]="!isOwnMessage()" [class.left-4]="isOwnMessage()" [class.flex-row-reverse]="isOwnMessage()">
+            <button class="size-8 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]"><img src="assets/svg/emoji/heavy_check_mark.svg" alt=""></button>
+            <button class="size-8 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]"><img src="assets/svg/emoji/rocket.svg" alt=""></button>
+            <button class="size-8 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]"><img src="assets/svg/emoji/nerd_face.svg" alt=""></button>
+            <button class="size-8 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]"><img src="assets/svg/icons/icon_black/answer.svg" alt=""></button>
+            @if (isOwnMessage()) {
+                <div class="relative group/menu">
+                    <button class="size-10 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]"><img src="assets/svg/icons/icon_black/menu.svg" alt=""></button>
+                    <div class="absolute top-6 left-0 opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition">
+                        <div class="edit_menu bg-white border border-black/10 rounded-tr-xl rounded-b-xl shadow-md whitespace-nowrap">
+                            <button class="w-full text-left py-2 px-4 py-2 text-xl hover:bg-[var(--hover-bg)]">Nachricht bearbeiten</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
         <img class="size-[70px]" [src]="'assets/svg/avatar/avatar_small/' + (sender?.avatar || '1') + '.svg'" alt="avatar">
         <div class="flex flex-col gap-2">
             <div class="flex items-center gap-6" [class.flex-row-reverse]="isOwnMessage()">

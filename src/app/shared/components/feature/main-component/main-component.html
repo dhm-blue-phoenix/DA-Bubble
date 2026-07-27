@@ -55,7 +55,7 @@
             <div class="chat_container w-full p-[20px] flex flex-col ">
                 <div #chatHistory class="chat_history w-full flex-1 overflow-y-auto ">
                     @for (item of messages_with_sender(); track item.message.id) {
-                        <app-chat [message]="item.message" [sender]="item.sender"></app-chat>
+                        <app-chat class="bg-black" [message]="item.message" [sender]="item.sender"></app-chat>
                     }
                 </div>
                 @if (active_type()) {
