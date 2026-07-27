@@ -19,4 +19,8 @@ export class Chat {
   isOwnMessage(): boolean {
     return this.message.sender_id === this.db.getCurrentUserId()
   }
+
+  async react(emoji: number): Promise<void> {
+    await this.db.toggleReaction(this.message.id, this.db.getCurrentUserId(), String(emoji))
+  }
 }
