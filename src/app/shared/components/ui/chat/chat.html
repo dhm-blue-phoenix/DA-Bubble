@@ -39,10 +39,11 @@
                     <button class="feedback">Antwort</button>
                 </div>
             }
-            @if (message.reactions && message.reactions.length > 0) {
+            @if (message.reactions.length > 0) {
                 <div class="flex gap-2 items-center" [class.flex-row-reverse]="isOwnMessage()">
-                    @for (reaction of message.reactions; track $index) {
+                    @for (reaction of groupedReactions(); track reaction.emoji) {
                         <div class="reaction_bubble flex items-center gap-1 px-3 py-1">
+                            <span>{{ reaction.count }}</span>
                             <img class="size-5" [src]="'assets/svg/emoji/emoji' + reaction.emoji + '.svg'" alt="reaction">
                         </div>
                     }
