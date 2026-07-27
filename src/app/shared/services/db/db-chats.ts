@@ -5,7 +5,6 @@ import { SupabaseClient, PostgrestSingleResponse } from '@supabase/supabase-js';
 import { Supabase } from './db-superbase';
 
 import { ExistChat, ChatId } from '../../interfaces/db/db-chats';
-import { DbPostgrestError } from '../../interfaces/db-error';
 
 @Injectable({
   providedIn: 'root',
@@ -64,11 +63,11 @@ export class DatabaseChats {
       .select()
       .single();
     if (error || !newChat) throw error;
-    await this.supabase.from('chat_members').insert([
+    const { error: memberError } = await this.supabase.from('chat_members').insert([
       { chat_id: newChat['id'], user_id: currentUserId },
       { chat_id: newChat['id'], user_id: otherUserId },
     ]);
-    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
+    if (memberError) throw new Error(`[ DB_CODE:${memberError['code']} ] MSG: ${memberError['message']}`);
     return newChat['id'];
   }
 

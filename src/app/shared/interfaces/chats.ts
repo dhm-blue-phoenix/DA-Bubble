@@ -9,5 +9,10 @@ export interface ChatMember {
   readonly joined_at: string;
 }
 
+export interface SenderId {
+  user_id: string;
+}
+
 export type Chats = Chat[];
 export type ChatMembers = ChatMember[];
+export type SenderIds = SenderId[];

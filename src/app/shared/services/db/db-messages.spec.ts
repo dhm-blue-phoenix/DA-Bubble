@@ -121,6 +121,7 @@ describe('DatabaseMessages', () => {
           edited_at: null,
         } as any;
 
+        service.currentChatId = 'chat_1';
         triggerEvent('messages', { table: 'messages', eventType: 'INSERT', new: newMsg });
         expect(service._chat_messages()).toContainEqual(newMsg);
       });

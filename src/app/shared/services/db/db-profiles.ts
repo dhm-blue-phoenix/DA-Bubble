@@ -123,4 +123,19 @@ export class DatabaseProfiles implements OnDestroy {
       .select();
     if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
   }
+
+  /**
+   * Aktualisiert den Avatar eines Profils.
+   * @param {string} profileId - Die ID des Profils.
+   * @param {string} value - Der neue Avatar.
+   * @returns {Promise<void>}
+   */
+  public async updateProfileAvatar(profileId: string, value: string): Promise<void> {
+    const { error }: DbPostgrestError = await this.supabase
+      .from('profiles')
+      .update({ avatar: value })
+      .eq('id', profileId)
+      .select();
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
+  }
 }

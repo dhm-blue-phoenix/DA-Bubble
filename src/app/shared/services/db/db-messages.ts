@@ -1,19 +1,20 @@
-import { Injectable, signal, WritableSignal, PLATFORM_ID, inject, OnDestroy } from '@angular/core';
+import { inject, Injectable, OnDestroy, PLATFORM_ID, signal, WritableSignal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
 import {
-  RealtimeChannel,
-  SupabaseClient,
-  PostgrestSingleResponse,
-  RealtimePostgresChangesPayload,
-  PostgrestResponse,
   PostgrestError,
+  PostgrestResponse,
+  PostgrestSingleResponse,
+  RealtimeChannel,
+  RealtimePostgresChangesPayload,
+  SupabaseClient,
 } from '@supabase/supabase-js';
 
 import { Supabase } from './db-superbase';
+import { DatabaseMessageHelper } from './db-message-helper';
 
 import { Message, Messages, Reaction } from '../../interfaces/messages';
-import { ReactionResult, NewMessage, MsgType } from '../../interfaces/db/db-messages';
+import { MsgType, NewMessage, ReactionResult } from '../../interfaces/db/db-messages';
 import { DbPostgrestError } from '../../interfaces/db-error';
 
 @Injectable({
@@ -22,6 +23,7 @@ import { DbPostgrestError } from '../../interfaces/db-error';
 export class DatabaseMessages implements OnDestroy {
   private readonly platformId: Object = inject(PLATFORM_ID);
   private readonly supabase: SupabaseClient = inject(Supabase)['supabase'];
+  private readonly db_msg_helper: DatabaseMessageHelper = inject(DatabaseMessageHelper);
   private readonly channels?: RealtimeChannel;
 
   /** Signal für direkte Chat-Nachrichten */
@@ -31,6 +33,8 @@ export class DatabaseMessages implements OnDestroy {
   /** Signal für Thread-Nachrichten */
   public readonly _thread_messages: WritableSignal<Messages> = signal<Messages>([]);
 
+  public currentChatId: string = '';
+
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
       this.channels = this.subscribeMessages();
@@ -38,7 +42,7 @@ export class DatabaseMessages implements OnDestroy {
   }
 
   /**
-   * Abonniert Realtime-Events für die Nachrichten- und Reaktions-Tabellen.
+   * Abonnierte Realtime-Events für die Nachrichten- und Reaktions-Tabellen.
    * @returns {RealtimeChannel} Der abonnierte Realtime-Kanal.
    */
   private subscribeMessages(): RealtimeChannel {
@@ -58,7 +62,7 @@ export class DatabaseMessages implements OnDestroy {
   }
 
   /**
-   * Verteilt einkommende Realtime-Events für Nachrichten und Reaktionen.
+   * Verteilt ein kommendes Realtime-Event für Nachrichten und Reaktionen.
    * @param {RealtimePostgresChangesPayload<object>} payload - Das Event-Payload.
    */
   private handleMessageEvent(payload: RealtimePostgresChangesPayload<object>): void {
@@ -74,15 +78,16 @@ export class DatabaseMessages implements OnDestroy {
   }
 
   /**
-   * Behandelt ein INSERT-Event für Nachrichten und aktualisiert die passenden Signals.
+   * Behandelt ein INSERT-Event für Nachrichten und aktualisiert des passenden Signals.
    * @param {RealtimePostgresChangesPayload<object>} payload - Das Event-Payload.
    */
-  private insertEventMessage(payload: RealtimePostgresChangesPayload<object>): void {
+  private async insertEventMessage(payload: RealtimePostgresChangesPayload<object>): Promise<void> {
     const message: Message = payload.new as Message;
-    if (message.chat_id)
+    if (message.chat_id && this.db_msg_helper.checkChat(this.currentChatId, message)) {
       this._chat_messages.update(
         (list: Messages): Messages => this.eventHelperInsertMessage(list, message),
       );
+    }
     if (message.channel_id)
       this._channel_messages.update(
         (list: Messages): Messages => this.eventHelperInsertMessage(list, message),
@@ -91,6 +96,7 @@ export class DatabaseMessages implements OnDestroy {
       this._thread_messages.update(
         (list: Messages): Messages => this.eventHelperInsertMessage(list, message),
       );
+    this.db_msg_helper.checkCurrentChat(message);
   }
 
   /**
@@ -150,7 +156,7 @@ export class DatabaseMessages implements OnDestroy {
         (list: Messages): Messages => this.eventHelperInsertReaction(list, reaction),
       );
     if (this.eventHelperIsMsgType(reaction) === 'thread')
-      this._channel_messages.update(
+      this._thread_messages.update(
         (list: Messages): Messages => this.eventHelperInsertReaction(list, reaction),
       );
   }
@@ -241,6 +247,7 @@ export class DatabaseMessages implements OnDestroy {
    * @returns {Promise<void>}
    */
   public async getMessages(msgType: MsgType, id: string): Promise<void> {
+    this.currentChatId = id;
     const { data: messages, error }: PostgrestResponse<any> = await this.supabase
       .from('messages')
       .select(

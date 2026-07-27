@@ -1,5 +1,8 @@
 import { inject, Injectable, PLATFORM_ID, Signal } from '@angular/core';
 
+import { Supabase } from './db/db-superbase';
+import { AuthChangeEvent, Session, SupabaseClient } from '@supabase/supabase-js';
+
 import { DatabaseProfiles } from './db/db-profiles';
 import { DatabaseAuth } from './db/db-auth';
 import { DatabaseChats } from './db/db-chats';
@@ -9,7 +12,7 @@ import { DatabaseThreads } from './db/db-threads';
 
 import { Profile, Profiles } from '../interfaces/profile';
 import { Messages } from '../interfaces/messages';
-import { ReturnFromCreateNewChannel, SignalChannel, SignalChannels } from '../interfaces/db/db-channels';
+import { SignalChannel, SignalChannels } from '../interfaces/db/db-channels';
 import { MsgType, ReactionResult } from '../interfaces/db/db-messages';
 import { isPlatformBrowser } from '@angular/common';
 
@@ -17,6 +20,7 @@ import { isPlatformBrowser } from '@angular/common';
   providedIn: 'root',
 })
 export class Database {
+  private readonly supabase: SupabaseClient = inject(Supabase)['supabase'];
   private readonly platformId: Object = inject(PLATFORM_ID);
 
   private readonly db_profiles: DatabaseProfiles = inject(DatabaseProfiles);
@@ -44,6 +48,49 @@ export class Database {
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
       this.loadProfiles();
+      this.setupAuthListener();
+    }
+  }
+
+  /**
+   * Lauscht auf Änderungen des Authentifizierungsstatus durch Supabase.
+   */
+  private setupAuthListener(): void {
+    this.supabase.auth.onAuthStateChange(
+      async (event: AuthChangeEvent, session: Session | null): Promise<void> => {
+        if (!session?.user) return this.db_auth.eventHelperSignedOut();
+
+        this.db_auth.eventHelperMainSetup(session);
+
+        switch (event) {
+          case 'SIGNED_IN':
+            this.eventHelperSignedIn(session);
+            break;
+          case 'SIGNED_OUT':
+            this.db_auth.eventHelperSignedOut();
+            break;
+          case 'PASSWORD_RECOVERY':
+            this.db_auth.eventHelperPasswordRecovery();
+            break;
+          case 'INITIAL_SESSION':
+            this.db_auth.eventHelperInitialSession();
+            break;
+        }
+      },
+    );
+  }
+
+  /**
+   * Helper Funktion fürs Anmelden
+   */
+  private async eventHelperSignedIn(session: Session): Promise<void> {
+    const provider: string | undefined = session['user']['app_metadata']['provider'];
+    const profile: Profile | null = await this.db_profiles.getProfile(
+      this.db_auth.getCurrentUserId(),
+    );
+    this.db_auth.eventHelperInitialSession();
+    if (provider === 'google' && profile) {
+      this.db_auth.eventHelperSignedInIsGoogle(profile);
     }
   }
 
@@ -54,7 +101,7 @@ export class Database {
     try {
       return await fn();
     } catch (error) {
-      throw error;
+      if (error) throw error;
       return fallback;
     }
   }
@@ -76,11 +123,11 @@ export class Database {
 
   /**
    * Registriert einen neuen Benutzer.
-   * @param {string} user_email - Die E-Mail Adresse.
+   * @param {string} user_email - Die E-Mail-Adresse.
    * @param {string} user_password - Das Passwort.
    * @param {string} user_name - Der Anzeigename.
    * @param {string} user_avatar - URL oder Pfad zum Profilbild (Avatar).
-   * @return {boolean} - true bei Erfolg oder false bei einem Duplikat.
+   * @returns {Promise<boolean>} - true bei Erfolg oder false bei einem Duplikat.
    */
   public async register(
     user_email: string,
@@ -102,8 +149,7 @@ export class Database {
 
   /**
    * Sendet eine E-Mail zum Zurücksetzen des Passworts.
-   * Wichtig: Diese Funktion ist derzeit noch in Arbeit und deaktiviert.
-   * @param {string} email - Die E-Mail Adresse des Benutzers.
+   * @param {string} email - Die E-Mail-Adresse des Benutzers.
    */
   public async sendEmailForPasswordReset(email: string): Promise<void> {
     await this.safeCall((): Promise<void> => this.db_auth.resetPasswordForEmail(email), undefined);
@@ -111,7 +157,6 @@ export class Database {
 
   /**
    * Aktualisiert das Passwort des aktuell angemeldeten Benutzers.
-   * Wichtig: Diese Funktion ist derzeit noch in Arbeit und deaktiviert.
    * @param {string} newPassword - Das neue Passwort.
    */
   public async updatePassword(newPassword: string): Promise<void> {
@@ -120,11 +165,14 @@ export class Database {
 
   /**
    * Meldet einen bestehenden Benutzer an.
-   * @param {string} user_email - Die E-Mail Adresse.
+   * @param {string} user_email - Die E-Mail-Adresse.
    * @param {string} user_password - Das Passwort.
    */
   public async login(user_email: string, user_password: string): Promise<void> {
-    await this.safeCall((): Promise<void> => this.db_auth.signInWithEmail(user_email.trim(), user_password.trim()), undefined);
+    await this.safeCall(
+      (): Promise<void> => this.db_auth.signInWithEmail(user_email.trim(), user_password.trim()),
+      undefined,
+    );
   }
 
   /**
@@ -144,7 +192,6 @@ export class Database {
     this.db_messages._thread_messages.set([]);
     this.db_channels._channels.set([]);
     this.db_channels._channel.set(null);
-    this.db_auth.signOut();
     await this.safeCall((): Promise<void> => this.db_auth.signOut(), undefined);
   }
 
@@ -173,9 +220,21 @@ export class Database {
   }
 
   /**
+   * Aktualisiert den Avatar des aktuellen Userprofils.
+   * @param {string} value - Der neue Avatar.
+   * @returns {Promise<void>}
+   */
+  public async editProfileAvatar(value: string): Promise<void> {
+    await this.safeCall(
+      (): Promise<void> => this.db_profiles.updateProfileAvatar(this.db_auth.getCurrentUserId(), value),
+      undefined,
+    );
+  }
+
+  /**
    * Gibt die ID des gemeinsamen Chats zwischen dem angemeldeten und einem anderen Benutzer zurück (erstellt bei Bedarf einen neuen).
    * @param {string} otherUserId - Die Profil-ID des Gesprächspartners.
-   * @returns {Promise<string>} Die ID des Chats.
+   * @returns {Promise<string>} Die ID des Chats oder ein leerer string: "".
    */
   public async getChatId(otherUserId: string): Promise<string> {
     return await this.safeCall(
