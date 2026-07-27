@@ -4,10 +4,12 @@
     
     <div class="chat_message group relative flex py-6 gap-2 cursor-pointer hover:bg-[var(--hover-bg)] my-2" [class.flex-row-reverse]="isOwnMessage()">
         <div class="reaction_bar absolute opacity-0 group-hover:opacity-100 transition bg-white border border-black/10 rounded-full shadow-md flex items-center gap-3 px-2 py-1" [class.right-4]="!isOwnMessage()" [class.left-4]="isOwnMessage()" [class.flex-row-reverse]="isOwnMessage()">
-            <button class="size-8 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]"><img src="assets/svg/emoji/heavy_check_mark.svg" alt=""></button>
-            <button class="size-8 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]"><img src="assets/svg/emoji/rocket.svg" alt=""></button>
-            <button class="size-8 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]"><img src="assets/svg/emoji/nerd_face.svg" alt=""></button>
-            <button class="size-8 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]"><img src="assets/svg/icons/icon_black/answer.svg" alt=""></button>
+            @for (btn of [1,2,3,4]; track btn) {
+                <button class="size-8 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]">
+                    <img [src]="'assets/svg/emoji/emoji' + btn + '.svg'" alt="reaction">
+                </button>
+            }
+
             @if (isOwnMessage()) {
                 <div class="relative group/menu">
                     <button class="size-10 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]"><img src="assets/svg/icons/icon_black/menu.svg" alt=""></button>
@@ -28,10 +30,21 @@
             <div [class]="isOwnMessage() ? 'message_user' : 'message_member'">
                 <span>{{message.content}}</span>
             </div>
-            <div class="flex gap-6 items-center" [class.flex-row-reverse]="isOwnMessage()">
-                <!-- Member actions -->
-                <span class="feedback" >2 Antworten</span>
-            </div>
+
+            @if (message.threads) {
+                <div class="flex gap-6 items-center" [class.flex-row-reverse]="isOwnMessage()">
+                    <button class="feedback">Antwort</button>
+                </div>
+            }
+            @if (message.reactions && message.reactions.length > 0) {
+                <div class="flex gap-2 items-center" [class.flex-row-reverse]="isOwnMessage()">
+                    @for (reaction of message.reactions; track $index) {
+                        <div class="reaction_bubble flex items-center gap-1 px-3 py-1">
+                            <img class="size-5" [src]="'assets/svg/emoji/emoji' + reaction.emoji + '.svg'" alt="reaction">
+                        </div>
+                    }
+                </div>
+            }
         </div>
     </div>
 </div>
