@@ -1,10 +1,32 @@
 <section class="dialog_bg fixed inset-0 bg-black/50 flex flex-col items-center justify-center">
-    <div class="dialog_content bg-white rounded-t-3xl w-full max-w-[720px]">
+
         @if (mode === 'editChannel') {
-            <app-edit-channel-dialog [channelInfo]="channelInfo" [channelCreator]="channelCreator" (closed)="closed.emit()" (save)="save.emit($event)" (leave)="leave.emit()"></app-edit-channel-dialog>
+            <div class="dialog_content bg-white rounded-t-3xl w-full max-w-[720px]">
+                <app-edit-channel-dialog [channelInfo]="channelInfo" [channelCreator]="channelCreator" (closed)="closed.emit()" (save)="save.emit($event)" (leave)="leave.emit()"></app-edit-channel-dialog>
+            </div>
         }
         @else if (mode === 'addChannel') {
-            <app-add-channel-dialog (closed)="closed.emit()"></app-add-channel-dialog>
+            <div class="dialog_content bg-white rounded-t-3xl w-full max-w-[720px]">
+                <app-add-channel-dialog (closed)="closed.emit()"></app-add-channel-dialog>
+            </div>
         }
-        </div>
+        @else if (mode === 'addMember') {
+            <div class="dialog_content_side bg-white  w-full max-w-[540px]">
+                <app-add-people-dialog [channelInfo]="channelInfo" (closed)="closed.emit()"></app-add-people-dialog>
+            </div>
+        }
+        @else if (mode === 'members') {
+            <div class="dialog_content_side bg-white  w-full max-w-[540px]">
+                <app-members-dialog [memberProfiles]="memberProfiles" (closed)="closed.emit()" (addMember)="addMember.emit()" (openProfile)="openProfile.emit($event)"></app-members-dialog>
+            </div>
+        }
+
 </section>
+
+@if (profileUser) {
+    <section class="profile_dialog_bg fixed inset-0 bg-black/50 flex items-center justify-center">
+        <div class="dialog_content_profile bg-white">
+            <app-profile-dialog [profile]="profileUser" (closed)="closedProfile.emit()" (message)="message.emit($event)"></app-profile-dialog>
+        </div>
+    </section>
+}
