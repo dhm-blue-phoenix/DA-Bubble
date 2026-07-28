@@ -3,7 +3,7 @@
     </div>
     
     <div class="chat_message group relative flex py-6 gap-2 cursor-pointer hover:bg-[var(--hover-bg)] my-2" [class.flex-row-reverse]="isOwnMessage()">
-        <div class="reaction_bar absolute opacity-0 group-hover:opacity-100 transition bg-white border border-black/10 rounded-full shadow-md flex items-center gap-3 px-2 py-1" [class.right-4]="!isOwnMessage()" [class.left-4]="isOwnMessage()" [class.flex-row-reverse]="isOwnMessage()">
+        <div class="reaction_bar absolute opacity-0 group-hover:opacity-100 transition bg-white border border-black/10 rounded-full shadow-md flex items-center gap-3 px-2 py-1" [class.right-4]="!isOwnMessage()" [class.left-4]="isOwnMessage()">
             @for (btn of [1,2,3,4]; track btn) {
                 <button (click)="react(btn)" class="size-8 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]">
                     <img [src]="'assets/svg/emoji/emoji' + btn + '.svg'" alt="reaction">
@@ -16,9 +16,9 @@
             @if (isOwnMessage()) {
                 <div class="relative group/menu">
                     <button class="size-10 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]"><img src="assets/svg/icons/icon_black/menu.svg" alt=""></button>
-                    <div class="absolute top-6 left-0 opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition">
-                        <div class="edit_menu bg-white border border-black/10 rounded-tr-xl rounded-b-xl shadow-md whitespace-nowrap">
-                            <button class="w-full text-left py-2 px-4 py-2 text-xl hover:bg-[var(--hover-bg)]">Nachricht bearbeiten</button>
+                    <div class="edit_bubble absolute opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition">
+                        <div class="edit_menu edit_shape bg-white border border-black/10 shadow-md whitespace-nowrap">
+                            <button class="edit_shape w-full text-left py-2 px-4 py-2 text-xl hover:bg-[var(--hover-bg)] hover:text-[var(--hover-text)] hover:font-bold">Nachricht bearbeiten</button>
                         </div>
                     </div>
                 </div>
@@ -42,7 +42,7 @@
             @if (message.reactions.length > 0) {
                 <div class="flex gap-2 items-center" [class.flex-row-reverse]="isOwnMessage()">
                     @for (reaction of groupedReactions(); track reaction.emoji) {
-                        <div class="reaction_bubble flex items-center gap-1 px-3 py-1">
+                        <div class="reaction_bubble flex items-center gap-1 px-3 py-1" >
                             <span>{{ reaction.count }}</span>
                             <img class="size-5" [src]="'assets/svg/emoji/emoji' + reaction.emoji + '.svg'" alt="reaction">
                         </div>

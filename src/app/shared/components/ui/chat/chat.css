@@ -44,3 +44,12 @@ color: rgba(104, 104, 104, 1);
     border: 1px solid rgba(83, 90, 241, 0.3);
     border-radius: 16px;
 }
+
+.edit_shape{
+    border-radius: 0px 30px 30px 30px;
+}
+
+.edit_bubble{
+    top: 60%;
+    left: 50%;
+}
