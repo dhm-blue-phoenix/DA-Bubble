@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, Input, Output, EventEmitter } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Message } from '../../../interfaces/messages'
@@ -14,6 +14,8 @@ import { Database } from '../../../services/db';
 export class Chat {
   @Input() message!: Message
   @Input() sender?: Profile
+
+  @Output() openThread = new EventEmitter<string>()
 
   db = inject(Database)
 
