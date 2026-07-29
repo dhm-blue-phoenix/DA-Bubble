@@ -1,0 +1,10 @@
+@if (reactions.length > 0) {
+    <div class="flex gap-2 items-center" [class.flex-row-reverse]="reverse">
+        @for (reaction of groupedReactions(); track reaction.emoji) {
+            <div class="reaction_bubble flex items-center gap-1 px-3 py-1">
+                <span>{{ reaction.count }}</span>
+                <img class="size-5" [src]="'assets/svg/emoji/emoji' + reaction.emoji + '.svg'" alt="reaction">
+            </div>
+        }
+    </div>
+}

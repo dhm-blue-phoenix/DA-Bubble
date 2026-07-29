@@ -7,6 +7,7 @@ import { Input } from '../../ui/input/input';
 import { ChatHeader } from '../../ui/chat-header/chat-header';
 import { Database } from '../../../services/db';
 import { Profile } from '../../../interfaces/profile';
+import { Message } from '../../../interfaces/messages';
 import { Dialogs } from '../../ui/dialogs/dialogs';
 
 @Component({
@@ -29,6 +30,8 @@ channel_member_profiles: WritableSignal<Profile[]> = signal<Profile[]>([])
 dm_partner: WritableSignal<Profile | null> = signal<Profile | null>(null)
 dialog_mode: WritableSignal<'editChannel' | 'addChannel' | 'addMember' | 'members' | null> = signal(null)
 profile_user: WritableSignal<Profile | null> = signal(null)
+thread_root: WritableSignal<Message | null> = signal(null)
+thread_id = ''
 
 all_user = this.db.profiles
 all_channels = this.db.channels
@@ -96,6 +99,16 @@ messages_with_sender = computed(() =>
     }))
 );
 
+thread_root_sender = computed(() =>
+    this.all_user().find(u => u.id === this.thread_root()?.sender_id))
+
+thread_messages_with_sender = computed(() =>
+    this.db.threadMsg().map(message => ({
+        message,
+        sender: this.all_user().find(u => u.id === message.sender_id)
+    }))
+);
+
     toggleMenu(menu: 'dmOpen' | 'channelOpen' | 'workspace' | 'thread') {
         if (menu === 'dmOpen') this.dmOpen = !this.dmOpen;
         if (menu === 'channelOpen') this.channelOpen = !this.channelOpen;
@@ -139,6 +152,20 @@ messages_with_sender = computed(() =>
         this.channel_member_profiles.set([])
         this.active_type.set(null)
         this.db.getChannels(this.db.getCurrentUserId())
+    }
+
+    async openThread(messageId: string) {
+        const found = this.messages_with_sender().find(item => item.message.id === messageId)
+        this.thread_root.set(found?.message ?? null)
+        this.thread_Open = true
+        this.thread_id = await this.db.getThreadId(messageId)
+        await this.db.loadMsg('thread', this.thread_id)
+    }
+
+    send_Thread_Content(content: string) {
+        const senderId = this.db.getCurrentUserId()
+        if (senderId && this.thread_id)
+            this.db.newMsg('thread', this.channel_id, this.thread_id, senderId, content)
     }
 
     openProfileChat(id: string) {

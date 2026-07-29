@@ -1,0 +1,10 @@
+@import '../../../../app.css';
+
+.edit_shape{
+    border-radius: 0px 30px 30px 30px;
+}
+
+.edit_bubble{
+    top: 60%;
+    left: 50%;
+}

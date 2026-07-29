@@ -48,14 +48,14 @@
             <img class="size-[32px]" [src]="workspace_Open ? 'assets/svg/icons/icon_black/hide_navigation_left_black.svg' : 'assets/svg/icons/icon_black/hide_navigation_right_black.svg'" [alt]="workspace_Open ? 'close Icon' : 'open Icon'">
         </button>
 
-        <section class="chat flex flex-col bg-white flex-1">
+        <section class="chat flex flex-col bg-white flex-1 min-w-0">
             <div class="chat_header flex justify-between px-[42px] py-[24px] border-b-2 border-black/10 shadow-sm">
                 <app-chat-header class ="contents" [type]="active_type()" [dmPartner]="dm_partner()" [isSelfChat]="is_self_chat()" [channelInfo]="channel_info()" [memberProfiles]="channel_member_profiles()" (openChannelInfo)="dialog_mode.set('editChannel')" (openAddMember)="dialog_mode.set('addMember')" (openMembers)="dialog_mode.set('members')"></app-chat-header>
             </div>
             <div class="chat_container w-full p-[20px] flex flex-col ">
                 <div #chatHistory class="chat_history w-full flex-1 overflow-y-auto ">
                     @for (item of messages_with_sender(); track item.message.id) {
-                        <app-chat class="bg-black" [message]="item.message" [sender]="item.sender"></app-chat>
+                        <app-chat class="bg-black" [message]="item.message" [sender]="item.sender" (openThread)="openThread($event)"></app-chat>
                     }
                 </div>
                 @if (active_type()) {
@@ -69,17 +69,16 @@
                 <div class="chat_header flex justify-between px-[42px] py-[24px] border-b-2 border-black/10 shadow-sm">
                     <div class="flex items-center gap-2">
                         <h2>Thread</h2>
-                        <span></span>
+                        <span>{{ channel_info()?.name }}</span>
                     </div>
                     <button (click)="toggleMenu('thread')" class="size-[40px]"><img src="assets/svg/icons/icon_black/close.svg" alt=""></button>
                 </div>
             <div class="chat_container w-full p-[20px] flex flex-col ">
 
             <div class="chat_history w-full flex-1 overflow-y-auto ">
-            <!--  Theard Chat            -->
-                <app-thread></app-thread>   
-            </div> 
-                <app-input></app-input>
+                <app-thread [rootMessage]="thread_root()" [rootSender]="thread_root_sender()" [messages]="thread_messages_with_sender()"></app-thread>
+            </div>
+                <app-input (sent)="send_Thread_Content($event)"></app-input>
             </div>
         </section>
     }
