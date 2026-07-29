@@ -18,7 +18,7 @@
                     <button class="size-10 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]"><img src="assets/svg/icons/icon_black/menu.svg" alt=""></button>
                     <div class="edit_bubble absolute opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition">
                         <div class="edit_menu edit_shape bg-white border border-black/10 shadow-md whitespace-nowrap">
-                            <button class="edit_shape w-full text-left py-2 px-4 py-2 text-xl hover:bg-[var(--hover-bg)] hover:text-[var(--hover-text)] hover:font-bold">Nachricht bearbeiten</button>
+                            <button (click)="startEdit()" class="edit_shape w-full text-left py-2 px-4 py-2 text-xl hover:bg-[var(--hover-bg)] hover:text-[var(--hover-text)] hover:font-bold">Nachricht bearbeiten</button>
                         </div>
                     </div>
                 </div>
@@ -30,9 +30,19 @@
                 <span class="chat_name">{{sender?.name}}</span>
                 <span class="timestamp">{{message.created_at | date:'HH:mm'}}</span>
             </div>
-            <div [class]="isOwnMessage() ? 'message_user' : 'message_member'">
-                <span>{{message.content}}</span>
-            </div>
+            @if (!editing) {
+                <div [class]="isOwnMessage() ? 'message_user' : 'message_member'">
+                    <span>{{message.content}}</span>
+                </div>
+            } @else {
+                <div class="flex flex-col gap-2">
+                    <input [(ngModel)]="editDraft" name="editDraft" type="text" class="edit_input outline-none w-full px-4 py-3">
+                    <div class="flex gap-2 justify-end">
+                        <button (click)="cancelEdit()" class="btn_raw bg-white text-[var(--highligh-color)] border font-bold">Abbrechen</button>
+                        <button (click)="saveEdit()" [disabled]="!editDraft.trim()" class="btn_raw bg-[var(--highligh-color)] text-white font-bold">Editieren</button>
+                    </div>
+                </div>
+            }
 
             @if (message.threads) {
                 <div class="flex gap-6 items-center" [class.flex-row-reverse]="isOwnMessage()">

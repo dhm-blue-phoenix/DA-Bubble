@@ -108,7 +108,7 @@ export class DatabaseMessages implements OnDestroy {
   private eventHelperInsertMessage(list: Messages, message: Message): Messages {
     return list.some((msg: Message): boolean => msg['id'] === message['id'])
       ? list
-      : [...list, message];
+      : [...list, { ...message, reactions: message['reactions'] ?? [] }];
   }
 
   /**
@@ -138,7 +138,9 @@ export class DatabaseMessages implements OnDestroy {
    * @returns {Messages} Die aktualisierte Nachrichtenliste.
    */
   private eventHelperUpdateMessage(list: Messages, message: Message): Messages {
-    return list.map((msg: Message): Message => (msg['id'] === message['id'] ? message : msg));
+    return list.map((msg: Message): Message =>
+      msg['id'] === message['id'] ? { ...msg, ...message } : msg,
+    );
   }
 
   /**
