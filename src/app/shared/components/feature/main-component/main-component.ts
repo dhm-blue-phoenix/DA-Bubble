@@ -6,6 +6,7 @@ import { Thread } from '../../ui/thread/thread';
 import { Input } from '../../ui/input/input';
 import { ChatHeader } from '../../ui/chat-header/chat-header';
 import { Database } from '../../../services/db';
+import { DateSeparatorService } from '../../../services/date-separator';
 import { Profile } from '../../../interfaces/profile';
 import { Message } from '../../../interfaces/messages';
 import { Dialogs } from '../../ui/dialogs/dialogs';
@@ -24,6 +25,7 @@ workspace_Open = true
 thread_Open = false
 
 db = inject(Database)
+dateSeparator = inject(DateSeparatorService)
 
 active_type: WritableSignal<'channel' | 'chat' | null> = signal(null)
 channel_member_profiles: WritableSignal<Profile[]> = signal<Profile[]>([])
@@ -93,19 +95,24 @@ channel_creator = computed(() =>
     this.all_user().find(u => u.id === this.channel_info()?.created_by) ?? null)
 
 messages_with_sender = computed(() =>
-    this.active_content().map(message => ({
-        message,
-        sender: this.all_user().find(u => u.id === message.sender_id)
+    this.dateSeparator.withSeparators(this.active_content()).map(item => ({
+        ...item,
+        sender: this.all_user().find(u => u.id === item.message.sender_id)
     }))
 );
 
 thread_root_sender = computed(() =>
     this.all_user().find(u => u.id === this.thread_root()?.sender_id))
 
+thread_root_date_label = computed(() => {
+    const root = this.thread_root()
+    return root ? this.dateSeparator.label(root.created_at) : ''
+})
+
 thread_messages_with_sender = computed(() =>
-    this.db.threadMsg().map(message => ({
-        message,
-        sender: this.all_user().find(u => u.id === message.sender_id)
+    this.dateSeparator.withSeparators(this.db.threadMsg()).map(item => ({
+        ...item,
+        sender: this.all_user().find(u => u.id === item.message.sender_id)
     }))
 );
 

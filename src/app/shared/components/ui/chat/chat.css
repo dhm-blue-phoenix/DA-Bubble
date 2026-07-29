@@ -1,9 +1,11 @@
 @import '../../../../app.css';
 
-.separator{
-    height: 1px;
-    width: 100%;
-    background-color: rgba(0, 0, 0, 0.2);
+.date_bubble{
+    padding: 4px 16px;
+    white-space: nowrap;
+    border: 1px solid var(--active-border);
+    border-radius: 30px;
+    font-weight: 600;
 }
 
 .message_member{

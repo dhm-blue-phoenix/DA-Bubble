@@ -12,5 +12,6 @@ import { Profile } from '../../../interfaces/profile';
 export class Thread {
   @Input() rootMessage: Message | null = null
   @Input() rootSender?: Profile
-  @Input() messages: { message: Message; sender?: Profile }[] = []
+  @Input() rootDateLabel = ''
+  @Input() messages: { message: Message; sender?: Profile; showSeparator: boolean; dateLabel: string }[] = []
 }

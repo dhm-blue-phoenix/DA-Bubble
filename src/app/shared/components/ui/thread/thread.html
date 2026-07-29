@@ -1,8 +1,7 @@
 @if (rootMessage) {
-    <app-chat [message]="rootMessage" [sender]="rootSender" context="thread"></app-chat>
-    <div class="separator flex items-center justify-center"></div>
+    <app-chat [message]="rootMessage" [sender]="rootSender" context="thread" [showSeparator]="true" [dateLabel]="rootDateLabel"></app-chat>
 }
 
 @for (item of messages; track item.message.id) {
-    <app-chat [message]="item.message" [sender]="item.sender" context="thread"></app-chat>
+    <app-chat [message]="item.message" [sender]="item.sender" context="thread" [showSeparator]="item.showSeparator" [dateLabel]="item.dateLabel"></app-chat>
 }

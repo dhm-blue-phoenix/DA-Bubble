@@ -1,4 +1,10 @@
-<div class="separator flex items-center justify-center"></div>
+@if (showSeparator) {
+    <div class="separator flex items-center justify-center">
+        <div class="flex-1 h-px bg-[var(--active-border)]"></div>
+        <span class="date_bubble ">{{ dateLabel }}</span>
+        <div class="flex-1 h-px bg-[var(--active-border)]"></div>
+    </div>
+}
 
 <div class="chat_message group relative flex py-6 gap-2 cursor-pointer hover:bg-[var(--hover-bg)] my-2" [class.flex-row-reverse]="isOwnMessage()">
     <app-message-actions [isOwnMessage]="isOwnMessage()" [isThread]="isThread()" (react)="react($event)" (openThread)="openThread.emit(message.id)" (edit)="startEdit()"> </app-message-actions>

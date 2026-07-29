@@ -55,7 +55,7 @@
             <div class="chat_container w-full p-[20px] flex flex-col ">
                 <div #chatHistory class="chat_history w-full flex-1 overflow-y-auto ">
                     @for (item of messages_with_sender(); track item.message.id) {
-                        <app-chat class="bg-black" [message]="item.message" [sender]="item.sender" (openThread)="openThread($event)"></app-chat>
+                        <app-chat class="bg-black" [message]="item.message" [sender]="item.sender" [showSeparator]="item.showSeparator" [dateLabel]="item.dateLabel" (openThread)="openThread($event)"></app-chat>
                     }
                 </div>
                 @if (active_type()) {
@@ -76,7 +76,7 @@
             <div class="chat_container w-full p-[20px] flex flex-col ">
 
             <div class="chat_history w-full flex-1 overflow-y-auto ">
-                <app-thread [rootMessage]="thread_root()" [rootSender]="thread_root_sender()" [messages]="thread_messages_with_sender()"></app-thread>
+                <app-thread [rootMessage]="thread_root()" [rootSender]="thread_root_sender()" [rootDateLabel]="thread_root_date_label()" [messages]="thread_messages_with_sender()"></app-thread>
             </div>
                 <app-input (sent)="send_Thread_Content($event)"></app-input>
             </div>

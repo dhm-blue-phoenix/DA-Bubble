@@ -17,6 +17,8 @@ export class Chat {
   @Input() message!: Message
   @Input() sender?: Profile
   @Input() context: 'channel' | 'chat' | 'thread' = 'channel'
+  @Input() showSeparator = false
+  @Input() dateLabel = ''
 
   @Output() openThread = new EventEmitter<string>()
 
