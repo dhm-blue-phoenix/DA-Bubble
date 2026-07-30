@@ -111,12 +111,13 @@ thread_root_date_label = computed(() => {
     return root ? this.dateSeparator.label(root.created_at) : ''
 })
 
-thread_messages_with_sender = computed(() =>
-    this.dateSeparator.withSeparators(this.db.threadMsg()).map(item => ({
+thread_messages_with_sender = computed(() => {
+    const replies = this.db.threadMsg().filter(m => m.id !== this.thread_root()?.id)
+    return this.dateSeparator.withSeparators(replies).map(item => ({
         ...item,
         sender: this.all_user().find(u => u.id === item.message.sender_id)
     }))
-);
+});
 
     toggleMenu(menu: 'dmOpen' | 'channelOpen' | 'workspace' | 'thread') {
         if (menu === 'dmOpen') this.dmOpen = !this.dmOpen;
@@ -165,7 +166,7 @@ thread_messages_with_sender = computed(() =>
 
     async openThread(messageId: string) {
         const found = this.messages_with_sender().find(item => item.message.id === messageId)
-        this.thread_root.set(found?.message ?? null)
+        this.thread_root.set(found ? { ...found.message, reactions: [] } : null)
         this.thread_Open = true
         this.thread_id = await this.db.getThreadId(messageId)
         await this.db.loadMsg('thread', this.thread_id)
