@@ -10,10 +10,12 @@ import { DateSeparatorService } from '../../../services/date-separator';
 import { Profile } from '../../../interfaces/profile';
 import { Message } from '../../../interfaces/messages';
 import { Dialogs } from '../../ui/dialogs/dialogs';
+import { ChatPlaceholder } from '../../ui/chat-placeholder/chat-placeholder';
+
 
 @Component({
   selector: 'app-main-component',
-  imports: [Workspace, Channels, Chat, Input, Thread, ChatHeader, Dialogs],
+  imports: [Workspace, Channels, Chat, Input, Thread, ChatHeader, Dialogs, ChatPlaceholder],
   templateUrl: './main-component.html',
   styleUrl: './main-component.css',
 })

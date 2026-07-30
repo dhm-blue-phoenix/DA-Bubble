@@ -1,0 +1,10 @@
+<div class="w-full flex flex-col gap-4 p-6">
+    <div class="flex items-center gap-4">
+        <img class="size-[70px]" [src]="'assets/svg/avatar/avatar_small/' + (profile?.avatar || '1') + '.svg'" alt="avatar">
+        <span class="text-xl font-bold">{{ profile?.name }}{{ isSelfChat ? ' (Du)' : '' }}</span>
+    </div>
+    <div>
+        <span class="text-xl font-bold text-black/50">Dieser Raum ist für dich da. </span>
+        <span class="text-xl font-semibold text-black/50">Mache dir Notizen, liste deiner To-dos auf oder bewahre Links und Dateien griffbereit auf. Du kannst hier auch gerne Dinge mit dir selbst besprechen.</span>
+    </div>
+</div>
