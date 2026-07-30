@@ -54,14 +54,15 @@
             </div>
             <div class="chat_container w-full p-[20px] flex flex-col ">
                 <div #chatHistory class="chat_history w-full flex-1 overflow-y-auto ">
-                    @if (messages_with_sender().length <= 0) {
-                        <app-chat-placeholder [profile]="dm_partner()" [isSelfChat]="is_self_chat()"></app-chat-placeholder>
-                    
-                    }
-                    @else {
+                    @if (messages_with_sender().length > 0) {
                         @for (item of messages_with_sender(); track item.message.id) {
                             <app-chat class="bg-black" [message]="item.message" [sender]="item.sender" [showSeparator]="item.showSeparator" [dateLabel]="item.dateLabel" (openThread)="openThread($event)"></app-chat>
-                        }
+                        } 
+                    }
+                    @else {
+                        <div class="w-full flex items-end h-full">
+                            <app-chat-placeholder [profile]="dm_partner()" [isSelfChat]="is_self_chat()" [type]="active_type()" [channel]="channel_info()"></app-chat-placeholder>
+                        </div>
                     }
                 </div>
                 @if (active_type()) {

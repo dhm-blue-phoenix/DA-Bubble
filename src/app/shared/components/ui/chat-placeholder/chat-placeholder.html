@@ -1,10 +1,34 @@
 <div class="w-full flex flex-col gap-4 p-6">
-    <div class="flex items-center gap-4">
-        <img class="size-[70px]" [src]="'assets/svg/avatar/avatar_small/' + (profile?.avatar || '1') + '.svg'" alt="avatar">
-        <span class="text-xl font-bold">{{ profile?.name }}{{ isSelfChat ? ' (Du)' : '' }}</span>
-    </div>
-    <div>
-        <span class="text-xl font-bold text-black/50">Dieser Raum ist für dich da. </span>
-        <span class="text-xl font-semibold text-black/50">Mache dir Notizen, liste deiner To-dos auf oder bewahre Links und Dateien griffbereit auf. Du kannst hier auch gerne Dinge mit dir selbst besprechen.</span>
-    </div>
+    @if (type !== 'channel') {
+        <div class="flex items-center gap-[24px]">
+            <img class="size-[100px]" [src]="'assets/svg/avatar/avatar_small/' + (profile?.avatar || '1') + '.svg'" alt="avatar">
+            <span class="text-2xl font-bold">{{ profile?.name }}{{ isSelfChat ? ' (Du)' : '' }}</span>
+        </div>
+        @if (false) {
+            <div>
+                <span class="text-xl font-bold text-black/50">Dieser Raum ist für dich da. </span>
+                <span class="text-xl font-semibold text-black/50">Mache dir Notizen, liste deiner To-dos auf oder bewahre Links und Dateien griffbereit auf. Du kannst hier auch gerne Dinge mit dir selbst besprechen.</span>
+            </div>
+        }
+
+        @else if (true) {
+            <div>
+                <span class="text-xl font-semibold text-black/50">Diese Unterhaltung findet nur zwischen </span>
+                <span class="text-xl text-[var(--hover-text)]">@{{ profile?.name }}</span>
+                <span class="text-xl font-semibold text-black/50"> und dir statt.</span>
+            </div> 
+        }
+    }
+    @else {
+        <div class="flex items-center flex-col gap-[24px]">
+            <div class="w-full flex gap-[24px] items-center">
+                <span>#</span>
+                <span>{{ channel?.name }}</span>
+            </div>
+            <div>
+                <span class="text-xl font-semibold text-black/50">Channel wurde erstellt. Das ist der Anfang des Channels </span>
+                <span class="text-xl text-[var(--hover-text)]"># {{ channel?.name }}</span>
+            </div> 
+        </div>
+    }
 </div>
