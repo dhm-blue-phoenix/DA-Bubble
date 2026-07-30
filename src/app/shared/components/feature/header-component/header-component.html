@@ -81,7 +81,7 @@
                     </div>
                 }
                 @else {
-                    <form action="" class="flex flex-col gap-8">
+                    <form (ngSubmit)="edit_Name()" class="flex flex-col gap-8">
                         <div class="flex flex-col gap-2">
                             <div class="flex gap-[32px]">
                                 <img class="size-[30px]" src="assets/svg/icons/icon_black/account_circle_black.svg" alt="profil_Icon">
@@ -92,8 +92,8 @@
                             </div>
                         </div>
                         <div class="flex gap-[30px] w-full justify-center">
-                            <button class="btn_raw text-[var(--highligh-color)] border font-bold" (click)="toggle_EditProfile()">Abbrechen</button>
-                            <button [disabled]="new_name.invalid" class="btn_raw bg-[var(--highligh-color)] text-white font-bold" (click)="edit_Name()">Speichern</button>
+                            <button type="button" class="btn_raw text-[var(--highligh-color)] border font-bold" (click)="toggle_EditProfile()">Abbrechen</button>
+                            <button type="submit" [disabled]="new_name.invalid" class="btn_raw bg-[var(--highligh-color)] text-white font-bold">Speichern</button>
                         </div>
                     </form>
                 }
