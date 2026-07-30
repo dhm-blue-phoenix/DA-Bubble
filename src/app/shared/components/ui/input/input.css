@@ -1,1 +1,18 @@
 @import '../../../../app.css';
+
+.emoji_div{
+    bottom: 32px;
+    left: 32px;
+    position: absolute;
+    z-index: 9;
+}
+
+emoji-picker {
+--border-radius: 16px 16px 16px 0px;
+--border-color: #535AF1;
+--input-border-color: #535AF1;
+--outline-color:  #535AF1;
+--border-size: 2px;
+--button-hover-background: #ECEEFE;
+--button-active-background: #535AF1;
+}
