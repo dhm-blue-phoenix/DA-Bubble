@@ -6,10 +6,19 @@
             </button>
         }
     }
-    @else { 
-    <button  class="size-8 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]">
-            <img src="assets/svg/icons/icon_black/add_reaction.svg" alt="reaction">
-    </button>
+    @else {
+        <div class="group/quick">
+            <button class="relative size-8 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]">
+                <img src="assets/svg/icons/icon_black/add_reaction.svg" alt="reaction">
+            </button>
+            <div class="quick_bubble absolute opacity-0 invisible group-hover/quick:opacity-100 group-hover/quick:visible transition bg-white border border-black/10 rounded-full shadow-md flex items-center gap-1 px-1 py-1" [class.quick_bubble_own]="isOwnMessage">
+                @for (btn of [1,2,3,4]; track btn) {
+                    <button (click)="react.emit(btn)" class="size-7 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]">
+                        <img class="size-[18px]" [src]="'assets/svg/emoji/emoji' + btn + '.svg'" alt="reaction">
+                    </button>
+                }
+            </div>
+        </div>
     }
 
     @if (!isThread) {
