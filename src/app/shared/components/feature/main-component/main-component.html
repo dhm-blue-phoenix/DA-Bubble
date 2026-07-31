@@ -59,7 +59,7 @@
                             <app-chat class="bg-black" [message]="item.message" [sender]="item.sender" [showSeparator]="item.showSeparator" [dateLabel]="item.dateLabel" (openThread)="openThread($event)"></app-chat>
                         } 
                     }
-                    @else {
+                    @else if (messages_with_sender().length == 0 && active_type() != null){
                         <div class="w-full flex items-end h-full">
                             <app-chat-placeholder [profile]="dm_partner()" [isSelfChat]="is_self_chat()" [type]="active_type()" [channel]="channel_info()"></app-chat-placeholder>
                         </div>
