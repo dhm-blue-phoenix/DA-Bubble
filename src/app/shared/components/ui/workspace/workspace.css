@@ -8,6 +8,9 @@
 }
 
 .aktiv{
-    background-color: var(--hover-bg);
+    background-color: rgba(236, 238, 254, 1);
+    color: rgba(83, 90, 241, 1);
+    font-style: bold !important;
+    font-weight: 800;
 }
 
