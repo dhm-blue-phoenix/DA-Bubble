@@ -76,7 +76,7 @@
                 <div class="chat_header flex justify-between px-[42px] py-[24px] border-b-2 border-black/10 shadow-sm">
                     <div class="flex items-center gap-2">
                         <h2>Thread</h2>
-                        <span>{{ channel_info()?.name }}</span>
+                        <span class="text-xl text-[var(--highligh-color)]">#{{ thread_channel_name }}</span>
                     </div>
                     <button (click)="toggleMenu('thread')" class="size-[40px]"><img src="assets/svg/icons/icon_black/close.svg" alt=""></button>
                 </div>
