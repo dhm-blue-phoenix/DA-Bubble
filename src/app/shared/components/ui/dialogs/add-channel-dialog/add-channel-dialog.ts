@@ -19,6 +19,13 @@ export class AddChannelDialog {
 
   async add_new_Channel (){
     const success = await this.db.newChannel(this.db.getCurrentUserId(), this.channel_name, this.channel_descritpion)
-    if (success) this.closed.emit()
+    try{
+      this.db.getChannels(this.db.getCurrentUserId())
+      if (success) 
+        this.closed.emit()
+    }
+    catch{
+      console.warn("Channel not create")
+    }      
   }
 }
