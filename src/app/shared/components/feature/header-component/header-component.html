@@ -58,18 +58,10 @@
                     </div>
     
                     <div class="justify-start w-full flex items-center gap-[16px]">
-                        @if(currentUser()?.status === "online"){
-                            <div class="status_currentUser bg-[var(--status-online)]"></div>
-                            <span class="text-xl text-[var(--status-online)]">Aktiv</span>
-                        }
-                        @else if(currentUser()?.status === "away"){
-                            <div class="status_currentUser bg-[var(--status-away)]"></div>
-                            <span class="text-xl text-[var(--status-away)]">Abwesend</span>
-                        }
-                        @else {
-                            <div class="status_currentUser bg-[var(--status-offline)]"></div>
-                            <span class="text-xl text-[var(--status-offline)]">Offline</span>
-                        }
+                        <div class="flex items-center gap-4 w-full">
+                            <div class="status_dot" [class]="currentUser()?.status"></div>
+                            <span class="text-xl capitalize" [style.color]="'var(--status-' + (currentUser()?.status) + ')'">{{ currentUser()?.status }}</span>
+                        </div>
                     </div>
     
                     <div class="w-full flex items-center gap-[16px] justify-start">
