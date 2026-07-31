@@ -58,18 +58,10 @@
                     </div>
     
                     <div class="justify-start w-full flex items-center gap-[16px]">
-                        @if(currentUser()?.status === "online"){
-                            <div class="status_currentUser bg-[var(--status-online)]"></div>
-                            <span class="text-xl text-[var(--status-online)]">Aktiv</span>
-                        }
-                        @else if(currentUser()?.status === "away"){
-                            <div class="status_currentUser bg-[var(--status-away)]"></div>
-                            <span class="text-xl text-[var(--status-away)]">Abwesend</span>
-                        }
-                        @else {
-                            <div class="status_currentUser bg-[var(--status-offline)]"></div>
-                            <span class="text-xl text-[var(--status-offline)]">Offline</span>
-                        }
+                        <div class="flex items-center gap-4 w-full">
+                            <div class="status_dot" [class]="currentUser()?.status"></div>
+                            <span class="text-xl capitalize" [style.color]="'var(--status-' + (currentUser()?.status) + ')'">{{ currentUser()?.status }}</span>
+                        </div>
                     </div>
     
                     <div class="w-full flex items-center gap-[16px] justify-start">
@@ -81,7 +73,7 @@
                     </div>
                 }
                 @else {
-                    <form action="" class="flex flex-col gap-8">
+                    <form (ngSubmit)="edit_Name()" class="flex flex-col gap-8">
                         <div class="flex flex-col gap-2">
                             <div class="flex gap-[32px]">
                                 <img class="size-[30px]" src="assets/svg/icons/icon_black/account_circle_black.svg" alt="profil_Icon">
@@ -92,8 +84,8 @@
                             </div>
                         </div>
                         <div class="flex gap-[30px] w-full justify-center">
-                            <button class="btn_raw text-[var(--highligh-color)] border font-bold" (click)="toggle_EditProfile()">Abbrechen</button>
-                            <button [disabled]="new_name.invalid" class="btn_raw bg-[var(--highligh-color)] text-white font-bold" (click)="edit_Name()">Speichern</button>
+                            <button type="button" class="btn_raw text-[var(--highligh-color)] border font-bold" (click)="toggle_EditProfile()">Abbrechen</button>
+                            <button type="submit" [disabled]="new_name.invalid" class="btn_raw bg-[var(--highligh-color)] text-white font-bold">Speichern</button>
                         </div>
                     </form>
                 }

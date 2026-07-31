@@ -1,0 +1,32 @@
+@import '../../../../app.css';
+
+.reaction_Bubble{
+    border: 1px solid rgba(83, 90, 241, 0.3);
+    border-radius: 16px;
+}
+
+.reaction_Dialog{
+    bottom: 75%;
+    left: 50%;
+    margin-bottom: 16px;
+    min-width: 160px;
+    padding: 20px 16px 12px;
+    border-radius: 24px 24px 24px 0px;
+    white-space: nowrap;
+    z-index: 9;
+}
+
+.reaction_Dialog_own{
+    left: auto;
+    right: 50%;
+    border-radius: 24px 24px 0px 24px;
+}
+
+.reaction_Dialog_icon{
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 32px;
+    height: 32px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}

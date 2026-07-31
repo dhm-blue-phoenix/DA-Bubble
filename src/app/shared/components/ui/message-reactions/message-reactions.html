@@ -1,0 +1,26 @@
+@if (reactions.length > 0) {
+    <div class="flex gap-2 items-center" [class.flex-row-reverse]="reverse">
+        @for (reaction of groupedReactions(); track reaction.emoji) {
+            <div class="relative group/reaction">
+                <div class="reaction_Bubble flex items-center gap-1 px-3 py-1">
+                    <span>{{ reaction.count }}</span>
+                    <img class="size-5" [src]="'assets/svg/emoji/emoji' + reaction.emoji + '.svg'" alt="reaction">
+                </div>
+                <div class="reaction_Dialog absolute opacity-0 invisible group-hover/reaction:opacity-100 group-hover/reaction:visible transition bg-[var(--highligh-color)] text-white text-center" [class.reaction_Dialog_own]="reverse">
+                    <div class="reaction_Dialog_icon absolute bg-white rounded-full flex items-center justify-center">
+                        <img class="size-5" [src]="'assets/svg/emoji/emoji' + reaction.emoji + '.svg'" alt="reaction">
+                    </div>
+                    <div class="flex flex-col">
+                        @for (name of reaction.names; track name) {
+                            <span class="font-bold">{{ name }}</span>
+                        }
+                        @if (reaction.extraCount > 0) {
+                            <span class="font-bold">+{{ reaction.extraCount }}</span>
+                        }
+                    </div>
+                    <span class="text-white/80 text-sm">{{ reactionLabel(reaction.count) }}</span>
+                </div>
+            </div>
+        }
+    </div>
+}
