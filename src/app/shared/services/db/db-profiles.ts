@@ -9,6 +9,8 @@ import {
 
 import { Supabase } from './db-superbase';
 
+import { DatabaseProfilesHelper } from './db-profiles-helper';
+
 import { Profile, Profiles } from '../../interfaces/profile';
 import { SupabaseResponseProfiles } from '../../interfaces/db/db-profiles';
 import { DbPostgrestError } from '../../interfaces/db-error';
@@ -19,6 +21,7 @@ import { DbPostgrestError } from '../../interfaces/db-error';
 export class DatabaseProfiles implements OnDestroy {
   private readonly platformId: Object = inject(PLATFORM_ID);
   private readonly supabase: SupabaseClient = inject(Supabase)['supabase'];
+  private readonly db_profile_helper: DatabaseProfilesHelper = inject(DatabaseProfilesHelper);
   private readonly channels?: RealtimeChannel;
 
   /** Signal, welches die Liste der Benutzerprofile hält. */
@@ -42,7 +45,9 @@ export class DatabaseProfiles implements OnDestroy {
         { event: '*', schema: 'public', table: 'profiles' },
         (payload: RealtimePostgresChangesPayload<object>): void => this.handleProfileEvent(payload),
       )
-      .subscribe();
+      .subscribe(async (status: string): Promise<void> => {
+        await this.db_profile_helper.subscribeHelper(status);
+      });
   }
 
   /**

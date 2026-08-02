@@ -104,7 +104,7 @@ describe('DatabaseChannels', () => {
       };
 
       it('should handle CHANNELS INSERT', () => {
-        service._channel.set({ id: 'chan_1', name: 'Old Name' });
+        service._channel.set({ id: 'chan_1', name: 'Old Name', description: '', created_by: 'user_1', created_at: new Date().toISOString(), channel_members: [] });
         triggerEvent('channels', {
           table: 'channels',
           eventType: 'INSERT',
@@ -115,7 +115,7 @@ describe('DatabaseChannels', () => {
 
       it('should handle CHANNELS UPDATE', () => {
         service._channels.set([{ id: 'chan_1', name: 'Old Name' }]);
-        service._channel.set({ id: 'chan_1', name: 'Old Name' });
+        service._channel.set({ id: 'chan_1', name: 'Old Name', description: '', created_by: 'user_1', created_at: new Date().toISOString(), channel_members: [] });
 
         triggerEvent('channels', {
           table: 'channels',
@@ -128,7 +128,7 @@ describe('DatabaseChannels', () => {
       });
 
       it('should handle MEMBERS INSERT', () => {
-        service._channel.set({ id: 'chan_1', channel_members: [{ user_id: 'user_1' }] });
+        service._channel.set({ id: 'chan_1', name: 'Channel 1', description: '', created_by: 'user_1', created_at: new Date().toISOString(), channel_members: [{ user_id: 'user_1' }] });
 
         triggerEvent('channel_members', {
           table: 'channel_members',
@@ -141,7 +141,7 @@ describe('DatabaseChannels', () => {
       });
 
       it('should handle MEMBERS DELETE', () => {
-        service._channel.set({ id: 'chan_1', channel_members: [{ user_id: 'user_1' }, { user_id: 'user_2' }] });
+        service._channel.set({ id: 'chan_1', name: 'Channel 1', description: '', created_by: 'user_1', created_at: new Date().toISOString(), channel_members: [{ user_id: 'user_1' }, { user_id: 'user_2' }] });
 
         triggerEvent('channel_members', {
           table: 'channel_members',

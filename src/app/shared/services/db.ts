@@ -59,9 +59,7 @@ export class Database {
     this.supabase.auth.onAuthStateChange(
       async (event: AuthChangeEvent, session: Session | null): Promise<void> => {
         if (!session?.user) return this.db_auth.eventHelperSignedOut();
-
         this.db_auth.eventHelperMainSetup(session);
-
         switch (event) {
           case 'SIGNED_IN':
             this.eventHelperSignedIn(session);
