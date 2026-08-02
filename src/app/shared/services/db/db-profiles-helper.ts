@@ -44,7 +44,6 @@ export class DatabaseProfilesHelper implements OnDestroy {
    * @param status Der Status‑String des Supabase‑Channel‑Callbacks (z.B. `'SUBSCRIBED'`).
    */
   public async subscribeHelper(status: string): Promise<void> {
-    console.warn(status);
     if (status === 'SUBSCRIBED') {
       this.startHeartbeat();
     }

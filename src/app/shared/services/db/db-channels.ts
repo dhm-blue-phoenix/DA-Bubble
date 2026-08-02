@@ -41,7 +41,7 @@ export class DatabaseChannels {
   }
 
   /**
-   * Abonniert Realtime-Events für die Kanäle und deren Mitglieder.
+   * Abonnierte Realtime-Events für die Kanäle und deren Mitglieder.
    * @returns {RealtimeChannel} Der abonnierte Realtime-Kanal.
    */
   private subscribeChannels(): RealtimeChannel {
@@ -128,6 +128,7 @@ export class DatabaseChannels {
 
   /**
    * Behandelt ein DELETE-Event für Kanal-Mitglieder und aktualisiert das _channel Signal.
+   * zusätzlich löscht es einen channel, sofern er nur noch 0 Mitglieder hat
    * @param {RealtimePostgresChangesPayload<object>} payload - Das Event-Payload.
    */
   private deleteEventMembers(payload: RealtimePostgresChangesPayload<object>): void {
@@ -140,6 +141,8 @@ export class DatabaseChannels {
           (m: { user_id: string }): boolean => m.user_id !== member.user_id,
         ),
       });
+      const membersLength: number = currentChannel['channel_members'].length - 1;
+      if (membersLength === 0) this.deleteChannel(member['channel_id']);
     }
   }
 
@@ -283,6 +286,17 @@ export class DatabaseChannels {
       })
       .eq('id', channelId)
       .select();
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
+  }
+
+  /**
+   * Löscht einen Kanal.
+   * @param {string} channelId - Die ID des Kanals.
+   * @param {string} name - Der neue Name.
+   * @returns {Promise<void>}
+   */
+  private async deleteChannel(channelId: string): Promise<void> {
+    const { error } = await this.supabase.from('channels').delete().eq('id', channelId);
     if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
   }
 }
