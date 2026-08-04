@@ -14,15 +14,24 @@
 
     <form class="flex flex-col gap-4">
         <div class="relative">
-            <div class="border border-black/15 rounded-2xl px-4 py-3 flex items-center gap-2">
-                <input [ngModel]="name()" (ngModelChange)="onNameChange($event)" name="memberName" type="text" placeholder="Name eingeben" class="text-lg outline-none w-full">
+            <div class="border border-black/15 rounded-2xl px-4 py-3 flex items-center flex-wrap gap-2">
+                @for (profile of selectedProfiles(); track profile.id) {
+                    <span class="flex items-center gap-2 bg-[var(--hover-bg)] rounded-full px-6 py-2">
+                        <img class="size-[24px] rounded-full" [src]="'assets/svg/avatar/avatar_small/' + (profile.avatar || '1') + '.svg'" alt="avatar">
+                        <span class="text-base font-semibold">{{ profile.name }}</span>
+                        <button type="button" (click)="removeSelected(profile)" class="flex items-center justify-center size-4 rounded-full hover:bg-black/10">
+                            <img class="size-[24px]" src="assets/svg/icons/icon_black/close.svg" alt="entfernen">
+                        </button>
+                    </span>
+                }
+                <input [ngModel]="searchText()" (ngModelChange)="onSearchTextChange($event)" (keydown)="onKeydown($event)" name="memberName" type="text" placeholder="Name eingeben" class="text-lg outline-none flex-1 min-w-[120px]">
             </div>
 
-            <app-mention-suggestions [results]="suggestions()" (select)="selectProfile($event)"></app-mention-suggestions>
+            <app-mention-suggestions [results]="suggestions()" [activeIndex]="0" (select)="selectProfile($event)"></app-mention-suggestions>
         </div>
 
         <div class="bg-white rounded-b-3xl w-full max-w-[720px] pb-10 flex justify-end">
-            <button (click)="addMember()" [disabled]="!name().trim()" class="btn_raw bg-[var(--highligh-color)] text-white font-bold">Hinzufügen</button>
+            <button (click)="addMembers()" [disabled]="selectedProfiles().length === 0" class="btn_raw bg-[var(--highligh-color)] text-white font-bold">Hinzufügen</button>
         </div>
     </form>
 </div>

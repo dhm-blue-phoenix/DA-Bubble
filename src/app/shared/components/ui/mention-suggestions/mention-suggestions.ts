@@ -9,5 +9,6 @@ import { Profile } from '../../../interfaces/profile';
 })
 export class MentionSuggestions {
   @Input() results: Profile[] = []
+  @Input() activeIndex = 0
   @Output() select = new EventEmitter<Profile>()
 }
