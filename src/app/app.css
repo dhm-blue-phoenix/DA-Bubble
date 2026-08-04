@@ -92,6 +92,14 @@ cursor: not-allowed;
     margin-top: 4px;
 }
 
+.scrollbar_Style{
+    margin: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-aktiv) var(--hover-bg);
+    background-color: white;
+    padding: 4px;
+}
+
 .errorMassage {
     color: red;
     font-size: 1rem;
