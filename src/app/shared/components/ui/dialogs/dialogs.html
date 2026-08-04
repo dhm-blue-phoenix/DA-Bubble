@@ -1,32 +1,32 @@
-<section class="dialog_bg fixed inset-0 bg-black/50 flex flex-col items-center justify-center">
+<dialog #dialogPanelRef class="dialog_bg fixed inset-0 bg-black/50 flex flex-col items-center justify-center" (close)="closed.emit()" (click)="onBackdropClick($event, dialogPanelRef)">
 
         @if (mode === 'editChannel') {
             <div class="dialog_content bg-white rounded-t-3xl w-full max-w-[720px]">
-                <app-edit-channel-dialog [channelInfo]="channelInfo" [channelCreator]="channelCreator" (closed)="closed.emit()" (save)="save.emit($event)" (leave)="leave.emit()"></app-edit-channel-dialog>
+                <app-edit-channel-dialog [channelInfo]="channelInfo" [channelCreator]="channelCreator" (closed)="dialogPanelRef.close()" (save)="save.emit($event)" (leave)="leave.emit()"></app-edit-channel-dialog>
             </div>
         }
         @else if (mode === 'addChannel') {
             <div class="dialog_content bg-white rounded-t-3xl w-full max-w-[720px]">
-                <app-add-channel-dialog (closed)="closed.emit()"></app-add-channel-dialog>
+                <app-add-channel-dialog (closed)="dialogPanelRef.close()"></app-add-channel-dialog>
             </div>
         }
         @else if (mode === 'addMember') {
             <div class="dialog_content_side bg-white  w-full max-w-[540px]">
-                <app-add-people-dialog [channelInfo]="channelInfo" (closed)="closed.emit()"></app-add-people-dialog>
+                <app-add-people-dialog [channelInfo]="channelInfo" (closed)="dialogPanelRef.close()"></app-add-people-dialog>
             </div>
         }
         @else if (mode === 'members') {
             <div class="dialog_content_side bg-white  w-full max-w-[540px]">
-                <app-members-dialog [memberProfiles]="memberProfiles" (closed)="closed.emit()" (addMember)="addMember.emit()" (openProfile)="openProfile.emit($event)"></app-members-dialog>
+                <app-members-dialog [memberProfiles]="memberProfiles" (closed)="dialogPanelRef.close()" (addMember)="addMember.emit()" (openProfile)="openProfile.emit($event)"></app-members-dialog>
             </div>
         }
 
-</section>
+</dialog>
 
 @if (profileUser) {
-    <section class="profile_dialog_bg fixed inset-0 bg-black/50 flex items-center justify-center">
+    <dialog #profileDialogPanelRef class="profile_dialog_bg fixed inset-0 bg-black/50 flex items-center justify-center" (close)="closedProfile.emit()" (click)="onBackdropClick($event, profileDialogPanelRef)">
         <div class="dialog_content_profile bg-white">
-            <app-profile-dialog [profile]="profileUser" (closed)="closedProfile.emit()" (message)="message.emit($event)"></app-profile-dialog>
+            <app-profile-dialog [profile]="profileUser" (closed)="profileDialogPanelRef.close()" (message)="message.emit($event)"></app-profile-dialog>
         </div>
-    </section>
+    </dialog>
 }
