@@ -12,7 +12,7 @@ export class AddChannelDialog {
 
   channel_name = ""
   channel_descritpion = ""
-
+  channel_exist = false
   db = inject(Database)
 
   @Output() closed = new EventEmitter<void>()
@@ -23,6 +23,8 @@ export class AddChannelDialog {
       this.db.getChannels(this.db.getCurrentUserId())
       if (success) 
         this.closed.emit()
+      else
+        this.channel_exist = true
     }
     catch{
       console.warn("Channel not create")
