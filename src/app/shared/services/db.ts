@@ -193,6 +193,16 @@ export class Database {
     await this.safeCall((): Promise<void> => this.db_auth.signOut(), undefined);
   }
 
+  /** Leert die gespeicherten Nachrichten des aktuellen Threads. */
+  public clearThreadMessages(): void {
+    this.db_messages._thread_messages.set([]);
+  }
+
+  /** Leert die gespeicherten Nachrichten des aktuellen Chats. */
+  public clearChatMessages(): void {
+    this.db_messages._chat_messages.set([]);
+  }
+
   /**
    * Lädt ein einzelnes Profil asynchron anhand seiner ID.
    * @param {string} profileId - Die ID des Profils.

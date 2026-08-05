@@ -133,6 +133,7 @@ thread_messages_with_sender = computed(() => {
     }
 
     async open_Dm(id:string){
+        this.db.clearChatMessages()
         this.active_type.set('chat')
         this.dm_partner.set(this.all_user().find(u => u.id === id) ?? null)
 
@@ -171,6 +172,7 @@ thread_messages_with_sender = computed(() => {
     }
 
     async openThread(messageId: string) {
+        this.db.clearThreadMessages()
         this.thread_root_id.set(messageId)
         this.thread_channel_name = this.channel_info()?.name ?? ''
         this.thread_Open = true
