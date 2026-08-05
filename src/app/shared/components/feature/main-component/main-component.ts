@@ -34,7 +34,12 @@ channel_member_profiles: WritableSignal<Profile[]> = signal<Profile[]>([])
 dm_partner: WritableSignal<Profile | null> = signal<Profile | null>(null)
 dialog_mode: WritableSignal<'editChannel' | 'addChannel' | 'addMember' | 'members' | null> = signal(null)
 profile_user: WritableSignal<Profile | null> = signal(null)
-thread_root: WritableSignal<Message | null> = signal(null)
+thread_root_id: WritableSignal<string | null> = signal(null)
+thread_root = computed(() => {
+    const id = this.thread_root_id()
+    if (!id) return null
+    return this.active_content().find(m => m.id === id) ?? null
+})
 thread_id = ''
 thread_channel_name = ''
 
@@ -166,8 +171,7 @@ thread_messages_with_sender = computed(() => {
     }
 
     async openThread(messageId: string) {
-        const found = this.messages_with_sender().find(item => item.message.id === messageId)
-        this.thread_root.set(found ? { ...found.message, reactions: [] } : null)
+        this.thread_root_id.set(messageId)
         this.thread_channel_name = this.channel_info()?.name ?? ''
         this.thread_Open = true
         this.thread_id = await this.db.getThreadId(messageId)

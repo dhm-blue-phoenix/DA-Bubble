@@ -219,14 +219,7 @@ describe('DatabaseMessages', () => {
 
         service._thread_messages.set([msg]);
         triggerEvent('reactions', { table: 'reactions', eventType: 'INSERT', new: reaction });
-        
-        // Wait, insertEventReaction for thread updates _channel_messages in the user's code.
-        // Let's assert based on how the code works:
-        // if (this.eventHelperIsMsgType(reaction) === 'thread')
-        //   this._channel_messages.update(...)
-        // So we expect _channel_messages to be updated? No, wait. 
-        // If eventHelperIsMsgType finds it in _thread_messages, it updates _channel_messages.
-        // Actually, let me assert _channel_messages and I will fix the bug in the user code too if it's there.
+        expect(service._thread_messages()[0].reactions).toContainEqual(reaction);
       });
 
       it('should remove reaction on DELETE reaction event', () => {

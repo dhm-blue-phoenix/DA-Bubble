@@ -88,7 +88,7 @@ export class DatabaseMessages implements OnDestroy {
         (list: Messages): Messages => this.eventHelperInsertMessage(list, message),
       );
     }
-    if (message.channel_id)
+    if (message.channel_id && !message.thread_id)
       this._channel_messages.update(
         (list: Messages): Messages => this.eventHelperInsertMessage(list, message),
       );
@@ -149,18 +149,15 @@ export class DatabaseMessages implements OnDestroy {
    */
   private insertEventReaction(payload: RealtimePostgresChangesPayload<object>): void {
     const reaction = payload.new as Reaction;
-    if (this.eventHelperIsMsgType(reaction) === 'chat')
-      this._chat_messages.update(
-        (list: Messages): Messages => this.eventHelperInsertReaction(list, reaction),
-      );
-    if (this.eventHelperIsMsgType(reaction) === 'channel')
-      this._channel_messages.update(
-        (list: Messages): Messages => this.eventHelperInsertReaction(list, reaction),
-      );
-    if (this.eventHelperIsMsgType(reaction) === 'thread')
-      this._thread_messages.update(
-        (list: Messages): Messages => this.eventHelperInsertReaction(list, reaction),
-      );
+    this._chat_messages.update(
+      (list: Messages): Messages => this.eventHelperInsertReaction(list, reaction),
+    );
+    this._channel_messages.update(
+      (list: Messages): Messages => this.eventHelperInsertReaction(list, reaction),
+    );
+    this._thread_messages.update(
+      (list: Messages): Messages => this.eventHelperInsertReaction(list, reaction),
+    );
   }
 
   /**
@@ -173,7 +170,7 @@ export class DatabaseMessages implements OnDestroy {
     return list.map(
       (msg: Message): Message =>
         msg.id === reaction['message_id']
-          ? { ...msg, reactions: [...msg['reactions'], reaction] }
+          ? { ...msg, reactions: [...(msg['reactions'] || []), reaction] }
           : msg,
     );
   }
@@ -184,18 +181,15 @@ export class DatabaseMessages implements OnDestroy {
    */
   private deleteEventReaction(payload: RealtimePostgresChangesPayload<object>): void {
     const reaction = payload.old as Reaction;
-    if (this.eventHelperIsMsgType(reaction) === 'chat')
-      this._chat_messages.update(
-        (list: Messages): Messages => this.eventHelperDeleteReaction(list, reaction),
-      );
-    if (this.eventHelperIsMsgType(reaction) === 'channel')
-      this._channel_messages.update(
-        (list: Messages): Messages => this.eventHelperDeleteReaction(list, reaction),
-      );
-    if (this.eventHelperIsMsgType(reaction) === 'thread')
-      this._thread_messages.update(
-        (list: Messages): Messages => this.eventHelperDeleteReaction(list, reaction),
-      );
+    this._chat_messages.update(
+      (list: Messages): Messages => this.eventHelperDeleteReaction(list, reaction),
+    );
+    this._channel_messages.update(
+      (list: Messages): Messages => this.eventHelperDeleteReaction(list, reaction),
+    );
+    this._thread_messages.update(
+      (list: Messages): Messages => this.eventHelperDeleteReaction(list, reaction),
+    );
   }
 
   /**
@@ -210,7 +204,7 @@ export class DatabaseMessages implements OnDestroy {
         msg.id === reaction.message_id
           ? {
               ...msg,
-              reactions: msg.reactions.filter(
+              reactions: (msg.reactions || []).filter(
                 (r: Reaction): boolean =>
                   !(r.user_id === reaction.user_id && r.emoji === reaction.emoji),
               ),
@@ -219,11 +213,7 @@ export class DatabaseMessages implements OnDestroy {
     );
   }
 
-  /**
-   * Bestimmt den Nachrichtentyp (Chat, Channel, Thread) anhand einer Reaktion.
-   * @param {Reaction} reaction - Die überprüfte Reaktion.
-   * @returns {string} Der gefundene Nachrichtentyp oder 'none'.
-   */
+  /** Bestimmt den Nachrichtentyp (Chat, Channel, Thread) anhand einer Reaktion. */
   private eventHelperIsMsgType(reaction: Reaction): string {
     const isChat: boolean = this._chat_messages().some((list: Message): boolean => {
       return list['id'] === reaction['message_id'];
@@ -250,7 +240,7 @@ export class DatabaseMessages implements OnDestroy {
    */
   public async getMessages(msgType: MsgType, id: string): Promise<void> {
     this.currentChatId = id;
-    const { data: messages, error }: PostgrestResponse<any> = await this.supabase
+    let query = this.supabase
       .from('messages')
       .select(
         `
@@ -263,8 +253,15 @@ export class DatabaseMessages implements OnDestroy {
         threads!threads_root_message_id_fkey(id)
       `,
       )
-      .eq(msgType + '_id', id)
-      .order('created_at', { ascending: true });
+      .eq(msgType + '_id', id);
+
+    if (msgType === 'channel') {
+      query = query.is('thread_id', null);
+    }
+
+    const { data: messages, error }: PostgrestResponse<any> = await query.order('created_at', {
+      ascending: true,
+    });
     if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
     if (messages) {
       if (msgType === 'chat') this._chat_messages.set(messages);
