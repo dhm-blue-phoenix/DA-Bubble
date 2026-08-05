@@ -10,11 +10,12 @@ export interface SupabaseResponseMessage {
 }
 
 export interface NewMessage {
-  chat_id?: string;
-  channel_id?: string;
-  thread_id?: string;
-  sender_id: string;
-  content: string;
+  readonly chat_id?: string;
+  readonly channel_id?: string;
+  readonly thread_id?: string;
+  readonly sender_id: string;
+  readonly content: string;
+  readonly thread_only?: boolean;
 }
 
 export type MsgType = 'chat' | 'channel' | 'thread';

@@ -8,7 +8,8 @@ export interface Message {
   readonly thread_id: string | null;
   readonly created_at: string;
   edited_at: string | null;
-  threads?: { id: string }[] | null;
+  readonly threads?: { id: string }[] | null;
+  readonly thread_only?: boolean;
 }
 
 export interface Reaction {

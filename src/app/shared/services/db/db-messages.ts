@@ -138,8 +138,8 @@ export class DatabaseMessages implements OnDestroy {
    * @returns {Messages} Die aktualisierte Nachrichtenliste.
    */
   private eventHelperUpdateMessage(list: Messages, message: Message): Messages {
-    return list.map((msg: Message): Message =>
-      msg['id'] === message['id'] ? { ...msg, ...message } : msg,
+    return list.map(
+      (msg: Message): Message => (msg['id'] === message['id'] ? { ...msg, ...message } : msg),
     );
   }
 
@@ -256,7 +256,7 @@ export class DatabaseMessages implements OnDestroy {
       .eq(msgType + '_id', id);
 
     if (msgType === 'channel') {
-      query = query.is('thread_id', null);
+      query = query.is('thread_only', null);
     }
 
     const { data: messages, error }: PostgrestResponse<any> = await query.order('created_at', {
@@ -332,7 +332,7 @@ export class DatabaseMessages implements OnDestroy {
     newMessage: NewMessage,
   ): NewMessage {
     return msgType === 'thread'
-      ? { ...newMessage, channel_id: threadChannelId as string }
+      ? { ...newMessage, channel_id: threadChannelId as string, thread_only: true }
       : newMessage;
   }
 
