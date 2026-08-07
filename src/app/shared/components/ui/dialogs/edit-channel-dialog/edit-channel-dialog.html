@@ -16,7 +16,7 @@
         @if (editingName) {
             <div class="border border-black/15 rounded-2xl px-4 py-3 flex items-center gap-2">
                 <span class="text-lg">#</span>
-                <input [(ngModel)]="nameDraft" name="channelName" type="text" placeholder="Channel-Name" class="text-lg outline-none w-full">
+                <input [(ngModel)]="nameDraft" (keydown.enter)="toggleEditName()" name="channelName" type="text" placeholder="Channel-Name" class="text-lg outline-none w-full">
             </div>
         } @else {
             <div class="flex items-center gap-2">
@@ -33,7 +33,7 @@
         </div>
         @if (editingDescription) {
             <div class="border border-black/15 rounded-2xl px-4 py-3">
-                <textarea [(ngModel)]="descriptionDraft" name="channelDescription" placeholder="Dein Text hier" class="text-black/70 outline-none w-full resize-none" rows="3"></textarea>
+                <textarea [(ngModel)]="descriptionDraft" (keydown.enter)="$event.preventDefault(); toggleEditDescription()" name="channelDescription" placeholder="Dein Text hier" class="text-black/70 outline-none w-full resize-none" rows="3"></textarea>
             </div>
         } @else {
             <div>

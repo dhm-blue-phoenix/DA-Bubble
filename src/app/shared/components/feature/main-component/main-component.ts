@@ -30,9 +30,8 @@ db = inject(Database)
 dateSeparator = inject(DateSeparatorService)
 
 active_type: WritableSignal<'channel' | 'chat' | null> = signal(null)
-channel_member_profiles: WritableSignal<Profile[]> = signal<Profile[]>([])
 dm_partner: WritableSignal<Profile | null> = signal<Profile | null>(null)
-dialog_mode: WritableSignal<'editChannel' | 'addChannel' | 'addMember' | 'members' | null> = signal(null)
+dialog_mode: WritableSignal<'editChannel' | 'addChannel' | 'addMember' | 'members' | 'userProfile' | null> = signal(null)
 profile_user: WritableSignal<Profile | null> = signal(null)
 thread_root_id: WritableSignal<string | null> = signal(null)
 thread_root = computed(() => {
@@ -70,25 +69,25 @@ constructor(){
         })
     })
     
-        effect(() => {
-        console.log('MainComponent state', {
-            active_type: this.active_type(),
-            dialog_mode: this.dialog_mode(),
-            profile_user: this.profile_user(),
-            dm_partner: this.dm_partner(),
-            channel_id: this.channel_id,
-            chat_id: this.chat_id,
-            channel_info: this.channel_info(),
-            channel_creator: this.channel_creator(),
-            channel_member_profiles: this.channel_member_profiles(),
-            all_user: this.all_user(),
-            all_channels: this.all_channels(),
-            chat_content: this.chat_content(),
-            channel_content: this.channel_content(),
-            active_content: this.active_content(),
-            messages_with_sender: this.messages_with_sender(),
-        })
-    })
+        // effect(() => {
+        // console.log('MainComponent state', {
+        //     active_type: this.active_type(),
+        //     dialog_mode: this.dialog_mode(),
+        //     profile_user: this.profile_user(),
+        //     dm_partner: this.dm_partner(),
+        //     channel_id: this.channel_id,
+        //     chat_id: this.chat_id,
+        //     channel_info: this.channel_info(),
+        //     channel_creator: this.channel_creator(),
+        //     channel_member_profiles: this.channel_member_profiles(),
+        //     all_user: this.all_user(),
+        //     all_channels: this.all_channels(),
+        //     chat_content: this.chat_content(),
+        //     channel_content: this.channel_content(),
+        //     active_content: this.active_content(),
+        //     messages_with_sender: this.messages_with_sender(),
+        // })
+    // })
 }
 active_content = computed(() => {
     if (this.active_type() === 'chat') return this.chat_content()
@@ -99,17 +98,27 @@ active_content = computed(() => {
 is_self_chat = computed(() => this.dm_partner()?.id === this.db.getCurrentUserId())
 
 channel_creator = computed(() =>
-    this.all_user().find(u => u.id === this.channel_info()?.created_by) ?? null)
+    this.all_user().find(user => user.id === this.channel_info()?.created_by) ?? null)
+
+currentUser = computed(() =>
+    this.all_user().find(user => user.id === this.db.getCurrentUserId()) ?? null)
+
+channel_member_profiles = computed((): Profile[] => {
+    const members = this.channel_info()?.channel_members ?? []
+    return members
+        .map(member => this.all_user().find(user => user.id === member.user_id))
+        .filter((profile): profile is Profile => profile !== undefined)
+})
 
 messages_with_sender = computed(() =>
     this.dateSeparator.withSeparators(this.active_content()).map(item => ({
         ...item,
-        sender: this.all_user().find(u => u.id === item.message.sender_id)
+        sender: this.all_user().find(user => user.id === item.message.sender_id)
     }))
 );
 
 thread_root_sender = computed(() =>
-    this.all_user().find(u => u.id === this.thread_root()?.sender_id))
+    this.all_user().find(user => user.id === this.thread_root()?.sender_id))
 
 thread_root_date_label = computed(() => {
     const root = this.thread_root()
@@ -118,10 +127,10 @@ thread_root_date_label = computed(() => {
 
 
 thread_messages_with_sender = computed(() => {
-    const replies = this.db.threadMsg().filter(m => m.id !== this.thread_root()?.id)
+    const replies = this.db.threadMsg().filter(message => message.id !== this.thread_root()?.id)
     return this.dateSeparator.withSeparators(replies).map(item => ({
         ...item,
-        sender: this.all_user().find(u => u.id === item.message.sender_id)
+        sender: this.all_user().find(user => user.id === item.message.sender_id)
     }))
 });
 
@@ -135,7 +144,7 @@ thread_messages_with_sender = computed(() => {
     async open_Dm(id:string){
         this.db.clearChatMessages()
         this.active_type.set('chat')
-        this.dm_partner.set(this.all_user().find(u => u.id === id) ?? null)
+        this.dm_partner.set(this.all_user().find(user => user.id === id) ?? null)
 
         const dm = await this.db.getChatId(id)
         this.chat_id = dm
@@ -147,15 +156,6 @@ thread_messages_with_sender = computed(() => {
         this.channel_id = id
         this.db.loadMsg('channel', id)
         await this.db.getChannelContent(id)
-
-        this.channel_member_profiles.set(this.resolveMemberProfiles())
-    }
-
-    resolveMemberProfiles(): Profile[] {
-        const members = this.channel_info()?.channel_members ?? []
-        return members
-            .map(m => this.all_user().find(u => u.id === m.user_id))
-            .filter((p): p is Profile => p !== undefined)
     }
 
     editChannel(data: { name: string; description: string }) {
@@ -166,7 +166,6 @@ thread_messages_with_sender = computed(() => {
         this.db.removeChannelMember(this.channel_id, this.db.getCurrentUserId())
         this.dialog_mode.set(null)
         this.channel_id = ''
-        this.channel_member_profiles.set([])
         this.active_type.set(null)
         this.db.getChannels(this.db.getCurrentUserId())
     }
@@ -190,6 +189,16 @@ thread_messages_with_sender = computed(() => {
         this.profile_user.set(null)
         this.dialog_mode.set(null)
         this.open_Dm(id)
+    }
+
+    openUserProfileDialog() {
+        this.dialog_mode.set('userProfile')
+    }
+
+    saveProfileName(name: string) {
+        const profile = this.currentUser()
+        if (profile) this.db.editProfileName(profile.id, name)
+        this.dialog_mode.set(null)
     }
 
     send_Content(content:string){

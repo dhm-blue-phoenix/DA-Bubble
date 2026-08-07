@@ -7,7 +7,7 @@
                     <img class="size-60px" src="assets/svg/devspace/Workspace logo.svg" alt="workspace">
                     <h2>Devspace</h2>
                 </div>
-                <button><img src="assets/svg/icons/icon_black/edit_square_black.svg" alt="edit"></button>
+                <button class="hover_btn"><img src="assets/svg/icons/icon_black/edit_square_black.svg" alt="edit"></button>
             </div>
             <div class="flex justify-between w-full items-center">
                 <div class="flex gap-1 items-center">
@@ -18,7 +18,7 @@
                 </div>
                 <button (click)="dialog_mode.set('addChannel')" class="hover_btn"><img class="size-24px" src="assets/svg/icons/icon_black/add_black.svg" alt="workspace"></button>
             </div>
-            <div [style.display]="channelOpen ? 'flex' : 'none'" class="w-full flex flex-col gap-2 p-2 overflow-y-auto max-h-48">
+            <div [style.display]="channelOpen ? 'flex' : 'none'" class="w-full flex flex-col gap-2 p-2 scrollbar_Style overflow-y-auto max-h-48">
                 @for (ch of all_channels(); track ch.id;) {
                     <app-channels (click)="open_Chat(ch.id)" [ch]="ch" [isActive]="active_type() === 'channel' && channel_id === ch.id"></app-channels>
                 }
@@ -35,7 +35,7 @@
                     <h3>Direktnachrichten</h3>
                 </button>
             </div>
-                <div [style.display]="dmOpen ? 'flex' : 'none'" class=" w-full flex items-start px-6 gap-4 flex-col overflow-y-auto flex-1 ">
+                <div [style.display]="dmOpen ? 'flex' : 'none'" class=" w-full flex items-start px-6 gap-4 flex-col scrollbar_Style overflow-y-auto flex-1 ">
                     @for (user of all_user(); track user.id) {
                     <app-workspace (click)="open_Dm(user.id)" class="w-full" [user]="user" [isActive]="active_type() === 'chat' && dm_partner()?.id === user.id"></app-workspace>
                     }
@@ -43,7 +43,7 @@
         </section>
         } 
 
-        <button (click)="toggleMenu('workspace')" class="workspace_button flex items-center bg-color-white hover:text-[var(--hover-text)] group">
+        <button (click)="toggleMenu('workspace')" class="workspace_button hover_btn flex items-center bg-color-white">
             <span>{{workspace_Open ? 'Workspace-Menü schließen' : 'Workspace-Menü öffnen'}}</span>
             <img class="size-[32px]" [src]="workspace_Open ? 'assets/svg/icons/icon_black/hide_navigation_left_black.svg' : 'assets/svg/icons/icon_black/hide_navigation_right_black.svg'" [alt]="workspace_Open ? 'close Icon' : 'open Icon'">
         </button>
@@ -53,7 +53,7 @@
                 <app-chat-header class ="contents" [type]="active_type()" [dmPartner]="dm_partner()" [isSelfChat]="is_self_chat()" [channelInfo]="channel_info()" [memberProfiles]="channel_member_profiles()" (openChannelInfo)="dialog_mode.set('editChannel')" (openAddMember)="dialog_mode.set('addMember')" (openMembers)="dialog_mode.set('members')"></app-chat-header>
             </div>
             <div class="chat_container w-full p-[20px] flex flex-col ">
-                <div #chatHistory class="chat_history w-full flex-1 overflow-y-auto ">
+                <div #chatHistory class="chat_history w-full flex-1 scrollbar_Style overflow-y-auto ">
                     @if (messages_with_sender().length > 0) {
                         @for (item of messages_with_sender(); track item.message.id) {
                             <app-chat class="bg-black" [message]="item.message" [sender]="item.sender" [showSeparator]="item.showSeparator" [dateLabel]="item.dateLabel" (openThread)="openThread($event)"></app-chat>
@@ -82,7 +82,7 @@
                 </div>
             <div class="chat_container w-full p-[20px] flex flex-col ">
 
-            <div class="chat_history w-full flex-1 overflow-y-auto ">
+            <div class="chat_history w-full flex-1 scrollbar_Style overflow-y-auto ">
                 <app-thread [rootMessage]="thread_root()" [rootSender]="thread_root_sender()" [rootDateLabel]="thread_root_date_label()" [messages]="thread_messages_with_sender()"></app-thread>
             </div>
                 <app-input (sent)="send_Thread_Content($event)"></app-input>
@@ -93,5 +93,5 @@
 
 
 @if (dialog_mode()) {
-    <app-dialogs [mode]="dialog_mode()" [channelInfo]="channel_info()" [channelCreator]="channel_creator()" [memberProfiles]="channel_member_profiles()" [profileUser]="profile_user()" (closed)="dialog_mode.set(null)" (save)="editChannel($event)" (leave)="leaveChannel()" (addMember)="dialog_mode.set('addMember')" (openProfile)="profile_user.set($event)" (closedProfile)="profile_user.set(null)" (message)="openProfileChat($event)"></app-dialogs>
+    <app-dialogs [mode]="dialog_mode()" [channelInfo]="channel_info()" [channelCreator]="channel_creator()" [memberProfiles]="channel_member_profiles()" [profileUser]="profile_user()" [ownProfile]="currentUser()" (closed)="dialog_mode.set(null)" (save)="editChannel($event)" (leave)="leaveChannel()" (addMember)="dialog_mode.set('addMember')" (openProfile)="profile_user.set($event)" (closedProfile)="profile_user.set(null)" (message)="openProfileChat($event)" (saveProfileName)="saveProfileName($event)"></app-dialogs>
 }

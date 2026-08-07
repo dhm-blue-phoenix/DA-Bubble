@@ -12,6 +12,10 @@
     padding: 16px;
     background-color: rgba(236, 238, 254, 1);
     border-radius: 0 24px 24px 24px;
+
+    .group:hover & {
+        background-color: white;
+    }
 }
 
 .message_user{

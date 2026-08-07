@@ -1,5 +1,13 @@
 @import '../../../../app.css';
 
+dialog.dialog_bg,
+dialog.profile_dialog_bg{
+    border: none;
+    padding: 0;
+    max-width: none;
+    max-height: none;
+}
+
 .dialog_bg{
     position: absolute;
     background-color: rgba(0, 0, 0, 0.2);
@@ -32,4 +40,8 @@
 
 .dialog_content_profile{
     border-radius: 30px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }

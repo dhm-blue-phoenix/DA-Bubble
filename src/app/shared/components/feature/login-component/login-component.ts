@@ -9,4 +9,12 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './login-component.html',
   styleUrl: './login-component.css',
 })
-export class LoginComponent {}
+export class LoginComponent {
+
+  animation = false
+
+ngOnInit(){
+  this.animation = true
+  setTimeout(() => this.animation = false, 3000)
+}
+}

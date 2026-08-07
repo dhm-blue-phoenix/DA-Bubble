@@ -2,15 +2,15 @@
         <input type="text" [(ngModel)]="content" (keydown.enter)="send()" placeholder="Nachricht an # Entwicklerteam" class="absolute inset-0 w-full h-full outline-none bg-transparent px-4 pt-4 pb-14">
         <div class="absolute bottom-4 left-4 right-4 flex justify-between items-center pointer-events-none">
             <div class="flex gap-3 items-center pointer-events-auto">
-                <button #emojiButton class="relative" (click)="toggle_Emoji()"><img class="size-[20px]" src="assets/svg/icons/icon_grey/sentiment_satisfied_grey.svg" alt="emoji"></button>
+                <button #emojiButton class="relative hover_btn" (click)="toggle_Emoji()"><img class="size-[24px]" src="assets/svg/icons/icon_grey/sentiment_satisfied_grey.svg" alt="emoji"></button>
                 @if (emoji_Dialog) {
                     <div #emojiWrapper class="emoji_div">
                         <emoji-picker class="light" (emoji-click)="addEmoji($event)"></emoji-picker>
                     </div>
                 }
-                <button><img class="size-[20px]" src="assets/svg/icons/icon_grey/alternate_email_grey.svg" alt="mention"></button>
+                <button class="hover_btn"><img class="size-[24px]" src="assets/svg/icons/icon_grey/alternate_email_grey.svg" alt="mention"></button>
             </div>
-            <button class="rounded-full p-1 pointer-events-auto" (click)="send()">
+            <button class="rounded-full p-1 pointer-events-auto flex justify-center hover:bg-[var(--hover-bg)]" (click)="send()">
                 <img class="size-[32px]" src="assets/svg/icons/icon_purple/Send icon.svg" alt="send">
             </button>
         </div>

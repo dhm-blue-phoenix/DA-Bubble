@@ -16,39 +16,58 @@ export class AddPeopleDialog {
   @Input() channelInfo: SignalChannel = null
   @Output() closed = new EventEmitter<void>()
 
-  db = inject(Database)
-  mention = inject(MentionService)
+  database = inject(Database)
+  mentionService = inject(MentionService)
 
-  name: WritableSignal<string> = signal('')
-  selectedProfile: WritableSignal<Profile | null> = signal(null)
+  searchText: WritableSignal<string> = signal('')
+  selectedProfiles: WritableSignal<Profile[]> = signal([])
 
   suggestions = computed(() => {
-    if (this.selectedProfile()) return []
-    return this.mention.filterProfiles(this.name()).filter(p => !this.isMember(p.id))
+    return this.mentionService.filterProfiles(this.searchText())
+      .filter(profile => !this.isMember(profile.id))
+      .filter(profile => !this.isSelected(profile.id))
   })
 
   isMember(profileId: string): boolean {
-    return this.channelInfo?.channel_members?.some(m => m.user_id === profileId) ?? false
+    return this.channelInfo?.channel_members?.some(member => member.user_id === profileId) ?? false
   }
 
-  onNameChange(value: string) {
-    this.name.set(value)
-    this.selectedProfile.set(null)
+  isSelected(profileId: string): boolean {
+    return this.selectedProfiles().some(profile => profile.id === profileId)
+  }
+
+  onSearchTextChange(value: string) {
+    this.searchText.set(value)
   }
 
   selectProfile(profile: Profile) {
-    this.selectedProfile.set(profile)
-    this.name.set(profile.name)
+    if (!this.isSelected(profile.id)) this.selectedProfiles.update(profiles => [...profiles, profile])
+    this.searchText.set('')
   }
 
-  async addMember() {
+  removeSelected(profile: Profile) {
+    this.selectedProfiles.update(profiles => profiles.filter(selected => selected.id !== profile.id))
+  }
+
+  onKeydown(event: KeyboardEvent) {
+    if (event.key !== 'Enter') 
+      return
+    event.preventDefault()
+
+    const topSuggestion = this.suggestions()[0]
+    if (topSuggestion) this.selectProfile(topSuggestion)
+    else if (this.selectedProfiles().length > 0) this.addMembers()
+  }
+
+  async addMembers() {
     const channelId = this.channelInfo?.id
     if (!channelId) return
 
-    const profile = this.selectedProfile()
-      ?? this.db.profiles().find(p => p.name.trim().toLowerCase() === this.name().trim().toLowerCase())
-    if (profile && !this.isMember(profile.id)) await this.db.addChannelMember(channelId, profile.id)
+    for (const profile of this.selectedProfiles()) {
+      if (!this.isMember(profile.id)) await this.database.addChannelMember(channelId, profile.id)
+    }
 
     this.closed.emit()
+    this.database.getChannelContent(channelId)
   }
 }

@@ -19,7 +19,12 @@
         </div>
             <div class="border border-black/15 rounded-2xl px-4 py-3 flex items-center gap-2">
                 <span class="text-lg font-bold text text-black/50">#</span>
-                <input [(ngModel)]="channel_name" #channelname="ngModel" name="channelName" minlength="1" max="30" type="text" placeholder="z.B. Kooperationsprojekte" placeholder="Channel-Name" class="text-lg outline-none w-full" required>
+                <input [(ngModel)]="channel_name" (ngModelChange)="channel_exist = false" #channelname="ngModel" name="channelName" minlength="1" max="30" type="text" placeholder="z.B. Kooperationsprojekte" placeholder="Channel-Name" class="text-lg outline-none w-full" required>
+            </div>
+            <div class="errorContainer px-4">
+                @if (channel_exist) {
+                    <span class="errorMassage">Channel Name gibt es bereits.</span>
+                }
             </div>
 
             <div class="flex gap-2 items-center">
