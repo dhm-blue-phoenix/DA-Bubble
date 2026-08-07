@@ -27,8 +27,8 @@
 </dialog>
 
 @if (profileUser) {
-    <dialog #profileDialogPanelRef class="profile_dialog_bg fixed inset-0 bg-black/50 flex items-center justify-center" (close)="closedProfile.emit()" (click)="onBackdropClick($event, profileDialogPanelRef)">
-        <div class="dialog_content_profile bg-white">
+    <dialog #profileDialogPanelRef class="dialog_bg fixed inset-0 bg-black/50 flex items-center justify-center" (close)="closedProfile.emit()" (click)="onBackdropClick($event, profileDialogPanelRef)">
+        <div class="dialog_content bg-white">
             <app-profile-dialog [profile]="profileUser" (closed)="profileDialogPanelRef.close()" (message)="message.emit($event)"></app-profile-dialog>
         </div>
     </dialog>
