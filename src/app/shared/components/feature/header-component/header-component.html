@@ -8,7 +8,7 @@
     <div>
         <div class="input_container flex items-center justify-between px-12 py-2">
             <input type="text" placeholder="Devspace durchsuchen" class="w-full" name="search" id="">
-            <button><img class="size-[35px]" src="assets/svg/icons/icon_grey/search_grey.svg" alt=""></button>
+            <button class="hover_btn"><img class="size-[32px]" src="assets/svg/icons/icon_grey/search_grey.svg" alt=""></button>
         </div>
     </div>
 
@@ -18,7 +18,7 @@
             <img class="size-[70px]" [src]='"assets/svg/avatar/avatar_small/" + (currentUser()?.avatar || "assets/svg/avatar/avatar_small/1") + ".svg"' alt="avatar">
             <div class="status_User" [class]="currentUser()?.status"></div>
         </div>
-        <button (click)="toggle_Dialog()">
+        <button (click)="toggle_Dialog()" class="hover_btn">
             <img class="size-[30px]" src="assets/svg/icons/icon_black/dropdown_black.svg" alt="">
         </button>
     </div>

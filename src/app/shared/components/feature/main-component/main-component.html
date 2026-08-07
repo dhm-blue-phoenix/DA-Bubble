@@ -7,7 +7,7 @@
                     <img class="size-60px" src="assets/svg/devspace/Workspace logo.svg" alt="workspace">
                     <h2>Devspace</h2>
                 </div>
-                <button><img src="assets/svg/icons/icon_black/edit_square_black.svg" alt="edit"></button>
+                <button class="hover_btn"><img src="assets/svg/icons/icon_black/edit_square_black.svg" alt="edit"></button>
             </div>
             <div class="flex justify-between w-full items-center">
                 <div class="flex gap-1 items-center">
@@ -43,7 +43,7 @@
         </section>
         } 
 
-        <button (click)="toggleMenu('workspace')" class="workspace_button flex items-center bg-color-white hover:text-[var(--hover-text)] group">
+        <button (click)="toggleMenu('workspace')" class="workspace_button hover_btn flex items-center bg-color-white">
             <span>{{workspace_Open ? 'Workspace-Menü schließen' : 'Workspace-Menü öffnen'}}</span>
             <img class="size-[32px]" [src]="workspace_Open ? 'assets/svg/icons/icon_black/hide_navigation_left_black.svg' : 'assets/svg/icons/icon_black/hide_navigation_right_black.svg'" [alt]="workspace_Open ? 'close Icon' : 'open Icon'">
         </button>
