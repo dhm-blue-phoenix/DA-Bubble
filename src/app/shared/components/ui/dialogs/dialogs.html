@@ -20,6 +20,9 @@
                 <app-members-dialog [memberProfiles]="memberProfiles" (closed)="dialogPanelRef.close()" (addMember)="addMember.emit()" (openProfile)="openProfile.emit($event)"></app-members-dialog>
             </div>
         }
+        @else if (mode === 'userProfile') {
+            <app-user-profile-dialog [profile]="ownProfile" (closed)="dialogPanelRef.close()" (save)="saveProfileName.emit($event)"></app-user-profile-dialog>
+        }
 
 </dialog>
 

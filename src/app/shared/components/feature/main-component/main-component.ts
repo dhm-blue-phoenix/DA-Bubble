@@ -31,7 +31,7 @@ dateSeparator = inject(DateSeparatorService)
 
 active_type: WritableSignal<'channel' | 'chat' | null> = signal(null)
 dm_partner: WritableSignal<Profile | null> = signal<Profile | null>(null)
-dialog_mode: WritableSignal<'editChannel' | 'addChannel' | 'addMember' | 'members' | null> = signal(null)
+dialog_mode: WritableSignal<'editChannel' | 'addChannel' | 'addMember' | 'members' | 'userProfile' | null> = signal(null)
 profile_user: WritableSignal<Profile | null> = signal(null)
 thread_root: WritableSignal<Message | null> = signal(null)
 thread_id = ''
@@ -94,6 +94,9 @@ is_self_chat = computed(() => this.dm_partner()?.id === this.db.getCurrentUserId
 
 channel_creator = computed(() =>
     this.all_user().find(user => user.id === this.channel_info()?.created_by) ?? null)
+
+currentUser = computed(() =>
+    this.all_user().find(user => user.id === this.db.getCurrentUserId()) ?? null)
 
 channel_member_profiles = computed((): Profile[] => {
     const members = this.channel_info()?.channel_members ?? []
@@ -180,6 +183,16 @@ thread_messages_with_sender = computed(() => {
         this.profile_user.set(null)
         this.dialog_mode.set(null)
         this.open_Dm(id)
+    }
+
+    openUserProfileDialog() {
+        this.dialog_mode.set('userProfile')
+    }
+
+    saveProfileName(name: string) {
+        const profile = this.currentUser()
+        if (profile) this.db.editProfileName(profile.id, name)
+        this.dialog_mode.set(null)
     }
 
     send_Content(content:string){
