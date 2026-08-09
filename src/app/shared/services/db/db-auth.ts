@@ -211,7 +211,6 @@ export class DatabaseAuth {
       password: user_password,
     });
     if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
-    window.location.reload();
   }
 
   /**
@@ -222,7 +221,7 @@ export class DatabaseAuth {
     const { error }: DbAuthError = await this.supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin,
+        redirectTo: `${window.location.origin}/workspace`,
       },
     });
     if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
