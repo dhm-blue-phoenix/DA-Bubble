@@ -1,5 +1,17 @@
 <div class="w-full flex flex-col gap-4 p-6">
-    @if (type !== 'channel') {
+    @if (type === 'channel') {
+        <div class="flex items-center flex-col gap-[16px]">
+            <div class="w-full flex gap-[8px] items-center">
+                <span class="text-2xl font-bold">#</span>
+                <span class="text-2xl font-bold">{{ channel?.name }}</span>
+            </div>
+            <div>
+                <span class="text-xl font-semibold text-black/50">Channel wurde erstellt. Das ist der Anfang des Channels </span>
+                <span class="text-xl text-[var(--hover-text)]"># {{ channel?.name }}</span>
+            </div>
+        </div>
+    }
+    @else if (type !== 'search') {
         <div class="flex items-center gap-[24px]">
             <img class="size-[100px]" [src]="'assets/svg/avatar/avatar_small/' + (profile?.avatar || '1') + '.svg'" alt="avatar">
             <span class="text-2xl font-bold">{{ profile?.name }}{{ isSelfChat ? ' (Du)' : '' }}</span>
@@ -18,17 +30,5 @@
                 <span class="text-xl font-semibold text-black/50"> und dir statt.</span>
             </div> 
         }
-    }
-    @else {
-        <div class="flex items-center flex-col gap-[16px]">
-            <div class="w-full flex gap-[8px] items-center">
-                <span class="text-2xl font-bold">#</span>
-                <span class="text-2xl font-bold">{{ channel?.name }}</span>
-            </div>
-            <div>
-                <span class="text-xl font-semibold text-black/50">Channel wurde erstellt. Das ist der Anfang des Channels </span>
-                <span class="text-xl text-[var(--hover-text)]"># {{ channel?.name }}</span>
-            </div> 
-        </div>
     }
 </div>

@@ -11,6 +11,6 @@ import { SignalChannel } from '../../../interfaces/db/db-channels';
 export class ChatPlaceholder {
   @Input() profile: Profile | null = null
   @Input() isSelfChat = false
-  @Input() type: 'channel' | 'chat' | null = null
+  @Input() type: 'channel' | 'chat' | 'search' | null = null
   @Input() channel: SignalChannel = null
 }

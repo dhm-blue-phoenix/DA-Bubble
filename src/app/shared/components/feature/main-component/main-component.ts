@@ -29,7 +29,7 @@ thread_Open = false
 db = inject(Database)
 dateSeparator = inject(DateSeparatorService)
 
-active_type: WritableSignal<'channel' | 'chat' | null> = signal(null)
+active_type: WritableSignal<'channel' | 'chat' | 'search' | null> = signal(null)
 dm_partner: WritableSignal<Profile | null> = signal<Profile | null>(null)
 dialog_mode: WritableSignal<'editChannel' | 'addChannel' | 'addMember' | 'members' | 'userProfile' | null> = signal(null)
 profile_user: WritableSignal<Profile | null> = signal(null)
@@ -92,6 +92,7 @@ constructor(){
 active_content = computed(() => {
     if (this.active_type() === 'chat') return this.chat_content()
     if (this.active_type() === 'channel') return this.channel_content()
+    if (this.active_type() === 'search') return []
     return []
 })
 
@@ -203,7 +204,7 @@ thread_messages_with_sender = computed(() => {
 
     send_Content(content:string){
         const type = this.active_type()
-        if (!type) return
+        if (!type || type === 'search') return
 
         const senderId = this.db.getCurrentUserId()
         const id = type === 'chat' ? this.chat_id : this.channel_id
