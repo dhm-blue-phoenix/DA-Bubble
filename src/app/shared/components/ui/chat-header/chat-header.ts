@@ -22,5 +22,5 @@ export class ChatHeader {
   @Output() openAddMember = new EventEmitter<void>()
   @Output() openMembers = new EventEmitter<void>()
 
-  mention: MentionController = inject(MentionService).createController()
+  mention: MentionController = inject(MentionService).createController(true)
 }

@@ -65,7 +65,7 @@
                         </div>
                     }
                 </div>
-                @if (active_type()) {
+                @if (active_type() != 'search') {
                     <app-input  (sent)="send_Content($event)"></app-input>
                 }
             </div>

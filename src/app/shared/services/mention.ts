@@ -15,13 +15,30 @@ export interface MentionTrigger {
 export class MentionService {
   private db = inject(Database)
 
-  filterProfiles(query: string): Profile[] {
+  filterProfiles(query: string, matchEmail = false): Profile[] {
     const normalizedQuery = query.trim().toLowerCase()
     if (!normalizedQuery) return []
 
     const profiles = this.db.profiles()
-    const startsWith = profiles.filter(profile => profile.name.toLowerCase().startsWith(normalizedQuery))
-    const includes = profiles.filter(profile => !startsWith.includes(profile) && profile.name.toLowerCase().includes(normalizedQuery))
+    const startsWith = profiles.filter(profile =>
+      profile.name.toLowerCase().startsWith(normalizedQuery) ||
+      (matchEmail && profile.email.toLowerCase().startsWith(normalizedQuery))
+    )
+    const includes = profiles.filter(profile =>
+      !startsWith.includes(profile) &&
+      (profile.name.toLowerCase().includes(normalizedQuery) ||
+        (matchEmail && profile.email.toLowerCase().includes(normalizedQuery)))
+    )
+    return [...startsWith, ...includes]
+  }
+
+  filterProfilesByEmail(query: string): Profile[] {
+    const normalizedQuery = query.trim().toLowerCase()
+    if (!normalizedQuery) return []
+
+    const profiles = this.db.profiles()
+    const startsWith = profiles.filter(profile => profile.email.toLowerCase().startsWith(normalizedQuery))
+    const includes = profiles.filter(profile => !startsWith.includes(profile) && profile.email.toLowerCase().includes(normalizedQuery))
     return [...startsWith, ...includes]
   }
 
@@ -35,7 +52,7 @@ export class MentionService {
     return [...startsWith, ...includes]
   }
 
-  detectTrigger(text: string, cursorPosition: number): MentionTrigger | null {
+  detectTrigger(text: string, cursorPosition: number, requireStart = false): MentionTrigger | null {
     const textBeforeCursor = text.slice(0, cursorPosition)
 
     let triggerIndex = textBeforeCursor.length - 1
@@ -50,6 +67,7 @@ export class MentionService {
 
     const characterAtTriggerIndex = textBeforeCursor[triggerIndex]
     if (triggerIndex < 0 || (characterAtTriggerIndex !== '#' && characterAtTriggerIndex !== '@')) return null
+    if (requireStart && triggerIndex !== 0) return null
 
     const trigger = characterAtTriggerIndex as '#' | '@'
     const query = textBeforeCursor.slice(triggerIndex + 1)
@@ -64,12 +82,12 @@ export class MentionService {
     return this.db.channels()
   }
 
-  createController(): MentionController {
-    return new MentionController(this)
+  createController(requireStartTrigger = false): MentionController {
+    return new MentionController(this, requireStartTrigger)
   }
 }
 export class MentionController {
-  constructor(private mentionService: MentionService) {}
+  constructor(private mentionService: MentionService, private requireStartTrigger = false) {}
 
   text = ''
   trigger: WritableSignal<MentionTrigger | null> = signal(null)
@@ -77,15 +95,20 @@ export class MentionController {
   onInput(input: HTMLInputElement | HTMLTextAreaElement) {
     this.text = input.value
     const cursorPosition = input.selectionStart ?? input.value.length
-    this.trigger.set(this.mentionService.detectTrigger(input.value, cursorPosition))
+    this.trigger.set(this.mentionService.detectTrigger(input.value, cursorPosition, this.requireStartTrigger))
   }
 
-  profileSuggestions(): Profile[] {
+  profileSuggestions(matchEmail = false): Profile[] {
     const activeTrigger = this.trigger()
     if (!activeTrigger || activeTrigger.trigger !== '@') return []
     return activeTrigger.query
-      ? this.mentionService.filterProfiles(activeTrigger.query)
+      ? this.mentionService.filterProfiles(activeTrigger.query, matchEmail)
       : this.mentionService.allProfiles()
+  }
+
+  emailSuggestions(): Profile[] {
+    if (this.trigger()) return []
+    return this.mentionService.filterProfilesByEmail(this.text)
   }
 
   channelSuggestions(): ChannelIdAndName[] {
@@ -106,10 +129,11 @@ export class MentionController {
 
   private insertSelection(prefix: string, name: string) {
     const activeTrigger = this.trigger()
-    if (!activeTrigger) return
+    const start = activeTrigger ? activeTrigger.start : 0
+    const end = activeTrigger ? activeTrigger.start + 1 + activeTrigger.query.length : this.text.length
 
-    const textBeforeTrigger = this.text.slice(0, activeTrigger.start)
-    const textAfterQuery = this.text.slice(activeTrigger.start + 1 + activeTrigger.query.length)
+    const textBeforeTrigger = this.text.slice(0, start)
+    const textAfterQuery = this.text.slice(end)
     this.text = `${textBeforeTrigger}${prefix}${name} ${textAfterQuery}`
     this.trigger.set(null)
   }
