@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Profile } from '../../../interfaces/profile';
-import { SignalChannel } from '../../../interfaces/db/db-channels';
+import { SignalChannel, ChannelIdAndName } from '../../../interfaces/db/db-channels';
 import { MentionService, MentionController } from '../../../services/mention';
 import { SelectionSuggestions } from '../selection-suggestions/selection-suggestions';
 
@@ -21,6 +21,21 @@ export class ChatHeader {
   @Output() openChannelInfo = new EventEmitter<void>()
   @Output() openAddMember = new EventEmitter<void>()
   @Output() openMembers = new EventEmitter<void>()
+  @Output() openSelection = new EventEmitter<{ type: 'chat' | 'channel'; id: string }>()
 
   mention: MentionController = inject(MentionService).createController(true)
+
+  onSearchFieldClick(input: HTMLInputElement) {
+    this.mention.onInput(input)
+  }
+
+  onSelectProfile(profile: Profile) {
+    this.mention.selectProfile(profile)
+    this.openSelection.emit({ type: 'chat', id: profile.id })
+  }
+
+  onSelectChannel(channel: ChannelIdAndName) {
+    this.mention.selectChannel(channel)
+    this.openSelection.emit({ type: 'channel', id: channel.id })
+  }
 }

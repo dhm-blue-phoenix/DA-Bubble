@@ -152,6 +152,11 @@ thread_messages_with_sender = computed(() => {
         this.db.loadMsg('chat', dm)
     }
 
+    onOpenSelection(selection: { type: 'chat' | 'channel'; id: string }) {
+        if (selection.type === 'chat') this.open_Dm(selection.id)
+        else this.open_Chat(selection.id)
+    }
+
     async open_Chat(id: string) {
         this.active_type.set('channel')
         this.channel_id = id

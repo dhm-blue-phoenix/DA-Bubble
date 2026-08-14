@@ -91,8 +91,12 @@ export class MentionController {
 
   text = ''
   trigger: WritableSignal<MentionTrigger | null> = signal(null)
+  selectedProfile: Profile | null = null
+  selectedChannel: ChannelIdAndName | null = null
 
   onInput(input: HTMLInputElement | HTMLTextAreaElement) {
+    this.selectedProfile = null
+    this.selectedChannel = null
     this.text = input.value
     const cursorPosition = input.selectionStart ?? input.value.length
     this.trigger.set(this.mentionService.detectTrigger(input.value, cursorPosition, this.requireStartTrigger))
@@ -121,10 +125,14 @@ export class MentionController {
 
   selectProfile(profile: Profile) {
     this.insertSelection('@', profile.name)
+    this.selectedProfile = profile
+    this.selectedChannel = null
   }
 
   selectChannel(channel: ChannelIdAndName) {
     this.insertSelection('#', channel.name)
+    this.selectedChannel = channel
+    this.selectedProfile = null
   }
 
   private insertSelection(prefix: string, name: string) {
