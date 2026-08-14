@@ -8,9 +8,9 @@
                         <emoji-picker class="light" (emoji-click)="addEmoji($event)"></emoji-picker>
                     </div>
                 }
-                <button class="hover_btn"><img class="size-[24px]" src="assets/svg/icons/icon_grey/alternate_email_grey.svg" alt="mention"></button>
+                <button class="hover_btn" (click)="trigger_at()"><img class="size-[24px]" src="assets/svg/icons/icon_grey/alternate_email_grey.svg" alt="mention"></button>
             </div>
-            <button class="rounded-full p-1 pointer-events-auto flex justify-center hover:bg-[var(--hover-bg)]" (click)="send()">
+            <button (click)="send()" class="rounded-full p-1 pointer-events-auto flex justify-center hover:bg-[var(--hover-bg)]">
                 <img class="size-[32px]" src="assets/svg/icons/icon_purple/Send icon.svg" alt="send">
             </button>
         </div>

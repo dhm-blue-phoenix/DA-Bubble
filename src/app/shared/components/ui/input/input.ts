@@ -19,10 +19,8 @@ export class Input {
   @Output() sent = new EventEmitter<string>()
 
   emoji_Dialog = false
-
   emojiWrapper = viewChild<ElementRef<HTMLElement>>('emojiWrapper')
   emojiButton = viewChild<ElementRef<HTMLElement>>('emojiButton')
-
   mention: MentionController = inject(MentionService).createController()
 
   constructor() {
@@ -52,5 +50,13 @@ export class Input {
     if (this.emojiWrapper()?.nativeElement.contains(target)) return
     if (this.emojiButton()?.nativeElement.contains(target)) return
     this.emoji_Dialog = false
+  }
+
+  trigger_at() {
+    if (this.mention.trigger()?.trigger === '@') {
+      this.mention.trigger.set(null)
+    } else {
+      this.mention.trigger.set({ trigger: '@', query: '', start: this.mention.text.length })
+    }
   }
 }
