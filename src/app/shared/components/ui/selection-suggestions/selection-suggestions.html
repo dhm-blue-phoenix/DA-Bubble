@@ -1,0 +1,27 @@
+@if (type === 'member' && profiles.length > 0) {
+    <ul class="selection_suggestions bg-white border border-black/15 rounded-tr-3xl rounded-b-3xl flex flex-col scrollbar_Style overflow-x-hidden overflow-y-auto shadow-lg">
+        @for (profile of profiles; track profile.id; let i = $index) {
+            <li>
+                <button type="button" (click)="selectProfile.emit(profile)" [class]="'w-full flex items-center gap-3 px-4 py-3 hover:bg-[var(--hover-bg)] text-left ' + (i === activeIndex ? 'bg-[var(--hover-bg)]' : '')">
+                    <div class="relative size-[48px]">
+                        <img class="size-[48px] rounded-full" [src]="'assets/svg/avatar/avatar_small/' + (profile.avatar || '1') + '.svg'" alt="avatar">
+                        <div class="status" [class]="profile.status"></div>
+                    </div>
+                    <span class="text-xl font-semibold">{{ profile.name }}</span>
+                </button>
+            </li>
+        }
+    </ul>
+}
+@else if (type === 'channel' && channels.length > 0) {
+    <ul class="selection_suggestions bg-white border border-black/15 rounded-tr-3xl rounded-b-3xl flex flex-col scrollbar_Style overflow-x-hidden overflow-y-auto shadow-lg">
+        @for (channel of channels; track channel.id; let i = $index) {
+            <li>
+                <button type="button" (click)="selectChannel.emit(channel)" [class]="'w-full flex items-center gap-3 px-4 py-3 hover:bg-[var(--hover-bg)] text-left ' + (i === activeIndex ? 'bg-[var(--hover-bg)]' : '')">
+                    <span class="text-xl font-bold">#</span>
+                    <span class="text-xl font-semibold">{{ channel.name }}</span>
+                </button>
+            </li>
+        }
+    </ul>
+}

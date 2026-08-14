@@ -1,9 +1,10 @@
 @import '../../../../app.css';
 
-.mention_suggestions{
+.selection_suggestions{
 position: absolute;
 top: calc(100% + 8px);
 left: 0;
 right: 0;
+max-height: 320px;
 z-index: 10;
 }
