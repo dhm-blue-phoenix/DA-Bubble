@@ -1,5 +1,5 @@
 @if (type === 'member' && profiles.length > 0) {
-    <ul class="selection_suggestions bg-white border border-black/15 rounded-tr-3xl rounded-b-3xl flex flex-col scrollbar_Style overflow-x-hidden overflow-y-auto shadow-lg">
+    <ul class="selection_suggestions bg-white border border-black/15 flex flex-col scrollbar_Style overflow-x-hidden overflow-y-auto shadow-lg" [class.selection_suggestions_up]="direction === 'up'" [class.rounded-tr-3xl]="direction === 'down'" [class.rounded-b-3xl]="direction === 'down'" [class.rounded-br-3xl]="direction === 'up'" [class.rounded-t-3xl]="direction === 'up'">
         @for (profile of profiles; track profile.id; let i = $index) {
             <li>
                 <button type="button" (click)="selectProfile.emit(profile)" [class]="'w-full flex items-center gap-3 px-4 py-3 hover:bg-[var(--hover-bg)] text-left ' + (i === activeIndex ? 'bg-[var(--hover-bg)]' : '')">
@@ -14,7 +14,7 @@
     </ul>
 }
 @else if (type === 'channel' && channels.length > 0) {
-    <ul class="selection_suggestions bg-white border border-black/15 rounded-tr-3xl rounded-b-3xl flex flex-col scrollbar_Style overflow-x-hidden overflow-y-auto shadow-lg">
+    <ul class="selection_suggestions bg-white border border-black/15 flex flex-col scrollbar_Style overflow-x-hidden overflow-y-auto shadow-lg" [class.selection_suggestions_up]="direction === 'up'" [class.rounded-tr-3xl]="direction === 'down'" [class.rounded-b-3xl]="direction === 'down'" [class.rounded-br-3xl]="direction === 'up'" [class.rounded-t-3xl]="direction === 'up'">
         @for (channel of channels; track channel.id; let i = $index) {
             <li>
                 <button type="button" (click)="selectChannel.emit(channel)" [class]="'w-full flex items-center gap-3 px-4 py-3 hover:bg-[var(--hover-bg)] text-left ' + (i === activeIndex ? 'bg-[var(--hover-bg)]' : '')">

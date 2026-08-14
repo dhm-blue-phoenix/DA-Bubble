@@ -1,5 +1,5 @@
     <div class="chat_input border-2 border-black/20 rounded-2xl relative min-h-[120px] p-4">
-        <input type="text" [(ngModel)]="content" (keydown.enter)="send()" placeholder="Nachricht an # Entwicklerteam" class="absolute inset-0 w-full h-full outline-none bg-transparent px-4 pt-4 pb-14">
+        <input #composerInput type="text" [(ngModel)]="mention.text" (input)="mention.onInput(composerInput)" (keyup)="mention.onInput(composerInput)" (click)="mention.onInput(composerInput)" (keydown.enter)="send()" placeholder="Nachricht an # Entwicklerteam" class="absolute inset-0 w-full h-full outline-none bg-transparent px-4 pt-4 pb-14">
         <div class="absolute bottom-4 left-4 right-4 flex justify-between items-center pointer-events-none">
             <div class="flex gap-3 items-center pointer-events-auto">
                 <button #emojiButton class="relative hover_btn" (click)="toggle_Emoji()"><img class="size-[24px]" src="assets/svg/icons/icon_grey/sentiment_satisfied_grey.svg" alt="emoji"></button>
@@ -14,5 +14,15 @@
                 <img class="size-[32px]" src="assets/svg/icons/icon_purple/Send icon.svg" alt="send">
             </button>
         </div>
+        @if (mention.trigger()) {
+            <app-selection-suggestions
+                direction="up"
+                [type]="mention.trigger()?.trigger === '#' ? 'channel' : 'member'"
+                [profiles]="mention.profileSuggestions()"
+                [channels]="mention.channelSuggestions()"
+                (selectProfile)="mention.selectProfile($event)"
+                (selectChannel)="mention.selectChannel($event)">
+            </app-selection-suggestions>
+        }
     </div>
 

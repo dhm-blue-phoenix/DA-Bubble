@@ -4,7 +4,13 @@
 position: absolute;
 top: calc(100% + 8px);
 left: 0;
-right: 0;
+width: fit-content;
+max-width: 100%;
 max-height: 320px;
-z-index: 10;
+z-index: 20;
+}
+
+.selection_suggestions_up{
+top: auto;
+bottom: calc(100% + 8px);
 }

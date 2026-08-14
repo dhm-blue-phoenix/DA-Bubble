@@ -2,10 +2,12 @@ import { Component, Output, EventEmitter, CUSTOM_ELEMENTS_SCHEMA, inject, PLATFO
 import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import type { EmojiClickEvent } from 'emoji-picker-element/shared';
+import { MentionService, MentionController } from '../../../services/mention';
+import { SelectionSuggestions } from '../selection-suggestions/selection-suggestions';
 
 @Component({
   selector: 'app-input',
-  imports: [FormsModule],
+  imports: [FormsModule, SelectionSuggestions],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './input.html',
   styleUrl: './input.css',
@@ -14,13 +16,14 @@ import type { EmojiClickEvent } from 'emoji-picker-element/shared';
   },
 })
 export class Input {
-  content = ''
   @Output() sent = new EventEmitter<string>()
 
   emoji_Dialog = false
 
   emojiWrapper = viewChild<ElementRef<HTMLElement>>('emojiWrapper')
   emojiButton = viewChild<ElementRef<HTMLElement>>('emojiButton')
+
+  mention: MentionController = inject(MentionService).createController()
 
   constructor() {
     if (isPlatformBrowser(inject(PLATFORM_ID))) {
@@ -29,9 +32,9 @@ export class Input {
   }
 
   send() {
-    if (!this.content.trim()) return
-    this.sent.emit(this.content)
-    this.content = ''
+    if (!this.mention.text.trim()) return
+    this.sent.emit(this.mention.text)
+    this.mention.text = ''
   }
 
   toggle_Emoji() {
@@ -39,7 +42,7 @@ export class Input {
   }
 
   addEmoji(event: EmojiClickEvent) {
-    if (event.detail.unicode) this.content += event.detail.unicode
+    if (event.detail.unicode) this.mention.text += event.detail.unicode
     this.emoji_Dialog = false
   }
 
