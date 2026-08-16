@@ -1,2 +1,5 @@
-<app-header-component (openUserProfile)="mainComp.openUserProfileDialog()"></app-header-component>
+<app-header-component 
+  (openUserProfile)="mainComp.openUserProfileDialog()"
+  (openSelection)="mainComp.onOpenSelection($event)">
+</app-header-component>
 <app-main-component #mainComp></app-main-component>

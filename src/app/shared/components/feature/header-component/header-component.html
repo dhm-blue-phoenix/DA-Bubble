@@ -11,7 +11,7 @@
             <button class="hover_btn"><img class="size-[32px]" src="assets/svg/icons/icon_grey/search_grey.svg" alt=""></button>
 
         </div>
-        @if (mention.trigger() || mention.text.trim()) {
+        @if (mention.trigger()) {
             <app-selection-suggestions
                 [type]="mention.trigger()?.trigger === '#' ? 'channel' : 'member'"
                 [profiles]="mention.trigger() ? mention.profileSuggestions(true) : mention.emailSuggestions()"
