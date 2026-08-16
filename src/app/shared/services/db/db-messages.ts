@@ -13,7 +13,7 @@ import {
 import { Supabase } from './db-superbase';
 import { DatabaseMessageHelper } from './db-message-helper';
 
-import { Message, Messages, Reaction } from '../../interfaces/messages';
+import { Message, Messages, Reaction, SearchMessages } from '../../interfaces/messages';
 import { MsgType, NewMessage, ReactionResult } from '../../interfaces/db/db-messages';
 import { DbPostgrestError } from '../../interfaces/db-error';
 
@@ -213,20 +213,6 @@ export class DatabaseMessages implements OnDestroy {
     );
   }
 
-  /** Bestimmt den Nachrichtentyp (Chat, Channel, Thread) anhand einer Reaktion. */
-  private eventHelperIsMsgType(reaction: Reaction): string {
-    const isChat: boolean = this._chat_messages().some((list: Message): boolean => {
-      return list['id'] === reaction['message_id'];
-    });
-    const isChannel: boolean = this._channel_messages().some((list: Message): boolean => {
-      return list['id'] === reaction['message_id'];
-    });
-    const isThread: boolean = this._thread_messages().some((list: Message): boolean => {
-      return list['id'] === reaction['message_id'];
-    });
-    return (isChat && 'chat') || (isChannel && 'channel') || (isThread && 'thread') || 'none';
-  }
-
   /** Beendet die Realtime-Verbindung beim Zerstören des Services. */
   public ngOnDestroy(): void {
     if (this.channels) this.supabase.removeChannel(this.channels);
@@ -423,5 +409,31 @@ export class DatabaseMessages implements OnDestroy {
     } else {
       return await this.addReaction(messageId, userId, emoji);
     }
+  }
+
+  /**
+   * Führt eine case-insensitive Suche in der messages-Tabelle durch.
+   * Sucht nach Nachrichten die den Suchbegriff im Inhalt enthalten.
+   * Gibt maximal 100 Ergebnisse zurück, sortiert nach Erstellungsdatum (neueste zuerst).
+   * @param {string} value - Der Suchbegriff der im Nachrichteninhalt gesucht wird.
+   * @returns {Promise<SearchMessages>} Liste der gefundenen Nachrichten.
+   * @throws {Error} Wenn die Datenbankabfrage fehlschlägt.
+   */
+  public async searchMessages(value: String): Promise<SearchMessages> {
+    const { data, error } = await this.supabase
+      .from('messages')
+      .select(`
+      id,
+      content,
+      created_at,
+      chat_id,
+      channel_id,
+      thread_id
+    `)
+      .ilike('content', `%${value}%`)
+      .order('created_at', { ascending: false })
+      .limit(100);
+    if (error) throw new Error(`[ DB_CODE:${error.code} ] MSG: ${error.message}`);
+    return data;
   }
 }

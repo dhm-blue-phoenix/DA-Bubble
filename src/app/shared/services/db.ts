@@ -11,7 +11,7 @@ import { DatabaseChannels } from './db/db-channels';
 import { DatabaseThreads } from './db/db-threads';
 
 import { Profile, Profiles } from '../interfaces/profile';
-import { Messages } from '../interfaces/messages';
+import { Messages, SearchMessages } from '../interfaces/messages';
 import { SignalChannel, SignalChannels } from '../interfaces/db/db-channels';
 import { MsgType, ReactionResult } from '../interfaces/db/db-messages';
 import { isPlatformBrowser } from '@angular/common';
@@ -30,19 +30,12 @@ export class Database {
   private readonly db_channels: DatabaseChannels = inject(DatabaseChannels);
   private readonly db_threads: DatabaseThreads = inject(DatabaseThreads);
 
-  /** Ein Read-Only Signal mit allen Benutzerprofilen. */
   public readonly profiles: Signal<Profiles> = this.db_profiles._profiles.asReadonly();
-  /** Ein Read-Only Signal, das den Login-Status des aktuellen Benutzers hält (true/false). */
   public readonly isLogin: Signal<boolean> = this.db_auth._isUserLogin.asReadonly();
-  /** Ein Read-Only Signal mit den direkten Chat-Nachrichten der aktuellen Ansicht. */
   public readonly chatMsg: Signal<Messages> = this.db_messages._chat_messages.asReadonly();
-  /** Ein Read-Only Signal mit den Nachrichten des aktuellen Kanals. */
   public readonly channelMsg: Signal<Messages> = this.db_messages._channel_messages.asReadonly();
-  /** Ein Read-Only Signal mit den Nachrichten des aktuellen Threads. */
   public readonly threadMsg: Signal<Messages> = this.db_messages._thread_messages.asReadonly();
-  /** Ein Read-Only Signal mit einer Liste der Kanäle (IDs und Namen), in denen der Benutzer Mitglied ist. */
   public readonly channels: Signal<SignalChannels> = this.db_channels._channels.asReadonly();
-  /** Ein Read-Only Signal mit den detaillierten Daten des aktuell geöffneten Kanals. */
   public readonly channel: Signal<SignalChannel> = this.db_channels._channel.asReadonly();
 
   constructor() {
@@ -300,6 +293,18 @@ export class Database {
     await this.safeCall(
       (): Promise<void> => this.db_messages.getMessages(msgType, id.trim()),
       undefined,
+    );
+  }
+
+  /**
+   * Durchsucht alle Nachrichten nach einem Suchbegriff und gibt die Ergebnisse zurück.
+   * @param {string} value - Der Suchbegriff.
+   * @returns {Promise<SearchMessages>} Liste der gefundenen Nachrichten oder leeres Array.
+   */
+  public async searchMsg(value: string): Promise<SearchMessages> {
+    return await this.safeCall(
+      (): Promise<SearchMessages> => this.db_messages.searchMessages(value),
+      [],
     );
   }
 

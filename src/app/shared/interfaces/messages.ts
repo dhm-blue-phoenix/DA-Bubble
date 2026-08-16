@@ -12,6 +12,15 @@ export interface Message {
   readonly thread_only?: boolean;
 }
 
+export interface SearchMessage {
+  readonly id: string;
+  readonly content: string;
+  readonly channel_id: string | null;
+  readonly chat_id: string | null;
+  readonly thread_id: string | null;
+  readonly created_at: string;
+}
+
 export interface Reaction {
   readonly message_id: string;
   readonly user_id: string;
@@ -20,4 +29,5 @@ export interface Reaction {
 }
 
 export type Messages = Message[];
+export type SearchMessages = SearchMessage[];
 export type Reactions = Reaction[];
