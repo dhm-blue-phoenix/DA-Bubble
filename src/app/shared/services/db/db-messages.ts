@@ -112,7 +112,7 @@ export class DatabaseMessages implements OnDestroy {
   }
 
   /**
-   * Behandelt ein UPDATE-Event für Nachrichten und aktualisiert die passenden Signals.
+   * Behandelt ein UPDATE-Event für Nachrichten und aktualisiert des passenden Signals.
    * @param {RealtimePostgresChangesPayload<object>} payload - Das Event-Payload.
    */
   private updateEventMessage(payload: RealtimePostgresChangesPayload<object>): void {
@@ -167,12 +167,7 @@ export class DatabaseMessages implements OnDestroy {
    * @returns {Messages} Die aktualisierte Nachrichtenliste.
    */
   private eventHelperInsertReaction(list: Messages, reaction: Reaction): Messages {
-    return list.map(
-      (msg: Message): Message =>
-        msg.id === reaction['message_id']
-          ? { ...msg, reactions: [...(msg['reactions'] || []), reaction] }
-          : msg,
-    );
+    return list.map((msg: Message): Message => msg.id === reaction['message_id'] ? { ...msg, reactions: [...(msg['reactions'] || []), reaction] } : msg);
   }
 
   /**
@@ -228,8 +223,7 @@ export class DatabaseMessages implements OnDestroy {
     this.currentChatId = id;
     let query = this.supabase
       .from('messages')
-      .select(
-        `
+      .select(`
         id,
         content,
         created_at,
@@ -237,17 +231,9 @@ export class DatabaseMessages implements OnDestroy {
         sender_id,
         reactions(emoji, user_id),
         threads!threads_root_message_id_fkey(id)
-      `,
-      )
-      .eq(msgType + '_id', id);
-
-    if (msgType === 'channel') {
-      query = query.is('thread_only', null);
-    }
-
-    const { data: messages, error }: PostgrestResponse<any> = await query.order('created_at', {
-      ascending: true,
-    });
+      `).eq(msgType + '_id', id);
+    if (msgType === 'channel') query = query.is('thread_only', null);
+    const { data: messages, error }: PostgrestResponse<any> = await query.order('created_at', { ascending: true });
     if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
     if (messages) {
       if (msgType === 'chat') this._chat_messages.set(messages);
@@ -284,13 +270,7 @@ export class DatabaseMessages implements OnDestroy {
    * @param {string} content - Der Nachrichtentext.
    * @returns {Promise<void>}
    */
-  public async createNewMessage(
-    msgType: MsgType,
-    threadChannelId: string | null,
-    id: string,
-    senderId: string,
-    content: string,
-  ): Promise<void> {
+  public async createNewMessage(msgType: MsgType, threadChannelId: string | null, id: string, senderId: string, content: string): Promise<void> {
     const mt: string = msgType + '_id';
     const newMessage: NewMessage = {
       [mt]: id,
@@ -312,11 +292,7 @@ export class DatabaseMessages implements OnDestroy {
    * @param {NewMessage} newMessage - Das rudimentäre Nachrichtenobjekt.
    * @returns {NewMessage} Das fertige Nachrichtenobjekt zum Einfügen.
    */
-  private returnMsgType(
-    msgType: MsgType,
-    threadChannelId: string | null,
-    newMessage: NewMessage,
-  ): NewMessage {
+  private returnMsgType(msgType: MsgType, threadChannelId: string | null, newMessage: NewMessage): NewMessage {
     return msgType === 'thread'
       ? { ...newMessage, channel_id: threadChannelId as string, thread_only: true }
       : newMessage;
@@ -329,11 +305,7 @@ export class DatabaseMessages implements OnDestroy {
    * @param {string} emoji - Das geprüfte Emoji.
    * @returns {Promise<boolean>} True, wenn die Reaktion existiert, sonst false.
    */
-  private async checkExistReaction(
-    messageId: string,
-    userId: string,
-    emoji: string,
-  ): Promise<boolean> {
+  private async checkExistReaction(messageId: string, userId: string, emoji: string): Promise<boolean> {
     const { data, error }: PostgrestSingleResponse<any> = await this.supabase
       .from('reactions')
       .select('*')
@@ -352,11 +324,7 @@ export class DatabaseMessages implements OnDestroy {
    * @param {string} emoji - Das zu löschende Emoji.
    * @returns {Promise<ReactionResult>} Das Ergebnis mit der Aktion 'removed'.
    */
-  private async deleteReaction(
-    messageId: string,
-    userId: string,
-    emoji: string,
-  ): Promise<ReactionResult> {
+  private async deleteReaction(messageId: string, userId: string, emoji: string): Promise<ReactionResult> {
     const { error }: PostgrestSingleResponse<PostgrestError | null> = await this.supabase
       .from('reactions')
       .delete()
@@ -374,11 +342,7 @@ export class DatabaseMessages implements OnDestroy {
    * @param {string} emoji - Das neue Emoji.
    * @returns {Promise<ReactionResult>} Das Ergebnis mit der Aktion 'added'.
    */
-  private async addReaction(
-    messageId: string,
-    userId: string,
-    emoji: string,
-  ): Promise<ReactionResult> {
+  private async addReaction(messageId: string, userId: string, emoji: string): Promise<ReactionResult> {
     const { error }: PostgrestSingleResponse<DbPostgrestError> = await this.supabase
       .from('reactions')
       .insert({
@@ -399,11 +363,7 @@ export class DatabaseMessages implements OnDestroy {
    * @param {string} emoji - Das umzuschaltende Emoji.
    * @returns {Promise<ReactionResult>} Ein Promise, das 'added' oder 'removed' zurückgibt.
    */
-  public async toggleReaction(
-    messageId: string,
-    userId: string,
-    emoji: string,
-  ): Promise<ReactionResult> {
+  public async toggleReaction(messageId: string, userId: string, emoji: string): Promise<ReactionResult> {
     if (await this.checkExistReaction(messageId, userId, emoji)) {
       return await this.deleteReaction(messageId, userId, emoji);
     } else {

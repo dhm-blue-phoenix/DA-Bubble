@@ -126,16 +126,7 @@ export class Database {
     user_name: string,
     user_avatar: string,
   ): Promise<boolean> {
-    return await this.safeCall(
-      (): Promise<boolean> =>
-        this.db_auth.signUpNewUser(
-          user_email.trim(),
-          user_password.trim(),
-          user_name.trim(),
-          user_avatar.trim().toLowerCase(),
-        ),
-      false,
-    );
+    return await this.safeCall((): Promise<boolean> => this.db_auth.signUpNewUser(user_email.trim(), user_password.trim(), user_name.trim(), user_avatar.trim().toLowerCase()), false);
   }
 
   /**
@@ -160,10 +151,7 @@ export class Database {
    * @param {string} user_password - Das Passwort.
    */
   public async login(user_email: string, user_password: string): Promise<void> {
-    await this.safeCall(
-      (): Promise<void> => this.db_auth.signInWithEmail(user_email.trim(), user_password.trim()),
-      undefined,
-    );
+    await this.safeCall((): Promise<void> => this.db_auth.signInWithEmail(user_email.trim(), user_password.trim()), undefined);
   }
 
   /**
@@ -202,10 +190,7 @@ export class Database {
    * @returns {Promise<Profile | null>} Die Profildaten oder null.
    */
   public async getProfile(profileId: string): Promise<Profile | null> {
-    return await this.safeCall(
-      (): Promise<Profile | null> => this.db_profiles.getProfile(profileId),
-      null,
-    );
+    return await this.safeCall((): Promise<Profile | null> => this.db_profiles.getProfile(profileId), null);
   }
 
   /**
@@ -214,10 +199,7 @@ export class Database {
    * @param {string} value - Der neue Anzeigename.
    */
   public async editProfileName(profileId: string, value: string): Promise<void> {
-    await this.safeCall(
-      (): Promise<void> => this.db_profiles.updateProfileName(profileId, value.trim()),
-      undefined,
-    );
+    await this.safeCall((): Promise<void> => this.db_profiles.updateProfileName(profileId, value.trim()), undefined);
   }
 
   /**
@@ -226,10 +208,7 @@ export class Database {
    * @returns {Promise<void>}
    */
   public async editProfileAvatar(value: string): Promise<void> {
-    await this.safeCall(
-      (): Promise<void> => this.db_profiles.updateProfileAvatar(this.db_auth.getCurrentUserId(), value),
-      undefined,
-    );
+    await this.safeCall((): Promise<void> => this.db_profiles.updateProfileAvatar(this.db_auth.getCurrentUserId(), value), undefined);
   }
 
   /**
@@ -238,10 +217,7 @@ export class Database {
    * @returns {Promise<string>} Die ID des Chats oder ein leerer string: "".
    */
   public async getChatId(otherUserId: string): Promise<string> {
-    return await this.safeCall(
-      (): Promise<string> => this.db_chats.getChatId(this.db_auth.getCurrentUserId(), otherUserId),
-      '',
-    );
+    return await this.safeCall((): Promise<string> => this.db_chats.getChatId(this.db_auth.getCurrentUserId(), otherUserId), '');
   }
 
   /**
@@ -259,17 +235,7 @@ export class Database {
     senderId: string,
     content: string,
   ): Promise<void> {
-    await this.safeCall(
-      (): Promise<void> =>
-        this.db_messages.createNewMessage(
-          msgType,
-          threadChannelId,
-          id.trim(),
-          senderId.trim(),
-          content.trim(),
-        ),
-      undefined,
-    );
+    await this.safeCall((): Promise<void> => this.db_messages.createNewMessage( msgType, threadChannelId, id.trim(), senderId.trim(), content.trim()), undefined);
   }
 
   /**
@@ -278,10 +244,7 @@ export class Database {
    * @param {string} newContent - Der neue Text.
    */
   public async editMsg(msgId: string, newContent: string): Promise<void> {
-    await this.safeCall(
-      (): Promise<void> => this.db_messages.updateMessage(msgId.trim(), newContent.trim()),
-      undefined,
-    );
+    await this.safeCall((): Promise<void> => this.db_messages.updateMessage(msgId.trim(), newContent.trim()), undefined);
   }
 
   /**
@@ -290,10 +253,7 @@ export class Database {
    * @param {string} id - Die ID der Quelle.
    */
   public async loadMsg(msgType: MsgType, id: string): Promise<void> {
-    await this.safeCall(
-      (): Promise<void> => this.db_messages.getMessages(msgType, id.trim()),
-      undefined,
-    );
+    await this.safeCall((): Promise<void> => this.db_messages.getMessages(msgType, id.trim()), undefined);
   }
 
   /**
@@ -302,10 +262,7 @@ export class Database {
    * @returns {Promise<SearchMessages>} Liste der gefundenen Nachrichten oder leeres Array.
    */
   public async searchMsg(value: string): Promise<SearchMessages> {
-    return await this.safeCall(
-      (): Promise<SearchMessages> => this.db_messages.searchMessages(value),
-      [],
-    );
+    return await this.safeCall((): Promise<SearchMessages> => this.db_messages.searchMessages(value), []);
   }
 
   /**
@@ -320,11 +277,7 @@ export class Database {
     senderId: string,
     emoji: string,
   ): Promise<ReactionResult | null> {
-    return await this.safeCall(
-      (): Promise<ReactionResult> =>
-        this.db_messages.toggleReaction(msgId.trim(), senderId.trim(), emoji.trim().toLowerCase()),
-      null,
-    );
+    return await this.safeCall((): Promise<ReactionResult> => this.db_messages.toggleReaction(msgId.trim(), senderId.trim(), emoji.trim().toLowerCase()), null);
   }
 
   /**
@@ -335,11 +288,7 @@ export class Database {
    * @returns {Promise<boolean>} - true bei Erfolg oder false bei einem Duplikat.
    */
   public async newChannel(userId: string, title: string, desc: string): Promise<boolean> {
-    return await this.safeCall(
-      (): Promise<boolean> =>
-        this.db_channels.createNewChannel(userId.trim(), title.trim(), desc.trim()),
-      false,
-    );
+    return await this.safeCall((): Promise<boolean> => this.db_channels.createNewChannel(userId.trim(), title.trim(), desc.trim()), false);
   }
 
   /**
@@ -349,11 +298,7 @@ export class Database {
    * @param {string} desc - Die neue Beschreibung.
    */
   public async editChannel(channelId: string, title: string, desc: string): Promise<void> {
-    await this.safeCall(
-      (): Promise<void> =>
-        this.db_channels.updateChannelData(channelId.trim(), title.trim(), desc.trim()),
-      undefined,
-    );
+    await this.safeCall((): Promise<void> => this.db_channels.updateChannelData(channelId.trim(), title.trim(), desc.trim()), undefined);
   }
 
   /**
@@ -362,11 +307,7 @@ export class Database {
    * @param {string} userId - Die Profil-ID des Benutzers.
    */
   public async addChannelMember(channelId: string, userId: string): Promise<void> {
-    await this.safeCall(
-      (): Promise<void> =>
-        this.db_channels.createNewMember(channelId.trim(), userId.trim(), 'admin'),
-      undefined,
-    );
+    await this.safeCall((): Promise<void> => this.db_channels.createNewMember(channelId.trim(), userId.trim(), 'admin'), undefined);
   }
 
   /**
@@ -375,10 +316,7 @@ export class Database {
    * @param {string} userId - Die Profil-ID des Benutzers.
    */
   public async removeChannelMember(channelId: string, userId: string): Promise<void> {
-    await this.safeCall(
-      (): Promise<void> => this.db_channels.removeMember(channelId.trim(), userId.trim()),
-      undefined,
-    );
+    await this.safeCall((): Promise<void> => this.db_channels.removeMember(channelId.trim(), userId.trim()), undefined);
   }
 
   /**
@@ -386,10 +324,7 @@ export class Database {
    * @param {string} userId - Die Profil-ID des Benutzers.
    */
   public async getChannels(userId: string): Promise<void> {
-    await this.safeCall(
-      (): Promise<void> => this.db_channels.getChannelIds(userId.trim()),
-      undefined,
-    );
+    await this.safeCall((): Promise<void> => this.db_channels.getChannelIds(userId.trim()), undefined);
   }
 
   /**
@@ -397,10 +332,7 @@ export class Database {
    * @param {string} channelId - Die Kanal-ID.
    */
   public async getChannelContent(channelId: string): Promise<void> {
-    await this.safeCall(
-      (): Promise<void> => this.db_channels.getChannelData(channelId.trim()),
-      undefined,
-    );
+    await this.safeCall((): Promise<void> => this.db_channels.getChannelData(channelId.trim()), undefined);
   }
 
   /**
