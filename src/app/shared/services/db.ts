@@ -30,12 +30,19 @@ export class Database {
   private readonly db_channels: DatabaseChannels = inject(DatabaseChannels);
   private readonly db_threads: DatabaseThreads = inject(DatabaseThreads);
 
+  /** Ein Read-Only Signal mit allen Benutzerprofilen. */
   public readonly profiles: Signal<Profiles> = this.db_profiles._profiles.asReadonly();
+  /** Ein Read-Only Signal, das den Login-Status des aktuellen Benutzers hält (true/false). */
   public readonly isLogin: Signal<boolean> = this.db_auth._isUserLogin.asReadonly();
+  /** Ein Read-Only Signal mit den direkten Chat-Nachrichten der aktuellen Ansicht. */
   public readonly chatMsg: Signal<Messages> = this.db_messages._chat_messages.asReadonly();
+  /** Ein Read-Only Signal mit den Nachrichten des aktuellen Kanals. */
   public readonly channelMsg: Signal<Messages> = this.db_messages._channel_messages.asReadonly();
+  /** Ein Read-Only Signal mit den Nachrichten des aktuellen Threads. */
   public readonly threadMsg: Signal<Messages> = this.db_messages._thread_messages.asReadonly();
+  /** Ein Read-Only Signal mit einer Liste der Kanäle (IDs und Namen), in denen der Benutzer Mitglied ist. */
   public readonly channels: Signal<SignalChannels> = this.db_channels._channels.asReadonly();
+  /** Ein Read-Only Signal mit den detaillierten Daten des aktuell geöffneten Kanals. */
   public readonly channel: Signal<SignalChannel> = this.db_channels._channel.asReadonly();
 
   constructor() {
