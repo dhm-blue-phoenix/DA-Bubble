@@ -178,6 +178,11 @@ Verwaltet das Senden, Empfangen, Bearbeiten von Nachrichten sowie Emoji-Reaktion
 - **Eingabe:** `messageId` (string), `userId` (string), `emoji` (string)
 - **Ausgabe:** `Promise<ReactionResult>` (`{ action: 'added' | 'removed' }`)
 
+### `searchMessages`
+- **Zweck:** Sucht nach Nachrichten die den Suchbegriff im Inhalt enthalten.
+- **Eingabe:** `value` (string)
+- **Ausgabe:** `Promise<SearchMessages>` (`{ id, content, channel_id, chat_id, thread_id, created_at }[]`)
+
 ---
 
 ## 6. DatabaseProfiles (`db-profiles.ts`)
