@@ -13,7 +13,7 @@ import {
 import { Supabase } from './db-superbase';
 import { DatabaseMessageHelper } from './db-message-helper';
 
-import { Message, Messages, Reaction } from '../../interfaces/messages';
+import { Message, Messages, Reaction, SearchMessages } from '../../interfaces/messages';
 import { MsgType, NewMessage, ReactionResult } from '../../interfaces/db/db-messages';
 import { DbPostgrestError } from '../../interfaces/db-error';
 
@@ -112,7 +112,7 @@ export class DatabaseMessages implements OnDestroy {
   }
 
   /**
-   * Behandelt ein UPDATE-Event für Nachrichten und aktualisiert die passenden Signals.
+   * Behandelt ein UPDATE-Event für Nachrichten und aktualisiert des passenden Signals.
    * @param {RealtimePostgresChangesPayload<object>} payload - Das Event-Payload.
    */
   private updateEventMessage(payload: RealtimePostgresChangesPayload<object>): void {
@@ -167,12 +167,7 @@ export class DatabaseMessages implements OnDestroy {
    * @returns {Messages} Die aktualisierte Nachrichtenliste.
    */
   private eventHelperInsertReaction(list: Messages, reaction: Reaction): Messages {
-    return list.map(
-      (msg: Message): Message =>
-        msg.id === reaction['message_id']
-          ? { ...msg, reactions: [...(msg['reactions'] || []), reaction] }
-          : msg,
-    );
+    return list.map((msg: Message): Message => msg.id === reaction['message_id'] ? { ...msg, reactions: [...(msg['reactions'] || []), reaction] } : msg);
   }
 
   /**
@@ -213,20 +208,6 @@ export class DatabaseMessages implements OnDestroy {
     );
   }
 
-  /** Bestimmt den Nachrichtentyp (Chat, Channel, Thread) anhand einer Reaktion. */
-  private eventHelperIsMsgType(reaction: Reaction): string {
-    const isChat: boolean = this._chat_messages().some((list: Message): boolean => {
-      return list['id'] === reaction['message_id'];
-    });
-    const isChannel: boolean = this._channel_messages().some((list: Message): boolean => {
-      return list['id'] === reaction['message_id'];
-    });
-    const isThread: boolean = this._thread_messages().some((list: Message): boolean => {
-      return list['id'] === reaction['message_id'];
-    });
-    return (isChat && 'chat') || (isChannel && 'channel') || (isThread && 'thread') || 'none';
-  }
-
   /** Beendet die Realtime-Verbindung beim Zerstören des Services. */
   public ngOnDestroy(): void {
     if (this.channels) this.supabase.removeChannel(this.channels);
@@ -242,8 +223,7 @@ export class DatabaseMessages implements OnDestroy {
     this.currentChatId = id;
     let query = this.supabase
       .from('messages')
-      .select(
-        `
+      .select(`
         id,
         content,
         created_at,
@@ -251,17 +231,9 @@ export class DatabaseMessages implements OnDestroy {
         sender_id,
         reactions(emoji, user_id),
         threads!threads_root_message_id_fkey(id)
-      `,
-      )
-      .eq(msgType + '_id', id);
-
-    if (msgType === 'channel') {
-      query = query.is('thread_only', null);
-    }
-
-    const { data: messages, error }: PostgrestResponse<any> = await query.order('created_at', {
-      ascending: true,
-    });
+      `).eq(msgType + '_id', id);
+    if (msgType === 'channel') query = query.is('thread_only', null);
+    const { data: messages, error }: PostgrestResponse<any> = await query.order('created_at', { ascending: true });
     if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
     if (messages) {
       if (msgType === 'chat') this._chat_messages.set(messages);
@@ -298,13 +270,7 @@ export class DatabaseMessages implements OnDestroy {
    * @param {string} content - Der Nachrichtentext.
    * @returns {Promise<void>}
    */
-  public async createNewMessage(
-    msgType: MsgType,
-    threadChannelId: string | null,
-    id: string,
-    senderId: string,
-    content: string,
-  ): Promise<void> {
+  public async createNewMessage(msgType: MsgType, threadChannelId: string | null, id: string, senderId: string, content: string): Promise<void> {
     const mt: string = msgType + '_id';
     const newMessage: NewMessage = {
       [mt]: id,
@@ -326,11 +292,7 @@ export class DatabaseMessages implements OnDestroy {
    * @param {NewMessage} newMessage - Das rudimentäre Nachrichtenobjekt.
    * @returns {NewMessage} Das fertige Nachrichtenobjekt zum Einfügen.
    */
-  private returnMsgType(
-    msgType: MsgType,
-    threadChannelId: string | null,
-    newMessage: NewMessage,
-  ): NewMessage {
+  private returnMsgType(msgType: MsgType, threadChannelId: string | null, newMessage: NewMessage): NewMessage {
     return msgType === 'thread'
       ? { ...newMessage, channel_id: threadChannelId as string, thread_only: true }
       : newMessage;
@@ -343,11 +305,7 @@ export class DatabaseMessages implements OnDestroy {
    * @param {string} emoji - Das geprüfte Emoji.
    * @returns {Promise<boolean>} True, wenn die Reaktion existiert, sonst false.
    */
-  private async checkExistReaction(
-    messageId: string,
-    userId: string,
-    emoji: string,
-  ): Promise<boolean> {
+  private async checkExistReaction(messageId: string, userId: string, emoji: string): Promise<boolean> {
     const { data, error }: PostgrestSingleResponse<any> = await this.supabase
       .from('reactions')
       .select('*')
@@ -366,11 +324,7 @@ export class DatabaseMessages implements OnDestroy {
    * @param {string} emoji - Das zu löschende Emoji.
    * @returns {Promise<ReactionResult>} Das Ergebnis mit der Aktion 'removed'.
    */
-  private async deleteReaction(
-    messageId: string,
-    userId: string,
-    emoji: string,
-  ): Promise<ReactionResult> {
+  private async deleteReaction(messageId: string, userId: string, emoji: string): Promise<ReactionResult> {
     const { error }: PostgrestSingleResponse<PostgrestError | null> = await this.supabase
       .from('reactions')
       .delete()
@@ -388,11 +342,7 @@ export class DatabaseMessages implements OnDestroy {
    * @param {string} emoji - Das neue Emoji.
    * @returns {Promise<ReactionResult>} Das Ergebnis mit der Aktion 'added'.
    */
-  private async addReaction(
-    messageId: string,
-    userId: string,
-    emoji: string,
-  ): Promise<ReactionResult> {
+  private async addReaction(messageId: string, userId: string, emoji: string): Promise<ReactionResult> {
     const { error }: PostgrestSingleResponse<DbPostgrestError> = await this.supabase
       .from('reactions')
       .insert({
@@ -413,15 +363,37 @@ export class DatabaseMessages implements OnDestroy {
    * @param {string} emoji - Das umzuschaltende Emoji.
    * @returns {Promise<ReactionResult>} Ein Promise, das 'added' oder 'removed' zurückgibt.
    */
-  public async toggleReaction(
-    messageId: string,
-    userId: string,
-    emoji: string,
-  ): Promise<ReactionResult> {
+  public async toggleReaction(messageId: string, userId: string, emoji: string): Promise<ReactionResult> {
     if (await this.checkExistReaction(messageId, userId, emoji)) {
       return await this.deleteReaction(messageId, userId, emoji);
     } else {
       return await this.addReaction(messageId, userId, emoji);
     }
+  }
+
+  /**
+   * Führt eine case-insensitive Suche in der messages-Tabelle durch.
+   * Sucht nach Nachrichten die den Suchbegriff im Inhalt enthalten.
+   * Gibt maximal 100 Ergebnisse zurück, sortiert nach Erstellungsdatum (neueste zuerst).
+   * @param {string} value - Der Suchbegriff der im Nachrichteninhalt gesucht wird.
+   * @returns {Promise<SearchMessages>} Liste der gefundenen Nachrichten.
+   * @throws {Error} Wenn die Datenbankabfrage fehlschlägt.
+   */
+  public async searchMessages(value: String): Promise<SearchMessages> {
+    const { data, error } = await this.supabase
+      .from('messages')
+      .select(`
+      id,
+      content,
+      created_at,
+      chat_id,
+      channel_id,
+      thread_id
+    `)
+      .ilike('content', `%${value}%`)
+      .order('created_at', { ascending: false })
+      .limit(100);
+    if (error) throw new Error(`[ DB_CODE:${error.code} ] MSG: ${error.message}`);
+    return data;
   }
 }

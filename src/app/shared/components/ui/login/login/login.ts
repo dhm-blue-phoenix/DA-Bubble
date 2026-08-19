@@ -24,7 +24,8 @@ export class Login {
   }
 
 async login(){
-  await this.db.login(this.login_Data.email, this.login_Data.password)
+
+    await this.db.login(this.login_Data.email, this.login_Data.password);
 
 }
 async login_as_guest(){
