@@ -55,8 +55,12 @@ export class HeaderComponent {
 
   mention: MentionController = inject(MentionService).createController(true)
 
-  onSearchFieldClick(input: HTMLInputElement) {
+  async onSearchFieldClick(input: HTMLInputElement) {
     this.mention.onInput(input)
+    if (this.mention.trigger() === null && this.mention.text.length > 0){
+      const result = await this.db.searchMsg(this.mention.text)
+      console.log(result)
+    }
   }
 
   onSelectProfile(profile: Profile) {
