@@ -28,6 +28,15 @@ export interface Reaction {
   readonly created_at: string;
 }
 
+export interface SearchResultView {
+  id: string;
+  content: string;
+  label: string;
+  date: string;
+  type: 'chat' | 'channel';
+  targetId: string;
+}
+
 export type Messages = Message[];
 export type SearchMessages = SearchMessage[];
 export type Reactions = Reaction[];
