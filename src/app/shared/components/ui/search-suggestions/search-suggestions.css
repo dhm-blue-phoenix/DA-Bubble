@@ -1,0 +1,16 @@
+@import '../../../../app.css';
+
+.selection_suggestions{
+position: absolute;
+top: calc(100% + 8px);
+left: 10%;
+width: fit-content;
+width: 80%;;
+max-height: 320px;
+z-index: 20;
+}
+
+.selection_suggestions_up{
+top: auto;
+bottom: calc(100% + 8px);
+}

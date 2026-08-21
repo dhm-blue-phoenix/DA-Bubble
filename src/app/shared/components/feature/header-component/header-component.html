@@ -20,6 +20,12 @@
                 (selectChannel)="onSelectChannel($event)">
             </app-selection-suggestions>
         }
+        @else if (searchResults().length > 0) {
+            <app-search-suggestions
+                [results]="searchResults()"
+                (select)="onSelectSearchResult($event)">
+            </app-search-suggestions>
+        }
     </div>
 
     <div class="flex gap-2 items-center">

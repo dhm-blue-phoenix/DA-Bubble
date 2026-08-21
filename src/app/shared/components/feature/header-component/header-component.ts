@@ -8,12 +8,13 @@ import { Profile } from '../../../interfaces/profile';
 import { SignalChannel, ChannelIdAndName } from '../../../interfaces/db/db-channels';
 import { MentionService, MentionController } from '../../../services/mention';
 import { SelectionSuggestions } from '../../ui/selection-suggestions/selection-suggestions';
+import { SearchSuggestions } from '../../ui/search-suggestions/search-suggestions';
 import { SearchMessages, SearchResultView } from '../../../interfaces/messages'
 
 
 @Component({
   selector: 'app-header-component',
-  imports: [FormsModule, SelectionSuggestions],
+  imports: [FormsModule, SelectionSuggestions, SearchSuggestions],
   templateUrl: './header-component.html',
   styleUrl: './header-component.css',
 })
@@ -63,6 +64,7 @@ export class HeaderComponent {
     if (this.mention.trigger() === null && this.mention.text.length > 0){
       const result = await this.db.searchMsg(this.mention.text)
       if (result){
+        console.log(result)
         this.searchResults.set(this.search_content(result))
       }
       else {
@@ -81,6 +83,13 @@ export class HeaderComponent {
     this.openSelection.emit({ type: 'channel', id: channel.id })
   }
 
+  onSelectSearchResult(result: SearchResultView) {
+    if (result.type === 'channel') {
+      this.searchResults.set([])
+      this.openSelection.emit({ type: 'channel', id: result.targetId })
+    }
+  }
+
   search_content(results: SearchMessages): SearchResultView[] {
     const views: SearchResultView[] = []
 
@@ -89,10 +98,11 @@ export class HeaderComponent {
 
       if (message.channel_id) {
         const channel = this.db.channels().find(channel => channel.id === message.channel_id)
+        if (channel === undefined) continue
         views.push({
           id: message.id,
           content: message.content,
-          label: channel ? `# ${channel.name}` : 'Thread',
+          label: channel ? `# ${channel.name}` : 'Unbekannt',
           date,
           type: 'channel',
           targetId: message.channel_id,
@@ -108,6 +118,7 @@ export class HeaderComponent {
         })
       }
     }
+    console.log(views)
     return views
   }
 
