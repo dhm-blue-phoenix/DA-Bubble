@@ -5,11 +5,27 @@
         
     </div>
 
-    <div>
+    <div class="relative">
         <div class="input_container flex items-center justify-between px-12 py-2">
-            <input type="text" placeholder="Devspace durchsuchen" class="w-full" name="search" id="">
+            <input #searchMsgInput type="text" autofocus [(ngModel)]="mention.text" (input)="mention.onInput(searchMsgInput)" (keyup)="onSearchFieldClick(searchMsgInput)" (click)="onSearchFieldClick(searchMsgInput)" name="searchMsg"type="text" placeholder="Devspace durchsuchen" class="w-full" name="search" id="">
             <button class="hover_btn"><img class="size-[32px]" src="assets/svg/icons/icon_grey/search_grey.svg" alt=""></button>
+
         </div>
+        @if (mention.trigger()) {
+            <app-selection-suggestions
+                [type]="mention.trigger()?.trigger === '#' ? 'channel' : 'member'"
+                [profiles]="mention.trigger() ? mention.profileSuggestions(true) : mention.emailSuggestions()"
+                [channels]="mention.channelSuggestions()"
+                (selectProfile)="onSelectProfile($event)"
+                (selectChannel)="onSelectChannel($event)">
+            </app-selection-suggestions>
+        }
+        @else if (searchResults().length > 0) {
+            <app-search-suggestions
+                [results]="searchResults()"
+                (select)="onSelectSearchResult($event)">
+            </app-search-suggestions>
+        }
     </div>
 
     <div class="flex gap-2 items-center">

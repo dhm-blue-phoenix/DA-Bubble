@@ -29,7 +29,7 @@ thread_Open = false
 db = inject(Database)
 dateSeparator = inject(DateSeparatorService)
 
-active_type: WritableSignal<'channel' | 'chat' | null> = signal(null)
+active_type: WritableSignal<'channel' | 'chat' | 'search' | null> = signal(null)
 dm_partner: WritableSignal<Profile | null> = signal<Profile | null>(null)
 dialog_mode: WritableSignal<'editChannel' | 'addChannel' | 'addMember' | 'members' | 'userProfile' | null> = signal(null)
 profile_user: WritableSignal<Profile | null> = signal(null)
@@ -53,6 +53,7 @@ chat_id = ''
 channel_info = this.db.channel
 channel_content = this.db.channelMsg
 
+scrollToMessageId: string | null = null
 
 chatHistory = viewChild<ElementRef<HTMLDivElement>>('chatHistory')
 
@@ -62,36 +63,29 @@ constructor(){
     })
 
     effect(() => {
-        this.messages_with_sender()
-        queueMicrotask(() => {
-            const el = this.chatHistory()?.nativeElement
-            if (el) el.scrollTop = el.scrollHeight
-        })
+    this.messages_with_sender()
+    queueMicrotask(() => {
+        const el = this.chatHistory()?.nativeElement
+        if (!el) return
+
+        if (this.scrollToMessageId) {
+            const target = document.getElementById('msg-' + this.scrollToMessageId)
+            if (target) {
+                target.scrollIntoView({ block: 'center' })
+                this.scrollToMessageId = null
+                return
+            }
+        }
+
+        el.scrollTop = el.scrollHeight
     })
+})
     
-        // effect(() => {
-        // console.log('MainComponent state', {
-        //     active_type: this.active_type(),
-        //     dialog_mode: this.dialog_mode(),
-        //     profile_user: this.profile_user(),
-        //     dm_partner: this.dm_partner(),
-        //     channel_id: this.channel_id,
-        //     chat_id: this.chat_id,
-        //     channel_info: this.channel_info(),
-        //     channel_creator: this.channel_creator(),
-        //     channel_member_profiles: this.channel_member_profiles(),
-        //     all_user: this.all_user(),
-        //     all_channels: this.all_channels(),
-        //     chat_content: this.chat_content(),
-        //     channel_content: this.channel_content(),
-        //     active_content: this.active_content(),
-        //     messages_with_sender: this.messages_with_sender(),
-        // })
-    // })
 }
 active_content = computed(() => {
     if (this.active_type() === 'chat') return this.chat_content()
     if (this.active_type() === 'channel') return this.channel_content()
+    if (this.active_type() === 'search') return []
     return []
 })
 
@@ -143,6 +137,7 @@ thread_messages_with_sender = computed(() => {
 
     async open_Dm(id:string){
         this.db.clearChatMessages()
+        this.scrollToMessageId = null
         this.active_type.set('chat')
         this.dm_partner.set(this.all_user().find(user => user.id === id) ?? null)
 
@@ -151,10 +146,25 @@ thread_messages_with_sender = computed(() => {
         this.db.loadMsg('chat', dm)
     }
 
-    async open_Chat(id: string) {
+    onOpenSelection(selection: { type: 'chat' | 'channel'; id: string ; messageId?: string }) {
+        if (selection.type === 'chat') this.open_Dm(selection.id)
+        else this.open_Chat(selection.id, selection.messageId)
+    }
+
+    open_Chat_By_Id(chatId: string, messageId:string) {
+        this.db.clearChatMessages()
+        this.active_type.set('chat')
+        this.dm_partner.set(null)
+        this.scrollToMessageId = messageId
+        this.chat_id = chatId
+        this.db.loadMsg('chat', chatId)
+    }
+
+    async open_Chat(id: string, messageId?:string) {
         this.active_type.set('channel')
         this.channel_id = id
         this.db.loadMsg('channel', id)
+        this.scrollToMessageId = messageId ?? null
         await this.db.getChannelContent(id)
     }
 
@@ -203,7 +213,7 @@ thread_messages_with_sender = computed(() => {
 
     send_Content(content:string){
         const type = this.active_type()
-        if (!type) return
+        if (!type || type === 'search') return
 
         const senderId = this.db.getCurrentUserId()
         const id = type === 'chat' ? this.chat_id : this.channel_id

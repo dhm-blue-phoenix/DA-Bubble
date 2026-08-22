@@ -7,7 +7,7 @@
                     <img class="size-60px" src="assets/svg/devspace/Workspace logo.svg" alt="workspace">
                     <h2>Devspace</h2>
                 </div>
-                <button class="hover_btn"><img src="assets/svg/icons/icon_black/edit_square_black.svg" alt="edit"></button>
+                <button (click)="active_type.set('search')" class="hover_btn"><img src="assets/svg/icons/icon_black/edit_square_black.svg" alt="edit"></button>
             </div>
             <div class="flex justify-between w-full items-center">
                 <div class="flex gap-1 items-center">
@@ -50,13 +50,13 @@
 
         <section class="chat flex flex-col bg-white flex-1 min-w-0">
             <div class="chat_header flex justify-between px-[42px] py-[24px] border-b-2 border-black/10 shadow-sm">
-                <app-chat-header class ="contents" [type]="active_type()" [dmPartner]="dm_partner()" [isSelfChat]="is_self_chat()" [channelInfo]="channel_info()" [memberProfiles]="channel_member_profiles()" (openChannelInfo)="dialog_mode.set('editChannel')" (openAddMember)="dialog_mode.set('addMember')" (openMembers)="dialog_mode.set('members')"></app-chat-header>
+                <app-chat-header class ="contents" [type]="active_type()" [dmPartner]="dm_partner()" [isSelfChat]="is_self_chat()" [channelInfo]="channel_info()" [memberProfiles]="channel_member_profiles()" (openChannelInfo)="dialog_mode.set('editChannel')" (openAddMember)="dialog_mode.set('addMember')" (openMembers)="dialog_mode.set('members')" (openSelection)="onOpenSelection($event)"></app-chat-header>
             </div>
             <div class="chat_container w-full p-[20px] flex flex-col ">
                 <div #chatHistory class="chat_history w-full flex-1 scrollbar_Style overflow-y-auto ">
                     @if (messages_with_sender().length > 0) {
                         @for (item of messages_with_sender(); track item.message.id) {
-                            <app-chat class="bg-black" [message]="item.message" [sender]="item.sender" [showSeparator]="item.showSeparator" [dateLabel]="item.dateLabel" (openThread)="openThread($event)"></app-chat>
+                            <app-chat class="bg-black" [id]="'msg-' + item.message.id" [message]="item.message" [sender]="item.sender" [showSeparator]="item.showSeparator" [dateLabel]="item.dateLabel" (openThread)="openThread($event)"></app-chat>
                         } 
                     }
                     @else if (messages_with_sender().length == 0 && active_type() != null){
@@ -65,7 +65,7 @@
                         </div>
                     }
                 </div>
-                @if (active_type()) {
+                @if (active_type() != 'search') {
                     <app-input  (sent)="send_Content($event)"></app-input>
                 }
             </div>

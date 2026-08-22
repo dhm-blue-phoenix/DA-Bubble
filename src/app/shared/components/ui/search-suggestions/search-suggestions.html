@@ -1,0 +1,15 @@
+@if (results.length > 0) {
+    <ul class="selection_suggestions bg-white border border-black/15 flex flex-col scrollbar_Style overflow-x-hidden overflow-y-auto shadow-lg" [class.selection_suggestions_up]="direction === 'up'" [class.rounded-tr-3xl]="direction === 'down'" [class.rounded-b-3xl]="direction === 'down'" [class.rounded-br-3xl]="direction === 'up'" [class.rounded-t-3xl]="direction === 'up'">
+        @for (result of results; track result.id) {
+            <li>
+                <button type="button" (click)="select.emit(result)" class="w-full flex flex-col items-start gap-1 px-4 py-3 hover:bg-[var(--hover-bg)] text-left">
+                    <div class="flex items-center gap-2 w-full justify-between">
+                        <span class="text-lg font-semibold text-black/50">{{ result.label }}</span>
+                        <span class="text-sm text-black/50">{{ result.date }}</span>
+                    </div>
+                    <span class="text-base font-semibold w-full">{{ result.content }}</span>
+                </button>
+            </li>
+        }
+    </ul>
+}

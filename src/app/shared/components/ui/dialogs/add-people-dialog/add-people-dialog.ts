@@ -4,11 +4,11 @@ import { Database } from '../../../../services/db';
 import { MentionService } from '../../../../services/mention';
 import { SignalChannel } from '../../../../interfaces/db/db-channels';
 import { Profile } from '../../../../interfaces/profile';
-import { MentionSuggestions } from '../../mention-suggestions/mention-suggestions';
+import { SelectionSuggestions } from '../../selection-suggestions/selection-suggestions';
 
 @Component({
   selector: 'app-add-people-dialog',
-  imports: [FormsModule, MentionSuggestions],
+  imports: [FormsModule, SelectionSuggestions],
   templateUrl: './add-people-dialog.html',
   styleUrl: './add-people-dialog.css',
 })
