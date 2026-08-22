@@ -69,25 +69,6 @@ constructor(){
         })
     })
     
-        // effect(() => {
-        // console.log('MainComponent state', {
-        //     active_type: this.active_type(),
-        //     dialog_mode: this.dialog_mode(),
-        //     profile_user: this.profile_user(),
-        //     dm_partner: this.dm_partner(),
-        //     channel_id: this.channel_id,
-        //     chat_id: this.chat_id,
-        //     channel_info: this.channel_info(),
-        //     channel_creator: this.channel_creator(),
-        //     channel_member_profiles: this.channel_member_profiles(),
-        //     all_user: this.all_user(),
-        //     all_channels: this.all_channels(),
-        //     chat_content: this.chat_content(),
-        //     channel_content: this.channel_content(),
-        //     active_content: this.active_content(),
-        //     messages_with_sender: this.messages_with_sender(),
-        // })
-    // })
 }
 active_content = computed(() => {
     if (this.active_type() === 'chat') return this.chat_content()
@@ -155,6 +136,14 @@ thread_messages_with_sender = computed(() => {
     onOpenSelection(selection: { type: 'chat' | 'channel'; id: string }) {
         if (selection.type === 'chat') this.open_Dm(selection.id)
         else this.open_Chat(selection.id)
+    }
+
+    open_Chat_By_Id(chatId: string) {
+        this.db.clearChatMessages()
+        this.active_type.set('chat')
+        this.dm_partner.set(null)
+        this.chat_id = chatId
+        this.db.loadMsg('chat', chatId)
     }
 
     async open_Chat(id: string) {

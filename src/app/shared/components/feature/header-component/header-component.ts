@@ -56,6 +56,7 @@ export class HeaderComponent {
   @Output() openAddMember = new EventEmitter<void>()
   @Output() openMembers = new EventEmitter<void>()
   @Output() openSelection = new EventEmitter<{ type: 'chat' | 'channel'; id: string }>()
+  @Output() openChatById = new EventEmitter<string>()
 
   mention: MentionController = inject(MentionService).createController(true)
 
@@ -84,9 +85,11 @@ export class HeaderComponent {
   }
 
   onSelectSearchResult(result: SearchResultView) {
+    this.searchResults.set([])
     if (result.type === 'channel') {
-      this.searchResults.set([])
       this.openSelection.emit({ type: 'channel', id: result.targetId })
+    } else {
+      this.openChatById.emit(result.targetId)
     }
   }
 
