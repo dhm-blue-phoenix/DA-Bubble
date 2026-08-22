@@ -137,6 +137,7 @@ thread_messages_with_sender = computed(() => {
 
     async open_Dm(id:string){
         this.db.clearChatMessages()
+        this.scrollToMessageId = null
         this.active_type.set('chat')
         this.dm_partner.set(this.all_user().find(user => user.id === id) ?? null)
 
@@ -145,9 +146,9 @@ thread_messages_with_sender = computed(() => {
         this.db.loadMsg('chat', dm)
     }
 
-    onOpenSelection(selection: { type: 'chat' | 'channel'; id: string }) {
+    onOpenSelection(selection: { type: 'chat' | 'channel'; id: string ; messageId?: string }) {
         if (selection.type === 'chat') this.open_Dm(selection.id)
-        else this.open_Chat(selection.id)
+        else this.open_Chat(selection.id, selection.messageId)
     }
 
     open_Chat_By_Id(chatId: string, messageId:string) {
@@ -159,10 +160,11 @@ thread_messages_with_sender = computed(() => {
         this.db.loadMsg('chat', chatId)
     }
 
-    async open_Chat(id: string) {
+    async open_Chat(id: string, messageId?:string) {
         this.active_type.set('channel')
         this.channel_id = id
         this.db.loadMsg('channel', id)
+        this.scrollToMessageId = messageId ?? null
         await this.db.getChannelContent(id)
     }
 
