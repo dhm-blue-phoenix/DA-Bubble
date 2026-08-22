@@ -1,6 +1,6 @@
 <app-header-component
   (openUserProfile)="mainComp.openUserProfileDialog()"
   (openSelection)="mainComp.onOpenSelection($event)"
-  (openChatById)="mainComp.open_Chat_By_Id($event)">
+  (openChatById)="mainComp.open_Chat_By_Id($event.chatId, $event.messageId)">
 </app-header-component>
 <app-main-component #mainComp></app-main-component>

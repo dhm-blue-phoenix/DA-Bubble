@@ -56,7 +56,7 @@ export class HeaderComponent {
   @Output() openAddMember = new EventEmitter<void>()
   @Output() openMembers = new EventEmitter<void>()
   @Output() openSelection = new EventEmitter<{ type: 'chat' | 'channel'; id: string }>()
-  @Output() openChatById = new EventEmitter<string>()
+  @Output() openChatById = new EventEmitter<{chatId: string; messageId: string}>()
 
   mention: MentionController = inject(MentionService).createController(true)
 
@@ -89,7 +89,7 @@ export class HeaderComponent {
     if (result.type === 'channel') {
       this.openSelection.emit({ type: 'channel', id: result.targetId })
     } else {
-      this.openChatById.emit(result.targetId)
+      this.openChatById.emit({chatId: result.targetId, messageId: result.id})
     }
   }
 

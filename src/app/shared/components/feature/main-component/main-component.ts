@@ -53,6 +53,7 @@ chat_id = ''
 channel_info = this.db.channel
 channel_content = this.db.channelMsg
 
+scrollToMessageId: string | null = null
 
 chatHistory = viewChild<ElementRef<HTMLDivElement>>('chatHistory')
 
@@ -62,12 +63,23 @@ constructor(){
     })
 
     effect(() => {
-        this.messages_with_sender()
-        queueMicrotask(() => {
-            const el = this.chatHistory()?.nativeElement
-            if (el) el.scrollTop = el.scrollHeight
-        })
+    this.messages_with_sender()
+    queueMicrotask(() => {
+        const el = this.chatHistory()?.nativeElement
+        if (!el) return
+
+        if (this.scrollToMessageId) {
+            const target = document.getElementById('msg-' + this.scrollToMessageId)
+            if (target) {
+                target.scrollIntoView({ block: 'center' })
+                this.scrollToMessageId = null
+                return
+            }
+        }
+
+        el.scrollTop = el.scrollHeight
     })
+})
     
 }
 active_content = computed(() => {
@@ -138,10 +150,11 @@ thread_messages_with_sender = computed(() => {
         else this.open_Chat(selection.id)
     }
 
-    open_Chat_By_Id(chatId: string) {
+    open_Chat_By_Id(chatId: string, messageId:string) {
         this.db.clearChatMessages()
         this.active_type.set('chat')
         this.dm_partner.set(null)
+        this.scrollToMessageId = messageId
         this.chat_id = chatId
         this.db.loadMsg('chat', chatId)
     }
