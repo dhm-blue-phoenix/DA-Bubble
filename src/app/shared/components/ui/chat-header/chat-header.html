@@ -32,7 +32,7 @@
                 <input #searchMsgInput type="text" autofocus [(ngModel)]="mention.text" (input)="mention.onInput(searchMsgInput)" (keyup)="mention.onInput(searchMsgInput)" (click)="onSearchFieldClick(searchMsgInput)" name="searchMsg" placeholder="An: #channel, oder @jemand oder E-Mail Adresse" class="text-lg font-semibold outline-none w-full" required>
         </div>
         @if (mention.trigger() || mention.text.trim()) {
-            <app-selection-suggestions
+            <app-selection-suggestions class="selection_suggestions"
                 [type]="mention.trigger()?.trigger === '#' ? 'channel' : 'member'"
                 [profiles]="mention.trigger() ? mention.profileSuggestions(true) : mention.emailSuggestions()"
                 [channels]="mention.channelSuggestions()"

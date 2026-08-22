@@ -27,7 +27,7 @@
                 <input [ngModel]="searchText()" (ngModelChange)="onSearchTextChange($event)" (keydown)="onKeydown($event)" name="memberName" type="text" placeholder="Name eingeben" class="text-lg outline-none flex-1 min-w-[120px]">
             </div>
 
-            <app-selection-suggestions [profiles]="suggestions()" [activeIndex]="0" (selectProfile)="selectProfile($event)"></app-selection-suggestions>
+            <app-selection-suggestions [profiles]="suggestions()" (selectProfile)="selectProfile($event)"></app-selection-suggestions>
         </div>
 
         <div class="bg-white rounded-b-3xl w-full max-w-[720px] pb-10 flex justify-end">
