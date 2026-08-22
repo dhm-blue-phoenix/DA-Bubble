@@ -64,14 +64,10 @@ export class HeaderComponent {
     this.mention.onInput(input)
     if (this.mention.trigger() === null && this.mention.text.length > 0){
       const result = await this.db.searchMsg(this.mention.text)
-      if (result){
-        console.log(result)
-        this.searchResults.set(this.search_content(result))
-      }
-      else {
-        this.searchResults.set([])
-      }
+      this.searchResults.set(result ? this.search_content(result) : [])
     }
+    else 
+      this.searchResults.set([])
   }
 
   onSelectProfile(profile: Profile) {
@@ -121,7 +117,6 @@ export class HeaderComponent {
         })
       }
     }
-    console.log(views)
     return views
   }
 
