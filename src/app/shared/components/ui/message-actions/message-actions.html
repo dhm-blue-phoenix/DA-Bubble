@@ -21,7 +21,7 @@
         </div>
     }
 
-    @if (!isThread) {
+    @if (isChannel) {
         <button (click)="openThread.emit()" class="size-8 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]">
                 <img src="assets/svg/icons/icon_black/answer.svg" alt="reaction">
         </button>

@@ -56,7 +56,7 @@
                 <div #chatHistory class="chat_history w-full flex-1 scrollbar_Style overflow-y-auto ">
                     @if (messages_with_sender().length > 0) {
                         @for (item of messages_with_sender(); track item.message.id) {
-                            <app-chat class="bg-black" [id]="'msg-' + item.message.id" [message]="item.message" [sender]="item.sender" [showSeparator]="item.showSeparator" [dateLabel]="item.dateLabel" (openThread)="openThread($event)"></app-chat>
+                            <app-chat class="bg-black" [id]="'msg-' + item.message.id" [message]="item.message" [sender]="item.sender" [context]="active_type() === 'channel' ? 'channel' : 'chat'" [showSeparator]="item.showSeparator" [dateLabel]="item.dateLabel" (openThread)="openThread($event)"></app-chat>
                         } 
                     }
                     @else if (messages_with_sender().length == 0 && active_type() != null){

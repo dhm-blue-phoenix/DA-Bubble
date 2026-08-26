@@ -87,7 +87,6 @@ export class DatabaseThreads {
       .select('id', { count: 'exact', head: true })
       .eq('thread_id', threadId);
     if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
-    console.log(count)
     return count ?? 0;
   }
 }
