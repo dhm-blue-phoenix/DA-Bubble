@@ -23,6 +23,11 @@
     background-color: rgba(121, 126, 243, 1);
     color: white;
     border-radius: 24px 0 24px 24px;
+
+    ::selection{
+        background-color: var(--bg-color);
+        color: black;
+    }
 }
 
 .timestamp{

@@ -50,8 +50,6 @@ background-color: gray;
 cursor: not-allowed;
 }
 
-
-
 .rotated-90 {
     transform: rotate(-90deg);
     transition: transform 0.2s ease;

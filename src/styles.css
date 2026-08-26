@@ -50,3 +50,9 @@ input{
         color: grey
     }
 }
+
+::selection {
+    background-color: var(--btn-hover);
+    color: white;
+
+}
