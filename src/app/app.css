@@ -94,10 +94,24 @@ cursor: not-allowed;
 
 .scrollbar_Style{
     margin: 4px;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border-aktiv) var(--hover-bg);
     background-color: white;
+    border-radius: 24px;
     padding: 4px;
+}
+
+.scrollbar_Style::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.scrollbar_Style::-webkit-scrollbar-track {
+    background-color: #989df7b9;
+    border-radius: 24px;
+}
+
+.scrollbar_Style::-webkit-scrollbar-thumb {
+    background-color: var(--border-aktiv);
+    border-radius: 24px;
 }
 
 .errorMassage {
