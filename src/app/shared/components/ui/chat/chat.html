@@ -36,7 +36,9 @@
 
         @if (message.threads && !isThread()) {
             <div class="flex gap-6 items-center" [class.flex-row-reverse]="isOwnMessage()">
-                <button (click)="openThread.emit(message.id)" class="feedback">Antwort</button>
+                <button (click)="openThread.emit(message.id)" class="feedback">
+                    {{ message.replyCount === 1 ? '1 Antwort' : (message.replyCount ?? 0) + ' Antworten' }}
+                </button>
             </div>
         }
 
