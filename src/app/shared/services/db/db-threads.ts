@@ -75,4 +75,18 @@ export class DatabaseThreads {
     if (existThread['success']) return existThread['thread_id'] as string;
     return this.createNewThread(msgId);
   }
+
+  /**
+   * Zählt die Antworten (Nachrichten) in einem bestehenden Thread, ohne deren Inhalt zu laden.
+   * @param {string} threadId - Die ID des Threads.
+   * @returns {Promise<number>} Die Anzahl der Nachrichten im Thread.
+   */
+  public async getThreadMessageCount(threadId: string): Promise<number> {
+    const { count, error } = await this.supabase
+      .from('messages')
+      .select('id', { count: 'exact', head: true })
+      .eq('thread_id', threadId);
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
+    return count ?? 0;
+  }
 }

@@ -7,7 +7,7 @@
 }
 
 <div class="chat_message group relative flex py-6 gap-2 cursor-pointer hover:bg-[var(--hover-bg)] my-2" [class.flex-row-reverse]="isOwnMessage()">
-    <app-message-actions [isOwnMessage]="isOwnMessage()" [isThread]="isThread()" (react)="react($event)" (openThread)="openThread.emit(message.id)" (edit)="startEdit()"> </app-message-actions>
+    <app-message-actions [isOwnMessage]="isOwnMessage()" [isThread]="isThread()" [isChannel]="context === 'channel'" (react)="react($event)" (openThread)="openThread.emit(message.id)" (edit)="startEdit()"> </app-message-actions>
     
     <img class="size-[70px]" [src]="'assets/svg/avatar/avatar_small/' + (sender?.avatar || '1') + '.svg'" alt="avatar">
     <div class="flex flex-col gap-2 min-w-0">
@@ -36,7 +36,9 @@
 
         @if (message.threads && !isThread()) {
             <div class="flex gap-6 items-center" [class.flex-row-reverse]="isOwnMessage()">
-                <button (click)="openThread.emit(message.id)" class="feedback">Antwort</button>
+                <button (click)="openThread.emit(message.id)" class="feedback">
+                    {{ message.replyCount === 1 ? '1 Antwort' : (message.replyCount ?? 0) + ' Antworten' }}
+                </button>
             </div>
         }
 

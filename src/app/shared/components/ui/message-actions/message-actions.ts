@@ -9,6 +9,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 export class MessageActions {
   @Input() isOwnMessage = false
   @Input() isThread = false
+  @Input() isChannel = false
 
   @Output() react = new EventEmitter<number>()
   @Output() openThread = new EventEmitter<void>()

@@ -12,6 +12,7 @@ import {
 
 import { Supabase } from './db-superbase';
 import { DatabaseMessageHelper } from './db-message-helper';
+import { DatabaseThreads } from './db-threads';
 
 import { Message, Messages, Reaction, SearchMessages } from '../../interfaces/messages';
 import { MsgType, NewMessage, ReactionResult } from '../../interfaces/db/db-messages';
@@ -24,6 +25,7 @@ export class DatabaseMessages implements OnDestroy {
   private readonly platformId: Object = inject(PLATFORM_ID);
   private readonly supabase: SupabaseClient = inject(Supabase)['supabase'];
   private readonly db_msg_helper: DatabaseMessageHelper = inject(DatabaseMessageHelper);
+  private readonly db_threads: DatabaseThreads = inject(DatabaseThreads);
   private readonly channels?: RealtimeChannel;
 
   /** Signal für direkte Chat-Nachrichten */
@@ -236,10 +238,27 @@ export class DatabaseMessages implements OnDestroy {
     const { data: messages, error }: PostgrestResponse<any> = await query.order('created_at', { ascending: true });
     if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
     if (messages) {
-      if (msgType === 'chat') this._chat_messages.set(messages);
-      if (msgType === 'channel') this._channel_messages.set(messages);
-      if (msgType === 'thread') this._thread_messages.set(messages);
+      const enrichedMessages = await this.attachReplyCounts(messages);
+      if (msgType === 'chat') this._chat_messages.set(enrichedMessages);
+      if (msgType === 'channel') this._channel_messages.set(enrichedMessages);
+      if (msgType === 'thread') this._thread_messages.set(enrichedMessages);
     }
+  }
+
+  /**
+   * Ergänzt Nachrichten mit einem Thread um die Anzahl der darin enthaltenen Antworten.
+   * @param {any[]} messages - Die geladenen Nachrichten.
+   * @returns {Promise<any[]>} Die Nachrichten, jeweils mit `replyCount` versehen, falls ein Thread existiert.
+   */
+  private async attachReplyCounts(messages: any[]): Promise<any[]> {
+    return Promise.all(
+      messages.map(async (message) => {
+        const threadId = message.threads?.id;
+        if (!threadId) return message;
+        const replyCount = await this.db_threads.getThreadMessageCount(threadId);
+        return { ...message, replyCount };
+      }),
+    );
   }
 
   /**

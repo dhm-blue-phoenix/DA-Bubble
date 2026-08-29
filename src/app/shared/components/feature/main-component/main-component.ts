@@ -187,6 +187,10 @@ thread_messages_with_sender = computed(() => {
         this.thread_Open = true
         this.thread_id = await this.db.getThreadId(messageId)
         await this.db.loadMsg('thread', this.thread_id)
+
+        const type = this.active_type()
+        if (type === 'channel') await this.db.loadMsg('channel', this.channel_id)
+        else if (type === 'chat') await this.db.loadMsg('chat', this.chat_id)
     }
 
     send_Thread_Content(content: string) {

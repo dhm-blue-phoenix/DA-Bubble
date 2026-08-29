@@ -1,8 +1,8 @@
-<div class="flex items-center justify-items-start gap-2 cursor-pointer user_container" [class.aktiv]="isActive">
+<button class="flex items-center justify-items-start gap-2 cursor-pointer user_container" [class.aktiv]="isActive">
     <div class="relative size-[48px]">
         <img class="size-[48px]" [src]="'assets/svg/avatar/avatar_small/' + (user.avatar || '1') + '.svg'" alt="avatar">
         <div class="status" [class]="user.status"></div>
 
     </div>
     <span class="dm_user">{{ user.name }}{{ user.id === db.getCurrentUserId() ? ' (Du)' : '' }}</span>
-</div>
+</button>

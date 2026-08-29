@@ -1,6 +1,7 @@
 @import '../../../../app.css';
 .user_container{
     padding: 4px 24px;
+    width: 90%;
     border-radius: 30px;
     &:hover{
         background-color: var(--hover-bg);
