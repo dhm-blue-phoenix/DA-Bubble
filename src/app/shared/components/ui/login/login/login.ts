@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { Database } from '../../../../services/db';
 import { FormsModule, NgModel } from '@angular/forms';
@@ -19,16 +19,20 @@ export class Login {
     password: '',
   };
 
+  error_Massage = signal(false)
+
   public googleLogin(): void {
     this.db.loginWithGoogle();
   }
 
 async login(){
-
-    await this.db.login(this.login_Data.email, this.login_Data.password);
+const login = await this.db.login(this.login_Data.email, this.login_Data.password);
+this.error_Massage.set(!login)
 
 }
 async login_as_guest(){
   await this.db.login(environment.guest_email, environment.guest_password)
 }
+
+
 }

@@ -157,9 +157,12 @@ export class Database {
    * @param {string} user_email - Die E-Mail-Adresse.
    * @param {string} user_password - Das Passwort.
    */
-  public async login(user_email: string, user_password: string): Promise<void> {
-    await this.safeCall((): Promise<void> => this.db_auth.signInWithEmail(user_email.trim(), user_password.trim()), undefined);
-  }
+ public async login(user_email: string, user_password: string): Promise<boolean> {
+  return await this.safeCall(async (): Promise<boolean> => {
+    await this.db_auth.signInWithEmail(user_email.trim(), user_password.trim());
+    return true;
+  }, false);
+}
 
   /**
    * Meldet einen bestehenden Benutzer mit seinen Google Account an.
