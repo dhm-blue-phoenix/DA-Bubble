@@ -1,7 +1,7 @@
 
 <div class="flex flex-col gap-[30px] items-center">
     <h2>Anmeldung</h2>
-    <span class="text-xl text-center">Wir empfelen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest</span>
+    <span class="text-base md:text-base text-center">Wir empfelen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest</span>
 
     <form class="flex justify-center items-center flex-col w-full" (ngSubmit)="login()">
             <div class="input_container flex items-center p-4 justify-between mb-[32px]">
@@ -30,7 +30,7 @@
             <span>Anmelden mit Google</span>
         </button>
         
-        <div class="flex gap-[30px]">
+        <div class="flex gap-[16px] md:gap-[32px]">
             <button type="submit" class="btn_raw bg-[var(--highligh-color)] text-white font-bold" [disabled]="email.invalid || password.invalid">Anmelden</button>
             <button type="button" (click)="login_as_guest()" class="btn_raw text-[var(--highligh-color)] border font-bold">Gäste-Login</button>
         </div>

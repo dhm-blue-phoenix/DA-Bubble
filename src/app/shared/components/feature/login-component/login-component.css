@@ -41,9 +41,10 @@
 
 section{
   background-color: var(--bg-color);
-  width: 100vw;
-  height: calc(100vh - 96px - 64px);
+  width: 100%;
+  min-height: calc(100vh - 86px - 56px);
 }
+
 
 @keyframes logo-move {
   to {
@@ -72,17 +73,38 @@ section{
 }
 
 h2{
-  font-size: 42px !important;
+  font-size: clamp(28px, 6vw, 42px) !important;
   color: var(--highligh-color);
 }
 
 .login_container{
-
-  width: 600px;
-  border-radius: 30px;
-  gap: 30px;
-  padding: 48px;
+  width: 100%;
+  max-width: 600px;
+  border-radius: 20px;
+  gap: 20px;
+  padding: 20px;
 }
+
+@media (max-width: 768px){
+  .login_container{
+    border-radius: 24px;
+    gap: 24px;
+    padding: 32px;
+  }
+  section{
+    padding: 16px;
+  }
+}
+
+@media (max-width: 420px ){
+  section{
+    padding: 8px;
+  }
+  .login_container{
+  padding: 16px;
+  }
+}
+
 
 .separator{
   width: 100%;
@@ -135,9 +157,10 @@ cursor: pointer;
 }
 
 .user_Feedback {
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
+  max-width: calc(100vw - 32px);
   transform: translate(-50%, 200%);
 }
 
