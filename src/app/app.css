@@ -136,5 +136,8 @@ cursor: not-allowed;
 padding: 6px 16px;
 font-size: 16px;
 }
+.back_btn{
+    padding: 2px;
+}
 
 }

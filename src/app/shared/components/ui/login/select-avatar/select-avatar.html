@@ -1,5 +1,5 @@
 <div class="flex flex-col gap-[30px] items-center">
-    <div class="grid grid-cols-3 items-center w-full">
+    <div class="grid items-center w-full">
       <a routerLink="/sign-in" class="back_btn justify-self-start">
         @if (!this.provider) {
             <img class="back_btn" src="assets/svg/icons/icon_black/arrow_back_black.svg" alt="back_arrow">
@@ -10,9 +10,9 @@
 
     <div class="flex flex-col items-center text-center gap-[30px]">
         @if (sel_avatar === '') {
-            <img class="size-[168px]" src='assets/svg/avatar/avatar_default/default.svg' alt="default-avatar">
+            <img class="size-24 md:size-32 lg:size-[168px]" src='assets/svg/avatar/avatar_default/default.svg' alt="default-avatar">
         }@else {
-            <img class="size-[168px]" [src]="'assets/svg/avatar/avatar_small/' + sel_avatar + '.svg'" alt="select_avatar">
+            <img class="size-24 md:size-32 lg:size-[168px]" [src]="'assets/svg/avatar/avatar_small/' + sel_avatar + '.svg'" alt="select_avatar">
         }
       @if(signin.data().name) {
         <h2>{{signin.data().name}}</h2>
@@ -25,12 +25,12 @@
 
     <div class="flex w-full gap-[8px] flex-col" action="">
         <div class="w-full flex justify-start">
-            <span class="text-xl">Aus der Liste wählen</span>
+            <span class="text-base md:text-base md:text-xl">Aus der Liste wählen</span>
         </div>
-        <div class="flex w-full items-center justify-between">
+        <div class="flex w-full flex-wrap items-center justify-center md:justify-between gap-3">
             @for (avatar of avatars; track avatar) {
                 <button class="selecet_avatar" [class.active]="sel_avatar === '' + avatar" (click)="select_Avatar(avatar)">
-                    <img [src]="'assets/svg/avatar/avatar_small/' + avatar + '.svg'" alt="avatar">
+                    <img class="size-10 md:size-14 lg:size-[72px]" [src]="'assets/svg/avatar/avatar_small/' + avatar + '.svg'" alt="avatar">
                 </button>
             }
         </div>
@@ -38,7 +38,7 @@
 
 
     <div class="flex w-full justify-end">
-        <button (click)="singin()" [disabled]="sel_avatar === ''" [class]="sel_avatar === '' ? 'btn_disable font-bold' : 'btn_raw bg-[var(--btn)] text-white font-bold'">Weiter</button>
+        <button class="btn_raw" (click)="singin()" [disabled]="sel_avatar === ''" [class]="sel_avatar === '' ? 'btn_disable font-bold' : 'btn_raw bg-[var(--btn)] text-white font-bold'">Weiter</button>
     </div>
 </div>
 
