@@ -1,7 +1,7 @@
 <section class="flex justify-center items-start">
-    <div class="flex items-center gap-[30px]">
-        <a class="text-[var(--link)] text-xl" href="#">Impressum</a>
-        <a class="text-[var(--link)] text-xl" href="#">Datenschutz</a>
+    <div class="flex items-center gap-[30px] shrink-0">
+        <button type="button" class="btn text-[var(--link)] text-xl" (click)="navigateRoute('imprint')">Impressum</button>
+        <button type="button" class="btn text-[var(--link)] text-xl" (click)="navigateRoute('privacy-policy')">Datenschutz</button>
     </div>
 
 </section>

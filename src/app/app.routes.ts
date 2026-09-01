@@ -6,7 +6,8 @@ import { ForgotPassword } from './shared/components/ui/login/forgot-password/for
 import { SignIn } from './shared/components/ui/login/sign-in/sign-in';
 import { ResetPassword } from'./shared/components/ui/login/reset-password/reset-password';
 import { SelectAvatar } from'./shared/components/ui/login/select-avatar/select-avatar';
-import path from 'path';
+import { Imprint } from './shared/components/legal/imprint/imprint';
+import { PrivacyPolicy } from './shared/components/legal/privacy-policy/privacy-policy';
 
 export const routes: Routes = [
     { path: '', component: LoginComponent, children: [
@@ -16,6 +17,10 @@ export const routes: Routes = [
         {path: 'forgot-password', component: ForgotPassword},
         {path: 'reset-password', component: ResetPassword},
     ]},
+    { path: 'legal', children: [
+        { path: 'imprint', component: Imprint },
+        { path: 'privacy-policy', component: PrivacyPolicy },
+      ] },
     { path: 'workspace', component: LayoutComponent },
     { path: '**', redirectTo: '' },
 ];

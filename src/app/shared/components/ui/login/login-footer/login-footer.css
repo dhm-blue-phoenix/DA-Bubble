@@ -5,3 +5,17 @@ section{
     width: 100vw;
     height: 64px;
 }
+
+.btn {
+  padding: 8px;
+  transition: ease-in-out 255ms all;
+  border-radius: 30px;
+  display: inline-block;
+
+  &:hover {
+    color: var(--highligh-color);
+    cursor: pointer;
+    box-shadow: 0 0 0 1px var(--hover-box-shadow);
+    text-shadow: 0 0 0.4px currentColor, 0 0 0.4px currentColor;
+  }
+}
