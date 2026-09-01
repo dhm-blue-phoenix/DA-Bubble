@@ -1,0 +1,66 @@
+section {
+  background-color: var(--bg-color);
+  width: 100vw;
+  height: 100vh;
+  user-select: none;
+}
+
+main {
+  height: calc(100% - 94px);
+}
+
+h2 {
+  color: var(--btn);
+  font-size: 46px;
+}
+
+li {
+  user-select: text;
+}
+
+/* Box Style */
+.box {
+  background-color: var(--bg-box-color);
+  padding: 48px 56px;
+  width: 676.27px;
+  height: 469px;
+  border-radius: 30px;
+}
+
+/* Box Header Button Style + Animation vom Arrow */
+.btn_container {
+  position: relative;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 200ms ease-in-out;
+  transform: scale(1);
+}
+
+.btn_container .btn_back {
+  position: absolute;
+  opacity: 1;
+}
+
+.btn_container:hover .btn_back {
+  opacity: 0;
+}
+
+.btn_back--hover  {
+  opacity: 0;
+}
+
+.btn_container:hover .btn_back--hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* Box Main Content */
+.box__content >.box__text:last-child > h2 {
+  font-size: 32px;
+}
+
+.box__text > ul > li > span {
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 120%;
+}

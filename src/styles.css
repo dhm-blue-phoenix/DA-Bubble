@@ -4,6 +4,7 @@
 :root {
     --bg-color:rgba(236, 238, 254, 1);
 
+    --bg-box-color: #FFFFFF;
     --border-aktiv:#535AF1;
     --bg-input:#ECEEFE;
     --hover-text: #535AF1;
