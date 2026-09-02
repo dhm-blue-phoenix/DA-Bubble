@@ -1,15 +1,7 @@
 import { inject, Injectable, OnDestroy, PLATFORM_ID, signal, WritableSignal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
-import {
-  PostgrestError,
-  PostgrestResponse,
-  PostgrestSingleResponse,
-  RealtimeChannel,
-  RealtimePostgresChangesPayload,
-  SupabaseClient,
-} from '@supabase/supabase-js';
-
+import { PostgrestError, PostgrestResponse, PostgrestSingleResponse, RealtimeChannel, RealtimePostgresChangesPayload, SupabaseClient} from '@supabase/supabase-js';
 import { Supabase } from './db-superbase';
 import { DatabaseMessageHelper } from './db-message-helper';
 import { DatabaseThreads } from './db-threads';
@@ -225,15 +217,8 @@ export class DatabaseMessages implements OnDestroy {
     this.currentChatId = id;
     let query = this.supabase
       .from('messages')
-      .select(`
-        id,
-        content,
-        created_at,
-        edited_at,
-        sender_id,
-        reactions(emoji, user_id),
-        threads!threads_root_message_id_fkey(id)
-      `).eq(msgType + '_id', id);
+      .select(`id, content, created_at, edited_at, sender_id, reactions(emoji, user_id), threads!threads_root_message_id_fkey(id)`)
+      .eq(msgType + '_id', id);
     if (msgType === 'channel') query = query.is('thread_only', null);
     const { data: messages, error }: PostgrestResponse<any> = await query.order('created_at', { ascending: true });
     if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
@@ -401,14 +386,7 @@ export class DatabaseMessages implements OnDestroy {
   public async searchMessages(value: String): Promise<SearchMessages> {
     const { data, error } = await this.supabase
       .from('messages')
-      .select(`
-      id,
-      content,
-      created_at,
-      chat_id,
-      channel_id,
-      thread_id
-    `)
+      .select(`id, content, created_at, chat_id, channel_id, thread_id`)
       .ilike('content', `%${value}%`)
       .order('created_at', { ascending: false })
       .limit(100);
