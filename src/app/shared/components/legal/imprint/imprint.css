@@ -7,6 +7,7 @@ section {
 
 main {
   height: calc(100% - 94px);
+  padding: 0 16px;
 }
 
 h2 {
@@ -25,6 +26,7 @@ li {
   width: 676.27px;
   height: 469px;
   border-radius: 30px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.10);
 }
 
 /* Box Header Button Style + Animation vom Arrow */
@@ -63,4 +65,13 @@ li {
   font-weight: 400;
   font-size: 20px;
   line-height: 120%;
+}
+
+/* Entspricht ungefär einem Tablet */
+@media (max-width: 1024px) {
+  main {
+    padding-top: 42px;
+    align-items: flex-start;
+    background-color: var(--bg-box-color);
+  }
 }
