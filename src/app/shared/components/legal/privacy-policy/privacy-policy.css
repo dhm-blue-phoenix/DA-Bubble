@@ -1,0 +1,42 @@
+section {
+  background-color: var(--bg-color);
+  width: 100vw;
+  user-select: none;
+}
+
+main {
+  height: calc(100% - 94px);
+  padding: 40px 16px 80px 16px;
+}
+
+h2 {
+  color: var(--btn);
+  font-size: 46px;
+  margin-bottom: 16px;
+}
+
+/* Box Style */
+.box {
+  max-width: 1312px;
+}
+
+.box__item {
+  user-select: text;
+}
+
+.box__item_headline {
+  color: var(--btn);
+  font-size: 24px;
+}
+
+.box__item_content {
+  font-size: 20px;
+  line-height: 100%;
+}
+
+/* Entspricht ungefär einem Tablet */
+@media (max-width: 1024px) {
+  main {
+    background-color: var(--bg-box-color);
+  }
+}

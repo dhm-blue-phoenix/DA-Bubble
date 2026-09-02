@@ -54,7 +54,21 @@ input{
 }
 
 ::selection {
-    background-color: var(--btn-hover);
-    color: white;
+  background-color: var(--btn-hover);
+  color: white;
+}
 
+::-webkit-scrollbar {
+  width: 8px;
+  height: 0px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #989df7b9;
+  border-radius: 24px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--border-aktiv);
+  border-radius: 24px;
 }
