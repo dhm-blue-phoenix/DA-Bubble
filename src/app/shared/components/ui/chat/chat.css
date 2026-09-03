@@ -18,6 +18,10 @@
     }
 }
 
+.message_member > span {
+  user-select: text;
+}
+
 .message_user{
     padding: 16px;
     background-color: rgba(121, 126, 243, 1);
@@ -28,6 +32,10 @@
         background-color: var(--bg-color);
         color: black;
     }
+}
+
+.message_user > span {
+  user-select: text;
 }
 
 .timestamp{

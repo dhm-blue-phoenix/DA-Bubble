@@ -12,31 +12,35 @@ import { SignInService } from '../../../../services/singin_service'
   styleUrl: './sign-in.css',
 })
 export class SignIn {
-  db = inject(Database)
-  signin = inject(SignInService)
-  router = inject(Router)
+  private router: Router = inject(Router);
+
+  db = inject(Database);
+  signin = inject(SignInService);
 
   register_Data = {
-    name :'',
-    email:'',
-    password:''
-  }
+    name: '',
+    email: '',
+    password: '',
+  };
 
-  checkbox = ""
-  submitted = false
+  checkbox = '';
+  submitted = false;
 
-  setSignInData(ngForm: NgForm){
-    this.submitted = true
-    if(ngForm.form.valid){
-
+  setSignInData(ngForm: NgForm) {
+    this.submitted = true;
+    if (ngForm.form.valid) {
       this.signin.data.set({
         email: this.register_Data.email,
         password: this.register_Data.password,
         name: this.register_Data.name,
-        avatar:""
-      })
-      this.router.navigate(['/select-avatar'])
+        avatar: '',
+      });
+      this.router.navigate(['/select-avatar']);
     }
-    return
-    }
+    return;
+  }
+
+  public navigateRoute(route: String): void {
+    this.router.navigate([`/legal/${route}`]);
+  }
 }

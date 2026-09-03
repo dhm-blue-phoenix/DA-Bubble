@@ -1,7 +1,6 @@
 section {
   background-color: var(--bg-color);
   width: 100vw;
-  user-select: none;
 }
 
 main {
@@ -20,7 +19,8 @@ h2 {
   max-width: 1312px;
 }
 
-.box__item {
+.box__item_headline,
+.box__item_content {
   user-select: text;
 }
 

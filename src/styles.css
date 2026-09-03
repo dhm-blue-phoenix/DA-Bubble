@@ -42,6 +42,7 @@
 
 *, *::before, *::after {
     font-family: 'Nunito', sans-serif;
+    user-select: none;
 }
 
 input{
