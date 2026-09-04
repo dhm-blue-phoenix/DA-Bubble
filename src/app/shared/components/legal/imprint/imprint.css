@@ -1,34 +1,7 @@
-section {
-  background-color: var(--bg-color);
-  width: 100vw;
-  height: 100vh;
-}
-
-main {
-  height: calc(100% - 94px);
-  padding: 0 16px;
-}
-
-h2 {
-  color: var(--btn);
-  font-size: 46px;
-}
-
 li {
   user-select: text;
 }
 
-/* Box Style */
-.box {
-  background-color: var(--bg-box-color);
-  padding: 48px 56px;
-  width: 676.27px;
-  height: 469px;
-  border-radius: 30px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.10);
-}
-
-/* Box Header Button Style + Animation vom Arrow */
 .btn_container {
   position: relative;
   border-radius: 50%;
@@ -55,18 +28,12 @@ li {
   transform: scale(1.1);
 }
 
-/* Box Main Content */
-.box__content >.box__text:last-child > h2 {
-  font-size: 32px;
-}
-
 .box__text > ul > li > span {
   font-weight: 400;
   font-size: 20px;
   line-height: 120%;
 }
 
-/* Entspricht ungefär einem Tablet */
 @media (max-width: 1024px) {
   main {
     padding-top: 42px;

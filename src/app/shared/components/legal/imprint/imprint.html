@@ -1,41 +1,41 @@
-<section aria-labelledby="imprint-headline">
+<section class="w-screen h-screen bg-[var(--bg-color)]" aria-labelledby="imprint-headline">
   <header>
     <!-- Header Bereich -->
     <app-login-header></app-login-header>
   </header>
 
-  <main class="flex justify-center items-center">
+  <main class="flex justify-center items-center h-[calc(100%-94px)] px-4">
     <!-- Main Content -->
 
-    <div class="box flex flex-col gap-8">
+    <div class="flex flex-col gap-8 bg-[var(--bg-box-color)] px-14 py-12 w-[676.27px] h-[469px] rounded-[30px] shadow-[0_4px_8px_0_rgba(0,0,0,0.2),0_6px_20px_0_rgba(0,0,0,0.10)]">
       <!-- Kontainer für die Impressum Box -->
 
       <div>
         <!-- Header Bereich für den Button -->
-        <button type="button" class="btn_container flex justify-center items-center" (click)="navigationBackLogin()" aria-label="Back">
-          <img class="btn_container btn_back" src="assets/svg/icons/icon_black/arrow_back_black.svg" alt="">
-          <img class="btn_container btn_back--hover" src="assets/svg/icons/icon_blue/arrow_back_blue.svg" alt="">
+        <button type="button" class="btn_container group flex justify-center items-center relative rounded-full cursor-pointer transition-all duration-200 ease-in-out scale-100" (click)="navigationBackLogin()" aria-label="Back">
+          <img class="btn_container btn_back absolute opacity-100 group-hover:opacity-0" src="assets/svg/icons/icon_black/arrow_back_black.svg" alt="">
+          <img class="btn_container btn_back--hover opacity-0 group-hover:opacity-100 group-hover:scale-110" src="assets/svg/icons/icon_blue/arrow_back_blue.svg" alt="">
         </button>
       </div>
 
       <div class="box__content flex flex-col gap-8 h-full">
         <!-- Haupt Bereich der Box wo sich die Impressum informationen und Überschriften befinden! -->
         <div class="box__text flex flex-col gap-4">
-          <h2 id="imprint-headline" class="font-bold">Impressum</h2>
+          <h2 id="imprint-headline" class="font-bold text-[var(--btn)] text-[46px]">Impressum</h2>
           <ul>
-            <li>
-                [Student Names List]
+            <li class="select-text">
+              [Student Names List]
             </li>
-            <li>
-                [Address of the DABubble operator - e.g. one of the students]
-                [Postcode and city]
+            <li class="select-text">
+              [Address of the DABubble operator - e.g. one of the students]
+              [Postcode and city]
             </li>
           </ul>
         </div>
         <div class="box__text flex flex-col gap-4">
-          <h2 class="font-bold">Contact:</h2>
+          <h2 class="font-bold text-[var(--btn)] text-[32px]">Contact:</h2>
           <ul>
-            <li>
+            <li class="select-text">
               Email: [Dein email]
             </li>
           </ul>
