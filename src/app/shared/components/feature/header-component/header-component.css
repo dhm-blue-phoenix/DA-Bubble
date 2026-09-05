@@ -43,3 +43,17 @@ top: 96px;
     height: 16px;
     border-radius: 50%;
 }
+
+@media (max-width: 1200px ){
+    .input_container{
+        display: none;
+    }
+
+}
+
+@media (max-width: 1024px ){
+    .input_container{
+        display: none;
+    }
+
+}

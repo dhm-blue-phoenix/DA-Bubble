@@ -1,9 +1,9 @@
 <main>
-    <div class="flex gap-8 px-8 py-4 justify-between content_beg">
+    <div class="flex gap-8 lg:px-8 lg:py-4 justify-between content_beg">
 
     @if(workspace_Open){
         <section class="channel flex-col bg-white flex items-center gap-4 p-4">
-            <div class="flex justify-between w-full">
+            <div class="devspace flex justify-between w-full">
                 <div class="flex items-center gap-4">
                     <img class="size-60px" src="assets/svg/devspace/Workspace logo.svg" alt="workspace">
                     <h2>Devspace</h2>
@@ -19,7 +19,7 @@
                 </div>
                 <button (click)="dialog_mode.set('addChannel')" class="hover_btn"><img class="size-24px" src="assets/svg/icons/icon_black/add_black.svg" alt="workspace"></button>
             </div>
-            <div [style.display]="channelOpen ? 'flex' : 'none'" class="w-full flex flex-col gap-2 p-2 scrollbar_Style overflow-y-auto max-h-48">
+            <div [style.display]="channelOpen ? 'flex' : 'none'" class="w-full channel_list flex flex-col gap-2 p-2 scrollbar_Style overflow-y-auto">
                 @for (ch of all_channels(); track ch.id;) {
                     <app-channels (click)="open_Chat(ch.id)" [ch]="ch" [isActive]="active_type() === 'channel' && channel_id === ch.id"></app-channels>
                 }

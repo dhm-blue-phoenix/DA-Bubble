@@ -11,7 +11,6 @@ section{
 }
 .chat{
     border-radius: 30px;
-    
 }
 
 .chat_container{
@@ -93,6 +92,28 @@ writing-mode: vertical-rl;
 height: 280px;
 & span{
     font-weight: bolder;
+    }
+}
+.channel_list{
+max-height: 240px;
+}
+
+@media (max-width: 920px ){
+.thread,
+.chat,
+.workspace_button,
+.devspace {
+    display: none;
+
+}
+.channel{
+    width: 100%;
+    border-radius: 0px;
+    padding: 24px;
+
+}
+.channel_list{
+max-height: calc(100vh / 2)
 }
 
 }
