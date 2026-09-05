@@ -64,5 +64,14 @@ padding: 8px 24px;
     .search_Mobile{
         display: flex;
     }
+}
+
+@media (max-width: 620px ){
+.currentUser_Name{
+    display: flex;
+}
+.search_mobile_Input{
+width: 100%;
+}
 
 }

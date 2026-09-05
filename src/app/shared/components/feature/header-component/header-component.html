@@ -2,7 +2,7 @@
     <div class="content_beg lg:px-8 py-2 flex justify-between items-center">
         <div class="flex items-center gap-2 px-4">
             <img src="assets/svg/logo/Logo.svg" alt="DA-Bubble-logo">
-            <h2>DABubble</h2>
+            <h2 class="hidden sm:flex">DABubble</h2>
             
         </div>
 
@@ -30,7 +30,7 @@
         </div>
 
         <div class="flex gap-2 items-center px-4">
-            <h2>{{ currentUser()?.name }}</h2>
+            <h2 class="hidden sm:flex">{{ currentUser()?.name }}</h2>
             <div class="flex relative">
                 <img class="size-[70px]" [src]='"assets/svg/avatar/avatar_small/" + (currentUser()?.avatar || "assets/svg/avatar/avatar_small/1") + ".svg"' alt="avatar">
                 <div class="status_User" [class]="currentUser()?.status"></div>
