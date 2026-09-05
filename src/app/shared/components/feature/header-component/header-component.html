@@ -40,7 +40,12 @@
             </button>
         </div>
     </div>
+
 </section>
+
+    <div class="search_Mobile p-4 w-full hidden justify-center">
+        <input #searchMsgInput type="text" autofocus [(ngModel)]="mention.text" (input)="mention.onInput(searchMsgInput)" (keyup)="onSearchFieldClick(searchMsgInput)" (click)="onSearchFieldClick(searchMsgInput)" name="searchMsg"type="text" placeholder="Devspace durchsuchen" class="search_mobile_Input" name="search" id="">
+    </div>
 
     @if (dialog_open) {
         <div class="profil_overlay" (click)="toggle_Dialog()">

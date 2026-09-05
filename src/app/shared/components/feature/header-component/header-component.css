@@ -37,6 +37,12 @@ top: 96px;
         }
     }
 }
+.search_mobile_Input{
+width: 80%;
+border-radius: 32px;
+border: solid 1px var(--btn);
+padding: 8px 24px;
+}
 
 .status_currentUser{
     width: 16px;
@@ -54,6 +60,9 @@ top: 96px;
 @media (max-width: 1024px ){
     .input_container{
         display: none;
+    }
+    .search_Mobile{
+        display: flex;
     }
 
 }

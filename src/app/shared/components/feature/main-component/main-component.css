@@ -98,7 +98,7 @@ height: 280px;
 max-height: 240px;
 }
 
-@media (max-width: 920px ){
+@media (max-width: 1024px ){
 .thread,
 .chat,
 .workspace_button,
@@ -114,6 +114,10 @@ max-height: 240px;
 }
 .channel_list{
 max-height: calc(100vh / 2)
+}
+
+section{
+    height: calc(100vh - 160px);
 }
 
 }
