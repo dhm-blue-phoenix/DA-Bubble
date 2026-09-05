@@ -5,7 +5,6 @@ section{
 }
 
 .input_container{
-    width: calc(100vw / 2);
     border-radius: 42px;
     background-color: white;
 }
