@@ -29,6 +29,12 @@
                         <span>Channel hinzufügen</span>
                     </button>
                 </div>
+
+                <div class="add_Channel_Mobile lg:hidden flex">
+                    <button (click)="dialog_mode.set('addChannel')" class="flex gap-2 px-3 py-2 items-center hover_btn">
+                        <img class="size-40px" src="assets/svg/icons/icon_white/edit_square_white.svg" alt="add-channel">
+                    </button>
+                </div>
             </div>
             <div class="flex w-full items-center gap-2 justify-start">
                 <button class="flex gap-2 items-center hover_btn" (click)="toggleMenu('dmOpen')" id="dm"><img class="size-24px" [class]="dmOpen ? 'rotated0' : 'rotated-90' " src="assets/svg/icons/icon_black/arrow_drop_down_black.svg" alt="dropdown-arrow">
