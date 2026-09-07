@@ -25,6 +25,7 @@ channelOpen = true
 dmOpen = true
 workspace_Open = true
 thread_Open = false
+mobileShowMenu: WritableSignal<boolean> = signal(true)
 
 db = inject(Database)
 dateSeparator = inject(DateSeparatorService)
@@ -140,10 +141,15 @@ thread_messages_with_sender = computed(() => {
         this.scrollToMessageId = null
         this.active_type.set('chat')
         this.dm_partner.set(this.all_user().find(user => user.id === id) ?? null)
+        this.mobileShowMenu.set(false)
 
         const dm = await this.db.getChatId(id)
         this.chat_id = dm
         this.db.loadMsg('chat', dm)
+    }
+
+    backToMenu() {
+        this.mobileShowMenu.set(true)
     }
 
     onOpenSelection(selection: { type: 'chat' | 'channel'; id: string ; messageId?: string }) {
@@ -157,6 +163,7 @@ thread_messages_with_sender = computed(() => {
         this.dm_partner.set(null)
         this.scrollToMessageId = messageId
         this.chat_id = chatId
+        this.mobileShowMenu.set(false)
         this.db.loadMsg('chat', chatId)
     }
 
@@ -165,6 +172,7 @@ thread_messages_with_sender = computed(() => {
         this.channel_id = id
         this.db.loadMsg('channel', id)
         this.scrollToMessageId = messageId ?? null
+        this.mobileShowMenu.set(false)
         await this.db.getChannelContent(id)
     }
 
@@ -177,6 +185,7 @@ thread_messages_with_sender = computed(() => {
         this.dialog_mode.set(null)
         this.channel_id = ''
         this.active_type.set(null)
+        this.mobileShowMenu.set(true)
         this.db.getChannels(this.db.getCurrentUserId())
     }
 

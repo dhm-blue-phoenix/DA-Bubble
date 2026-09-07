@@ -113,18 +113,34 @@ max-height: 240px;
 }
 
 @media (max-width: 1024px ){
-.thread,
-.chat,
-.workspace_button,
-.devspace {
+.workspace_button {
     display: none;
-
 }
+
+.thread,
+.chat {
+    display: none;
+}
+
+.thread.mobile_active,
+.chat.mobile_active {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    width: 100%;
+    height: 100vh;
+    border-radius: 0px;
+}
+
 .channel{
     width: 100%;
     border-radius: 0px;
     padding: 24px;
 
+}
+.channel.mobile_hidden{
+    display: none;
 }
 .channel_list{
 max-height: calc(100vh / 2)
@@ -134,4 +150,9 @@ section{
     height: calc(100vh - 160px);
 }
 
+}
+
+.mobile_devspace_bar{
+    padding: 16px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
 }

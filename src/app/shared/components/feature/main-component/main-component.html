@@ -2,7 +2,7 @@
     <div class="flex gap-8 lg:px-8 lg:py-4 justify-between content_beg">
 
     @if(workspace_Open){
-        <section class="channel flex-col bg-white flex items-center gap-4 p-4">
+        <section class="channel flex-col bg-white flex items-center gap-4 p-4" [class.mobile_hidden]="!mobileShowMenu()">
             <div class="devspace flex justify-between w-full">
                 <div class="flex items-center gap-4">
                     <img class="size-60px" src="assets/svg/devspace/Workspace logo.svg" alt="workspace">
@@ -55,7 +55,12 @@
             <img class="size-[32px]" [src]="workspace_Open ? 'assets/svg/icons/icon_black/hide_navigation_left_black.svg' : 'assets/svg/icons/icon_black/hide_navigation_right_black.svg'" [alt]="workspace_Open ? 'close Icon' : 'open Icon'">
         </button>
 
-        <section class="chat flex flex-col bg-white flex-1 min-w-0">
+        <section class="chat flex flex-col bg-white flex-1 min-w-0" [class.mobile_active]="!mobileShowMenu()">
+            <div class="mobile_devspace_bar flex items-center gap-2 lg:hidden">
+                <button (click)="backToMenu()" class="back_btn"><img class="size-6" src="assets/svg/icons/icon_black/arrow_back_black.svg" alt="Zurück zur Auswahl"></button>
+                <img class="size-8" src="assets/svg/devspace/Workspace logo.svg" alt="workspace">
+                <h2>Devspace</h2>
+            </div>
             <div class="chat_header flex justify-between px-[42px] py-[24px] border-b-2 border-black/10 shadow-sm">
                 <app-chat-header class ="contents" [type]="active_type()" [dmPartner]="dm_partner()" [isSelfChat]="is_self_chat()" [channelInfo]="channel_info()" [memberProfiles]="channel_member_profiles()" (openChannelInfo)="dialog_mode.set('editChannel')" (openAddMember)="dialog_mode.set('addMember')" (openMembers)="dialog_mode.set('members')" (openSelection)="onOpenSelection($event)"></app-chat-header>
             </div>
@@ -79,7 +84,12 @@
         </section>
 
     @if(thread_Open){
-        <section class="thread bg-white flex flex-col">
+        <section class="thread bg-white flex flex-col" [class.mobile_active]="!mobileShowMenu()">
+                <div class="mobile_devspace_bar flex items-center gap-2 lg:hidden">
+                    <button (click)="backToMenu()" class="back_btn"><img class="size-6" src="assets/svg/icons/icon_black/arrow_back_black.svg" alt="Zurück zur Auswahl"></button>
+                    <img class="size-8" src="assets/svg/devspace/Workspace logo.svg" alt="workspace">
+                    <h2>Devspace</h2>
+                </div>
                 <div class="chat_header flex justify-between px-[42px] py-[24px] border-b-2 border-black/10 shadow-sm">
                     <div class="flex items-center gap-2">
                         <h2>Thread</h2>
