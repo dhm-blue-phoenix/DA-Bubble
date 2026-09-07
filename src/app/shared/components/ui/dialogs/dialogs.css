@@ -45,3 +45,10 @@ dialog.profile_dialog_bg{
     top: 50%;
     transform: translate(-50%, -50%);
 }
+@media (max-width: 1024px ){
+
+    .dialog_content{
+        border-radius: 0px;
+
+    }
+}

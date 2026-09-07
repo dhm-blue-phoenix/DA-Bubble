@@ -15,3 +15,23 @@
     border-radius: 30px;
     border: 1px solid #ADB0D9
 }
+@media (max-width: 1024px ){
+
+    .profile_Dialog{
+        width: 320px;
+        border-radius: 0px;
+        top: 0px;
+        height: 100vh;
+
+    }
+}
+
+@media (max-width: 420px ){
+
+    .profile_Dialog{
+        width: 100vw;
+        height: 100vh;
+
+
+    }
+}

@@ -12,11 +12,11 @@ section{
 .profil_overlay{
 position: absolute;
 background-color: rgba(0, 0, 0, 0.2);
-z-index: 1;
 height: 100vh;
 width: 100vw;
 top: 0px;
 left: 0px;
+z-index: 10;
 }
 
 .profil_content{
@@ -27,6 +27,7 @@ background-color: white;
 position: absolute;
 right: 32px;
 top: 96px;
+z-index: 10;
 
 & button{
     padding: 12px 24px;
