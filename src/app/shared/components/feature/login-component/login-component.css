@@ -10,6 +10,9 @@
 .page-content {
   animation: content-fade-in 1s ease 3s both;
 }
+.sign_in_responsiv{
+  display: none;
+} 
 
 .logo-icon {
   width: 18vw;
@@ -96,12 +99,15 @@ h2{
   }
 }
 
-@media (max-width: 420px ){
+@media (max-width: 540px ){
   section{
     padding: 8px;
   }
   .login_container{
   padding: 16px;
+  }
+  .sign_in_responsiv {
+    display: flex;
   }
 }
 

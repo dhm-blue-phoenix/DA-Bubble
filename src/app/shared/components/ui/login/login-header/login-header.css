@@ -5,20 +5,26 @@ section{
     width: 100%;
     padding: 16px 16px 0 16px;
 }
-
+.header_login{
+display: flex;
+justify-content: space-between;
+}
 
 h2{
     font-size: 32px !important;
+}
+
+section{
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
 @media (max-width: 540px){
 .header_Display{
     display: none;
 }
-section{
-width: 100%;
-display: flex;
-justify-content: center;
-
+.header_login{
+    justify-content: center;
 }
 }

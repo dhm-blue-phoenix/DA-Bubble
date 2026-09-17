@@ -6,11 +6,19 @@
 }
 
 <div [class]="animation ? 'page-content' : ''">
-  <app-login-header></app-login-header>
-  <section class="flex items-center justify-center">
-    <div class="bg-white login_container">
-      <router-outlet></router-outlet>
-    </div>
-  </section>
+    <app-login-header></app-login-header>
+        <section class="flex items-center flex-col justify-center">
+            <div class="bg-white login_container">
+                <router-outlet></router-outlet>
+              </div>
+              <div class="sign_in_responsiv flex-col gap-2 py-[24px] w-full justify-center items-center">
+                  <span class="text-l font-semibold">Neu bei DaBubble?</span>
+                  <a routerLink="/sign-in">
+                    <button class="btn_raw text-[var(--highligh-color)] border font-bold">Konto Erstellen</button>
+                  </a>
+              </div>
+        </section>
   <app-login-footer></app-login-footer>
 </div>
+
+
