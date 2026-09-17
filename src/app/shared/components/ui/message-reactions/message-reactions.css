@@ -10,9 +10,11 @@
     left: 50%;
     margin-bottom: 16px;
     min-width: 160px;
+    max-width: calc(100vw - 2rem);
     padding: 20px 16px 12px;
     border-radius: 24px 24px 24px 0px;
-    white-space: nowrap;
+    white-space: normal;
+    word-break: break-word;
     z-index: 9;
 }
 
