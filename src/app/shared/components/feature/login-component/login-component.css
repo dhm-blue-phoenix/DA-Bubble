@@ -12,6 +12,7 @@
 }
 .sign_in_responsiv{
   display: none;
+  flex: 1;
 } 
 
 .logo-icon {
