@@ -131,7 +131,7 @@ cursor: not-allowed;
     background-color: var(--status-away);
 }
 
-@media (max-width: 420px){
+@media (max-width: 540px){
 .btn_raw{
 padding: 6px 16px;
 font-size: 16px;
@@ -139,5 +139,6 @@ font-size: 16px;
 .back_btn{
     padding: 2px;
 }
+
 
 }
