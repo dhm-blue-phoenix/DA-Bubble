@@ -11,12 +11,12 @@
             </div>
         }
         @else if (mode === 'addMember') {
-            <div class="dialog_content_side bg-white w-full h-full lg:w-auto lg:h-auto lg:max-w-[540px] lg:max-h-[80vh] lg:overflow-y-auto">
+            <div class="dialog_content_side bg-white w-full h-full lg:w-auto lg:h-auto lg:max-w-[540px] lg:max-h-[80vh] lg:overflow-y-auto" [style.top.px]="sideDialogTop" [style.right.px]="sideDialogRight">
                 <app-add-people-dialog [channelInfo]="channelInfo" (closed)="dialogPanelRef.close()"></app-add-people-dialog>
             </div>
         }
         @else if (mode === 'members') {
-            <div class="dialog_content_side bg-white w-full h-full lg:w-auto lg:h-auto lg:max-w-[540px] lg:max-h-[80vh] lg:overflow-y-auto">
+            <div class="dialog_content_side bg-white w-full h-full lg:w-auto lg:h-auto lg:max-w-[540px] lg:max-h-[80vh] lg:overflow-y-auto" [style.top.px]="sideDialogTop" [style.right.px]="sideDialogRight">
                 <app-members-dialog [memberProfiles]="memberProfiles" (closed)="dialogPanelRef.close()" (addMember)="addMember.emit()" (openProfile)="openProfile.emit($event)"></app-members-dialog>
             </div>
         }

@@ -19,8 +19,8 @@ export class ChatHeader {
   @Input() memberProfiles: Profile[] = []
 
   @Output() openChannelInfo = new EventEmitter<void>()
-  @Output() openAddMember = new EventEmitter<void>()
-  @Output() openMembers = new EventEmitter<void>()
+  @Output() openAddMember = new EventEmitter<HTMLElement>()
+  @Output() openMembers = new EventEmitter<HTMLElement>()
   @Output() openSelection = new EventEmitter<{ type: 'chat' | 'channel'; id: string }>()
 
   mention: MentionController = inject(MentionService).createController(true)

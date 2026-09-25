@@ -17,6 +17,7 @@ import { Profile } from '../../../interfaces/profile';
 export class Dialogs implements AfterViewInit, OnChanges {
 
   @Input() mode: 'editChannel' | 'addChannel' | 'addMember' | 'members' | 'userProfile' | null = null
+  @Input() anchorRect: DOMRect | null = null
   @Input() channelInfo: SignalChannel = null
   @Input() channelCreator: Profile | null = null
   @Input() memberProfiles: Profile[] = []
@@ -49,5 +50,20 @@ export class Dialogs implements AfterViewInit, OnChanges {
   /** Schließt den Dialog, wenn der Klick auf den Dialog selbst (= Backdrop) statt auf ein Kind-Element trifft. */
   onBackdropClick(event: MouseEvent, dialog: HTMLDialogElement) {
     if (event.target === dialog) dialog.close()
+  }
+
+  private static readonly SIDE_DIALOG_WIDTH = 540
+
+  /** Positioniert die Members-/Add-People-Dialoge relativ zum geklickten Button statt fix am Bildschirmrand (nur ab lg, s. dialogs.css). */
+  get sideDialogTop(): number | null {
+    if (!this.anchorRect || typeof window === 'undefined') return null
+    return Math.min(this.anchorRect.bottom + 8, window.innerHeight - 100)
+  }
+
+  get sideDialogRight(): number | null {
+    if (!this.anchorRect || typeof window === 'undefined') return null
+    const raw = window.innerWidth - this.anchorRect.right
+    const maxRight = window.innerWidth - Dialogs.SIDE_DIALOG_WIDTH - 8
+    return Math.max(8, Math.min(raw, maxRight))
   }
 }

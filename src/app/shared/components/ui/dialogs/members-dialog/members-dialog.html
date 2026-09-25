@@ -7,7 +7,7 @@
         </button>
     </div>
 
-    <div class="flex flex-col gap-1 overflow-y-auto">
+    <div class="flex flex-col gap-1 overflow-y-auto max-h-[240px] scrollbar_Style">
         @for (member of memberProfiles; track member.id) {
             <button (click)="openProfile.emit(member)" class="flex items-center gap-3 px-2 py-2 rounded-2xl pointer hover:bg-[var(--hover-bg)] w-full min-w-0">
                 <div class="relative size-10 md:size-[48px] shrink-0">

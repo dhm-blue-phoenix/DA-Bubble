@@ -35,6 +35,7 @@ platformId = inject(PLATFORM_ID)
 active_type: WritableSignal<'channel' | 'chat' | 'search' | null> = signal(null)
 dm_partner: WritableSignal<Profile | null> = signal<Profile | null>(null)
 dialog_mode: WritableSignal<'editChannel' | 'addChannel' | 'addMember' | 'members' | 'userProfile' | null> = signal(null)
+dialogAnchor: WritableSignal<DOMRect | null> = signal(null)
 profile_user: WritableSignal<Profile | null> = signal(null)
 thread_root_id: WritableSignal<string | null> = signal(null)
 thread_root = computed(() => {
@@ -130,6 +131,11 @@ thread_messages_with_sender = computed(() => {
         sender: this.all_user().find(user => user.id === item.message.sender_id)
     }))
 });
+
+    openDialogNear(anchor: HTMLElement, mode: 'editChannel' | 'addChannel' | 'addMember' | 'members' | 'userProfile') {
+        this.dialogAnchor.set(anchor.getBoundingClientRect())
+        this.dialog_mode.set(mode)
+    }
 
     /** Zwischen 1024px und 1250px ist nicht genug Platz für Workspace-Sidebar + Chat + Thread gleichzeitig. */
     isNarrowDesktop(): boolean {

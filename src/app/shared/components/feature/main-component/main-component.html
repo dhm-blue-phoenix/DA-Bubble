@@ -62,7 +62,7 @@
                 <h2>Devspace</h2>
             </div>
             <div class="chat_header flex justify-between xl:px-[42px] px-[16px] py-[8px] lg:py-[24px] border-b-2 border-black/10 shadow-sm">
-                <app-chat-header class ="contents" [type]="active_type()" [dmPartner]="dm_partner()" [isSelfChat]="is_self_chat()" [channelInfo]="channel_info()" [memberProfiles]="channel_member_profiles()" (openChannelInfo)="dialog_mode.set('editChannel')" (openAddMember)="dialog_mode.set('members')" (openMembers)="dialog_mode.set('members')" (openSelection)="onOpenSelection($event)"></app-chat-header>
+                <app-chat-header class ="contents" [type]="active_type()" [dmPartner]="dm_partner()" [isSelfChat]="is_self_chat()" [channelInfo]="channel_info()" [memberProfiles]="channel_member_profiles()" (openChannelInfo)="dialog_mode.set('editChannel')" (openAddMember)="openDialogNear($event, 'members')" (openMembers)="openDialogNear($event, 'members')" (openSelection)="onOpenSelection($event)"></app-chat-header>
             </div>
             <div class="chat_container w-full p-[16px] flex flex-col ">
                 <div #chatHistory class="chat_history w-full flex-1 scrollbar_Style overflow-y-auto">
@@ -111,5 +111,5 @@
 
 
 @if (dialog_mode()) {
-    <app-dialogs [mode]="dialog_mode()" [channelInfo]="channel_info()" [channelCreator]="channel_creator()" [memberProfiles]="channel_member_profiles()" [profileUser]="profile_user()" [ownProfile]="currentUser()" (closed)="dialog_mode.set(null)" (save)="editChannel($event)" (leave)="leaveChannel()" (addMember)="dialog_mode.set('addMember')" (openProfile)="profile_user.set($event)" (closedProfile)="profile_user.set(null)" (message)="openProfileChat($event)" (saveProfileName)="saveProfileName($event)"></app-dialogs>
+    <app-dialogs [mode]="dialog_mode()" [anchorRect]="dialogAnchor()" [channelInfo]="channel_info()" [channelCreator]="channel_creator()" [memberProfiles]="channel_member_profiles()" [profileUser]="profile_user()" [ownProfile]="currentUser()" (closed)="dialog_mode.set(null); dialogAnchor.set(null)" (save)="editChannel($event)" (leave)="leaveChannel()" (addMember)="dialog_mode.set('addMember')" (openProfile)="profile_user.set($event)" (closedProfile)="profile_user.set(null)" (message)="openProfileChat($event)" (saveProfileName)="saveProfileName($event)"></app-dialogs>
 }
