@@ -174,14 +174,17 @@ thread_messages_with_sender = computed(() => {
         else this.open_Chat(selection.id, selection.messageId)
     }
 
-    open_Chat_By_Id(chatId: string, messageId:string) {
+    async open_Chat_By_Id(chatId: string, messageId:string) {
         this.db.clearChatMessages()
         this.active_type.set('chat')
-        this.dm_partner.set(null)
         this.scrollToMessageId = messageId
         this.chat_id = chatId
         this.mobileShowMenu.set(false)
-        this.db.loadMsg('chat', chatId)
+        await this.db.loadMsg('chat', chatId)
+
+        const currentUserId = this.db.getCurrentUserId()
+        const partnerId = this.chat_content().find(message => message.sender_id !== currentUserId)?.sender_id ?? currentUserId
+        this.dm_partner.set(this.all_user().find(user => user.id === partnerId) ?? null)
     }
 
     async open_Chat(id: string, messageId?:string) {
