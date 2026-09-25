@@ -112,6 +112,15 @@ height: 280px;
 max-height: 240px;
 }
 
+@media (max-width: 1440px ){
+.channel,
+.thread{
+    width: 320px;
+}
+.chat_team_avatar{
+    display: none;
+}
+}
 @media (max-width: 1024px ){
 .workspace_button {
     display: none;

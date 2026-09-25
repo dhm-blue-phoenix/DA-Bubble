@@ -61,7 +61,7 @@
                 <img class="size-8" src="assets/svg/devspace/Workspace logo.svg" alt="workspace">
                 <h2>Devspace</h2>
             </div>
-            <div class="chat_header flex justify-between lg:px-[42px] px-[16px] py-[8px] lg:py-[24px] border-b-2 border-black/10 shadow-sm">
+            <div class="chat_header flex justify-between xl:px-[42px] px-[16px] py-[8px] lg:py-[24px] border-b-2 border-black/10 shadow-sm">
                 <app-chat-header class ="contents" [type]="active_type()" [dmPartner]="dm_partner()" [isSelfChat]="is_self_chat()" [channelInfo]="channel_info()" [memberProfiles]="channel_member_profiles()" (openChannelInfo)="dialog_mode.set('editChannel')" (openAddMember)="dialog_mode.set('members')" (openMembers)="dialog_mode.set('members')" (openSelection)="onOpenSelection($event)"></app-chat-header>
             </div>
             <div class="chat_container w-full p-[16px] flex flex-col ">
@@ -90,7 +90,7 @@
                     <img class="size-8" src="assets/svg/devspace/Workspace logo.svg" alt="workspace">
                     <h2>Devspace</h2>
                 </div>
-                <div class="chat_header flex justify-between p-[24px] md:px-[42px] md:py-[24px] border-b-2 border-black/10 shadow-sm">
+                <div class="chat_header flex justify-between xl:px-[42px] px-[16px] py-[8px] lg:py-[24px] border-b-2 border-black/10 shadow-sm">
                     <div class="flex items-center gap-2">
                         <h2>Thread</h2>
                         <span class="text-xl text-[var(--highligh-color)]">#{{ thread_channel_name }}</span>
