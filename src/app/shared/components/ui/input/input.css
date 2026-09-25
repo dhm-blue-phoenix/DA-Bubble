@@ -2,7 +2,7 @@
 
 .emoji_div{
     bottom: 32px;
-    left: 32px;
+    left: 8px;
     position: absolute;
     z-index: 9;
 }
@@ -15,4 +15,18 @@ emoji-picker {
 --border-size: 2px;
 --button-hover-background: #ECEEFE;
 --button-active-background: #535AF1;
+width: min(352px, calc(100vw - 1rem));
+max-width: 100%;
+height: min(360px, 60vh);
+max-height: 100%;
+--num-columns: 8;
+}
+
+@media (max-width: 420px){
+    emoji-picker {
+        --num-columns: 5;
+    }
+    .emoji_div{
+        max-width: 240px;
+    }
 }
