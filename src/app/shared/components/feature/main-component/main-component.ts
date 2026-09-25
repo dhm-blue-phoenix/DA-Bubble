@@ -1,4 +1,5 @@
-import { Component, inject, signal, WritableSignal, computed, effect, viewChild, ElementRef } from '@angular/core';
+import { Component, inject, signal, WritableSignal, computed, effect, viewChild, ElementRef, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Workspace } from '../../ui/workspace/workspace'
 import { Channels } from '../../ui/channels/channels'
 import { Chat } from '../../ui/chat/chat'
@@ -29,6 +30,7 @@ mobileShowMenu: WritableSignal<boolean> = signal(true)
 
 db = inject(Database)
 dateSeparator = inject(DateSeparatorService)
+platformId = inject(PLATFORM_ID)
 
 active_type: WritableSignal<'channel' | 'chat' | 'search' | null> = signal(null)
 dm_partner: WritableSignal<Profile | null> = signal<Profile | null>(null)
@@ -129,10 +131,19 @@ thread_messages_with_sender = computed(() => {
     }))
 });
 
+    /** Zwischen 1024px und 1250px ist nicht genug Platz für Workspace-Sidebar + Chat + Thread gleichzeitig. */
+    isNarrowDesktop(): boolean {
+        if (!isPlatformBrowser(this.platformId)) return false
+        return window.innerWidth >= 1024 && window.innerWidth < 1250
+    }
+
     toggleMenu(menu: 'dmOpen' | 'channelOpen' | 'workspace' | 'thread') {
         if (menu === 'dmOpen') this.dmOpen = !this.dmOpen;
         if (menu === 'channelOpen') this.channelOpen = !this.channelOpen;
-        if (menu === 'workspace') this.workspace_Open = !this.workspace_Open;
+        if (menu === 'workspace') {
+            this.workspace_Open = !this.workspace_Open;
+            if (this.workspace_Open && this.isNarrowDesktop()) this.thread_Open = false;
+        }
         if (menu === 'thread') this.thread_Open = !this.thread_Open;
     }
 
@@ -194,6 +205,7 @@ thread_messages_with_sender = computed(() => {
         this.thread_root_id.set(messageId)
         this.thread_channel_name = this.channel_info()?.name ?? ''
         this.thread_Open = true
+        if (this.isNarrowDesktop()) this.workspace_Open = false
         this.thread_id = await this.db.getThreadId(messageId)
         await this.db.loadMsg('thread', this.thread_id)
 
