@@ -13,6 +13,7 @@ export class SelectionSuggestions {
   @Input() profiles: Profile[] = []
   @Input() channels: ChannelIdAndName[] = []
   @Input() direction: 'up' | 'down' = 'down'
+  @Input() fullWidth = false
 
   @Output() selectProfile = new EventEmitter<Profile>()
   @Output() selectChannel = new EventEmitter<ChannelIdAndName>()

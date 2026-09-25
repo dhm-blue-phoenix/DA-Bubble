@@ -10,6 +10,7 @@ import { SearchResultView } from '../../../interfaces/messages';
 export class SearchSuggestions {
   @Input() results: SearchResultView[] = []
   @Input() direction: 'up' | 'down' = 'down'
+  @Input() fullWidth = false
 
   @Output() select = new EventEmitter<SearchResultView>()
 }

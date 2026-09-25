@@ -14,3 +14,8 @@ z-index: 20;
 top: auto;
 bottom: calc(100% + 8px);
 }
+
+.selection_suggestions.full_width{
+width: 100%;
+max-width: 100%;
+}
