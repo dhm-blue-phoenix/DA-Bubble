@@ -11,12 +11,12 @@
             </div>
         }
         @else if (mode === 'addMember') {
-            <div class="dialog_content_side bg-white  w-full h-full lg:max-w-[540px]">
+            <div class="dialog_content_side bg-white w-full h-full lg:w-auto lg:h-auto lg:max-w-[540px] lg:max-h-[80vh] lg:overflow-y-auto">
                 <app-add-people-dialog [channelInfo]="channelInfo" (closed)="dialogPanelRef.close()"></app-add-people-dialog>
             </div>
         }
         @else if (mode === 'members') {
-            <div class="dialog_content_side bg-white  w-full h-full lg:max-w-[540px]">
+            <div class="dialog_content_side bg-white w-full h-full lg:w-auto lg:h-auto lg:max-w-[540px] lg:max-h-[80vh] lg:overflow-y-auto">
                 <app-members-dialog [memberProfiles]="memberProfiles" (closed)="dialogPanelRef.close()" (addMember)="addMember.emit()" (openProfile)="openProfile.emit($event)"></app-members-dialog>
             </div>
         }
@@ -28,7 +28,7 @@
 
 @if (profileUser) {
     <dialog #profileDialogPanelRef class="dialog_bg fixed inset-0 bg-black/50 flex items-center justify-center" (close)="closedProfile.emit()" (click)="onBackdropClick($event, profileDialogPanelRef)">
-        <div class="dialog_content bg-white">
+        <div class="dialog_content bg-white w-[92vw] max-w-[540px] max-h-[90vh] overflow-y-auto">
             <app-profile-dialog [profile]="profileUser" (closed)="profileDialogPanelRef.close()" (message)="message.emit($event)"></app-profile-dialog>
         </div>
     </dialog>
