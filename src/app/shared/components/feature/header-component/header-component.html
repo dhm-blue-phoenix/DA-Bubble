@@ -68,9 +68,11 @@
 
     @if (dialog_open) {
         <div class="profil_overlay" (click)="toggle_Dialog()">
-            <div (click)="$event.stopPropagation()" class="flex flex-col items-center bg-color-white profil_content justify-center gap-4">
-                <button class="w-5/6" (click)="openProfile()"><span class="font-semibold text-2xl">Profil</span></button>
-                <button class="w-5/6" (click)="logout()"><span class="font-semibold text-2xl" >Log out</span></button>
+            <div class="content_beg relative h-full">
+                <div (click)="$event.stopPropagation()" class="flex flex-col items-center bg-color-white profil_content justify-center gap-4">
+                    <button class="w-5/6" (click)="openProfile()"><span class="font-semibold text-2xl">Profil</span></button>
+                    <button class="w-5/6" (click)="logout()"><span class="font-semibold text-2xl" >Log out</span></button>
+                </div>
             </div>
         </div>
     }
