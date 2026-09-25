@@ -80,6 +80,13 @@ export class HeaderComponent {
     this.openSelection.emit({ type: 'channel', id: channel.id })
   }
 
+  closeSearchDropdown() {
+    setTimeout(() => {
+      this.mention.trigger.set(null)
+      this.searchResults.set([])
+    }, 150)
+  }
+
   onSelectSearchResult(result: SearchResultView) {
     this.searchResults.set([])
     if (result.type === 'channel') {

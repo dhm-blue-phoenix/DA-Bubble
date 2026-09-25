@@ -24,10 +24,10 @@
                         </button>
                     </span>
                 }
-                <input [ngModel]="searchText()" (ngModelChange)="onSearchTextChange($event)" (keydown)="onKeydown($event)" name="memberName" type="text" placeholder="Name eingeben" class="text-lg outline-none flex-1 min-w-[120px]">
+                <input [ngModel]="searchText()" (ngModelChange)="onSearchTextChange($event)" (keydown)="onKeydown($event)" (focus)="onSearchFocus()" (blur)="onSearchBlur()" name="memberName" type="text" placeholder="Name eingeben" class="text-lg outline-none flex-1 min-w-[120px]">
             </div>
 
-            <app-selection-suggestions [profiles]="suggestions()" (selectProfile)="selectProfile($event)"></app-selection-suggestions>
+            <app-selection-suggestions [profiles]="searchFocused() ? suggestions() : []" (selectProfile)="selectProfile($event)"></app-selection-suggestions>
         </div>
 
         <div class="bg-white rounded-b-3xl w-full pb-4 md:pb-10 flex justify-end">

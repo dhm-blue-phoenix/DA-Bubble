@@ -21,6 +21,7 @@ export class AddPeopleDialog {
 
   searchText: WritableSignal<string> = signal('')
   selectedProfiles: WritableSignal<Profile[]> = signal([])
+  searchFocused: WritableSignal<boolean> = signal(false)
 
   suggestions = computed(() => {
     return this.mentionService.filterProfiles(this.searchText())
@@ -38,6 +39,14 @@ export class AddPeopleDialog {
 
   onSearchTextChange(value: string) {
     this.searchText.set(value)
+  }
+
+  onSearchFocus() {
+    this.searchFocused.set(true)
+  }
+
+  onSearchBlur() {
+    setTimeout(() => this.searchFocused.set(false), 150)
   }
 
   selectProfile(profile: Profile) {
