@@ -33,11 +33,3 @@ li {
   font-size: 20px;
   line-height: 120%;
 }
-
-@media (max-width: 1024px) {
-  main {
-    padding-top: 42px;
-    align-items: flex-start;
-    background-color: var(--bg-box-color);
-  }
-}
