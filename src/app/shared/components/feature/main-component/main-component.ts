@@ -1,4 +1,5 @@
-import { Component, inject, signal, WritableSignal, computed, effect, viewChild, ElementRef } from '@angular/core';
+import { Component, inject, signal, WritableSignal, computed, effect, viewChild, ElementRef, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Workspace } from '../../ui/workspace/workspace'
 import { Channels } from '../../ui/channels/channels'
 import { Chat } from '../../ui/chat/chat'
@@ -25,13 +26,16 @@ channelOpen = true
 dmOpen = true
 workspace_Open = true
 thread_Open = false
+mobileShowMenu: WritableSignal<boolean> = signal(true)
 
 db = inject(Database)
 dateSeparator = inject(DateSeparatorService)
+platformId = inject(PLATFORM_ID)
 
 active_type: WritableSignal<'channel' | 'chat' | 'search' | null> = signal(null)
 dm_partner: WritableSignal<Profile | null> = signal<Profile | null>(null)
 dialog_mode: WritableSignal<'editChannel' | 'addChannel' | 'addMember' | 'members' | 'userProfile' | null> = signal(null)
+dialogAnchor: WritableSignal<DOMRect | null> = signal(null)
 profile_user: WritableSignal<Profile | null> = signal(null)
 thread_root_id: WritableSignal<string | null> = signal(null)
 thread_root = computed(() => {
@@ -128,10 +132,24 @@ thread_messages_with_sender = computed(() => {
     }))
 });
 
+    openDialogNear(anchor: HTMLElement, mode: 'editChannel' | 'addChannel' | 'addMember' | 'members' | 'userProfile') {
+        this.dialogAnchor.set(anchor.getBoundingClientRect())
+        this.dialog_mode.set(mode)
+    }
+
+    /** Zwischen 1024px und 1250px ist nicht genug Platz für Workspace-Sidebar + Chat + Thread gleichzeitig. */
+    isNarrowDesktop(): boolean {
+        if (!isPlatformBrowser(this.platformId)) return false
+        return window.innerWidth >= 1024 && window.innerWidth < 1250
+    }
+
     toggleMenu(menu: 'dmOpen' | 'channelOpen' | 'workspace' | 'thread') {
         if (menu === 'dmOpen') this.dmOpen = !this.dmOpen;
         if (menu === 'channelOpen') this.channelOpen = !this.channelOpen;
-        if (menu === 'workspace') this.workspace_Open = !this.workspace_Open;
+        if (menu === 'workspace') {
+            this.workspace_Open = !this.workspace_Open;
+            if (this.workspace_Open && this.isNarrowDesktop()) this.thread_Open = false;
+        }
         if (menu === 'thread') this.thread_Open = !this.thread_Open;
     }
 
@@ -140,10 +158,15 @@ thread_messages_with_sender = computed(() => {
         this.scrollToMessageId = null
         this.active_type.set('chat')
         this.dm_partner.set(this.all_user().find(user => user.id === id) ?? null)
+        this.mobileShowMenu.set(false)
 
         const dm = await this.db.getChatId(id)
         this.chat_id = dm
         this.db.loadMsg('chat', dm)
+    }
+
+    backToMenu() {
+        this.mobileShowMenu.set(true)
     }
 
     onOpenSelection(selection: { type: 'chat' | 'channel'; id: string ; messageId?: string }) {
@@ -151,13 +174,17 @@ thread_messages_with_sender = computed(() => {
         else this.open_Chat(selection.id, selection.messageId)
     }
 
-    open_Chat_By_Id(chatId: string, messageId:string) {
+    async open_Chat_By_Id(chatId: string, messageId:string) {
         this.db.clearChatMessages()
         this.active_type.set('chat')
-        this.dm_partner.set(null)
         this.scrollToMessageId = messageId
         this.chat_id = chatId
-        this.db.loadMsg('chat', chatId)
+        this.mobileShowMenu.set(false)
+        await this.db.loadMsg('chat', chatId)
+
+        const currentUserId = this.db.getCurrentUserId()
+        const partnerId = this.chat_content().find(message => message.sender_id !== currentUserId)?.sender_id ?? currentUserId
+        this.dm_partner.set(this.all_user().find(user => user.id === partnerId) ?? null)
     }
 
     async open_Chat(id: string, messageId?:string) {
@@ -165,6 +192,7 @@ thread_messages_with_sender = computed(() => {
         this.channel_id = id
         this.db.loadMsg('channel', id)
         this.scrollToMessageId = messageId ?? null
+        this.mobileShowMenu.set(false)
         await this.db.getChannelContent(id)
     }
 
@@ -177,6 +205,7 @@ thread_messages_with_sender = computed(() => {
         this.dialog_mode.set(null)
         this.channel_id = ''
         this.active_type.set(null)
+        this.mobileShowMenu.set(true)
         this.db.getChannels(this.db.getCurrentUserId())
     }
 
@@ -185,6 +214,7 @@ thread_messages_with_sender = computed(() => {
         this.thread_root_id.set(messageId)
         this.thread_channel_name = this.channel_info()?.name ?? ''
         this.thread_Open = true
+        if (this.isNarrowDesktop()) this.workspace_Open = false
         this.thread_id = await this.db.getThreadId(messageId)
         await this.db.loadMsg('thread', this.thread_id)
 

@@ -7,6 +7,13 @@
 .edit_bubble{
     top: 60%;
     left: 50%;
+    max-width: calc(100vw - 2rem);
+}
+
+.edit_menu{
+    max-width: calc(100vw - 2rem);
+    white-space: normal;
+    word-break: break-word;
 }
 
 .quick_bubble{
@@ -14,7 +21,7 @@
     left: -75%;
     margin-bottom: 8px;
     transform: translateX(-50%);
-    white-space: nowrap;
+    max-width: calc(100vw - 2rem);
     z-index: 9;
 }
 

@@ -1,3 +1,10 @@
+
+.content_beg{
+    width: 100%;
+    max-width: 1920px;
+    margin-inline: auto;
+}
+
 h2{
     font-size: 24px !important;
     font-weight: 700 !important;
@@ -42,9 +49,6 @@ font-size: 18px;
 }
 
 :disabled{
-padding: 12px 24px;
-border-radius: 24px;
-font-size: 18px;
 color: white;
 background-color: gray;
 cursor: not-allowed;

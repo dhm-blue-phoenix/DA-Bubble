@@ -1,10 +1,10 @@
-<div class="flex flex-col justify-start bg-white profile_Dialog justify-center gap-[32px] p-[42px]">
+<div class="flex flex-col justify-start bg-white profile_Dialog justify-center gap-[32px] p-[16px] lg:p-[42px]">
 
     <div class="flex items-center justify-between w-full">
         @if (!editing) {
-            <span class="text-2xl font-bold">Profil</span>
+            <span class="lg:text-2xl text-xl font-bold">Profil</span>
         } @else {
-            <span class="text-2xl font-bold">Dein Profil bearbeiten</span>
+            <span class="lg:text-2xl text-xl font-bold">Dein Profil bearbeiten</span>
         }
         <button class="rounded-full p-1 pointer-events-auto flex justify-center hover:bg-[var(--hover-bg)]" (click)="closed.emit()"><img src="assets/svg/icons/icon_black/close.svg" alt="close"></button>
     </div>
@@ -14,29 +14,29 @@
     </div>
 
     @if (!editing) {
-        <div class="w-full flex justify-between">
-            <span class="text-3xl font-bold">{{ profile?.name }}</span>
+        <div class="w-full flex flex-col lg:flex-row lg:justify-between items-center lg:items-center gap-2 lg:gap-0">
+            <span class="text-3xl font-bold text-center lg:text-left">{{ profile?.name }}</span>
             <button class="text-[20px] text-[var(--hover-text)] hover:font-bold" (click)="toggleEdit()">Bearbeiten</button>
         </div>
 
-        <div class="justify-start w-full flex items-center gap-[16px]">
-            <div class="flex items-center gap-4 w-full">
+        <div class="justify-center lg:justify-start w-full flex items-center gap-[16px]">
+            <div class="flex items-center justify-center lg:justify-start gap-4 w-full">
                 <div class="status_dot" [class]="profile?.status"></div>
                 <span class="text-xl capitalize" [style.color]="'var(--status-' + (profile?.status) + ')'">{{ profile?.status }}</span>
             </div>
         </div>
 
-        <div class="w-full flex items-center gap-[16px] justify-start">
+        <div class="w-full flex items-center gap-[16px] justify-center lg:justify-start">
             <img class="size-[32px]" src="assets/svg/icons/icon_black/mail_black.svg" alt="email_icon">
             <span class="font-bold text-xl">E-Mail-Adresse</span>
         </div>
-        <div class="w-full">
+        <div class="w-full text-center lg:text-left">
             <span class="px-[48px] text-[20px] text-[var(--link-profile)]">{{ profile?.email }}</span>
         </div>
     } @else {
         <form (ngSubmit)="saveEdit()" class="flex flex-col gap-8">
-            <div class="flex flex-col gap-2">
-                <div class="flex gap-[32px]">
+            <div class="flex flex-col gap-4">
+                <div class="flex justify-center lg:justify-start gap-2 lg:gap-[32px]">
                     <img class="size-[30px]" src="assets/svg/icons/icon_black/account_circle_black.svg" alt="profil_Icon">
                     <span class="text-xl font-bold">Vollständiger Name</span>
                 </div>

@@ -1,8 +1,9 @@
-<main class="flex gap-8 px-8 py-4 justify-between" >
+<main>
+    <div class="flex gap-8 lg:px-8 lg:py-4 justify-between content_beg">
 
     @if(workspace_Open){
-        <section class="channel flex-col bg-white flex items-center gap-4 p-4">
-            <div class="flex justify-between w-full">
+        <section class="channel flex-col bg-white flex items-center gap-4 p-4" [class.mobile_hidden]="!mobileShowMenu()">
+            <div class="devspace flex lg:flex hidden justify-between w-full">
                 <div class="flex items-center gap-4">
                     <img class="size-60px" src="assets/svg/devspace/Workspace logo.svg" alt="workspace">
                     <h2>Devspace</h2>
@@ -18,7 +19,7 @@
                 </div>
                 <button (click)="dialog_mode.set('addChannel')" class="hover_btn"><img class="size-24px" src="assets/svg/icons/icon_black/add_black.svg" alt="workspace"></button>
             </div>
-            <div [style.display]="channelOpen ? 'flex' : 'none'" class="w-full flex flex-col gap-2 p-2 scrollbar_Style overflow-y-auto max-h-48">
+            <div [style.display]="channelOpen ? 'flex' : 'none'" class="w-full channel_list flex flex-col gap-2 p-2 scrollbar_Style overflow-y-auto">
                 @for (ch of all_channels(); track ch.id;) {
                     <app-channels (click)="open_Chat(ch.id)" [ch]="ch" [isActive]="active_type() === 'channel' && channel_id === ch.id"></app-channels>
                 }
@@ -26,6 +27,12 @@
                     <button (click)="dialog_mode.set('addChannel')" class="flex gap-2 px-3 py-2 items-center hover_btn">
                         <img class="size-24px" src="assets/svg/icons/icon_black/add_circle_black.svg" alt="add-channel">
                         <span>Channel hinzufügen</span>
+                    </button>
+                </div>
+
+                <div class="add_Channel_Mobile lg:hidden flex">
+                    <button (click)="dialog_mode.set('addChannel')" class="flex gap-2 px-3 py-2 items-center hover_btn">
+                        <img class="size-40px" src="assets/svg/icons/icon_white/edit_square_white.svg" alt="add-channel">
                     </button>
                 </div>
             </div>
@@ -48,12 +55,17 @@
             <img class="size-[32px]" [src]="workspace_Open ? 'assets/svg/icons/icon_black/hide_navigation_left_black.svg' : 'assets/svg/icons/icon_black/hide_navigation_right_black.svg'" [alt]="workspace_Open ? 'close Icon' : 'open Icon'">
         </button>
 
-        <section class="chat flex flex-col bg-white flex-1 min-w-0">
-            <div class="chat_header flex justify-between px-[42px] py-[24px] border-b-2 border-black/10 shadow-sm">
-                <app-chat-header class ="contents" [type]="active_type()" [dmPartner]="dm_partner()" [isSelfChat]="is_self_chat()" [channelInfo]="channel_info()" [memberProfiles]="channel_member_profiles()" (openChannelInfo)="dialog_mode.set('editChannel')" (openAddMember)="dialog_mode.set('addMember')" (openMembers)="dialog_mode.set('members')" (openSelection)="onOpenSelection($event)"></app-chat-header>
+        <section class="chat flex flex-col bg-white flex-1 min-w-0" [class.mobile_active]="!mobileShowMenu()">
+            <div class="mobile_devspace_bar flex items-center gap-1 lg:hidden">
+                <button (click)="backToMenu()" class="back_btn"><img class="size-6" src="assets/svg/icons/icon_black/keyboard_arrow_down_black.svg" alt="Zurück zur Auswahl"></button>
+                <img class="size-8" src="assets/svg/devspace/Workspace logo.svg" alt="workspace">
+                <h2>Devspace</h2>
             </div>
-            <div class="chat_container w-full p-[20px] flex flex-col ">
-                <div #chatHistory class="chat_history w-full flex-1 scrollbar_Style overflow-y-auto ">
+            <div class="chat_header flex justify-between xl:px-[42px] px-[16px] py-[8px] lg:py-[24px] border-b-2 border-black/10 shadow-sm">
+                <app-chat-header class ="contents" [type]="active_type()" [dmPartner]="dm_partner()" [isSelfChat]="is_self_chat()" [channelInfo]="channel_info()" [memberProfiles]="channel_member_profiles()" (openChannelInfo)="dialog_mode.set('editChannel')" (openAddMember)="openDialogNear($event, 'members')" (openMembers)="openDialogNear($event, 'members')" (openSelection)="onOpenSelection($event)"></app-chat-header>
+            </div>
+            <div class="chat_container w-full p-[16px] flex flex-col ">
+                <div #chatHistory class="chat_history w-full flex-1 scrollbar_Style overflow-y-auto">
                     @if (messages_with_sender().length > 0) {
                         @for (item of messages_with_sender(); track item.message.id) {
                             <app-chat class="bg-black" [id]="'msg-' + item.message.id" [message]="item.message" [sender]="item.sender" [context]="active_type() === 'channel' ? 'channel' : 'chat'" [showSeparator]="item.showSeparator" [dateLabel]="item.dateLabel" (openThread)="openThread($event)"></app-chat>
@@ -72,26 +84,32 @@
         </section>
 
     @if(thread_Open){
-        <section class="thread bg-white flex flex-col">
-                <div class="chat_header flex justify-between px-[42px] py-[24px] border-b-2 border-black/10 shadow-sm">
+        <section class="thread bg-white flex flex-col" [class.mobile_active]="!mobileShowMenu()">
+                <div class="mobile_devspace_bar flex items-center gap-2 lg:hidden">
+                    <button (click)="backToMenu()" class="back_btn"><img class="size-6" src="assets/svg/icons/icon_black/arrow_back_black.svg" alt="Zurück zur Auswahl"></button>
+                    <img class="size-8" src="assets/svg/devspace/Workspace logo.svg" alt="workspace">
+                    <h2>Devspace</h2>
+                </div>
+                <div class="chat_header flex justify-between xl:px-[42px] px-[16px] py-[8px] lg:py-[24px] border-b-2 border-black/10 shadow-sm">
                     <div class="flex items-center gap-2">
                         <h2>Thread</h2>
                         <span class="text-xl text-[var(--highligh-color)]">#{{ thread_channel_name }}</span>
                     </div>
                     <button (click)="toggleMenu('thread')" class="size-[40px]"><img src="assets/svg/icons/icon_black/close.svg" alt=""></button>
                 </div>
-            <div class="chat_container w-full p-[20px] flex flex-col ">
+            <div class="chat_container w-full p-[16px] flex flex-col ">
 
-            <div class="chat_history w-full flex-1 scrollbar_Style overflow-y-auto ">
+            <div class="chat_history w-full flex-1 scrollbar_Style overflow-y-auto">
                 <app-thread [rootMessage]="thread_root()" [rootSender]="thread_root_sender()" [rootDateLabel]="thread_root_date_label()" [messages]="thread_messages_with_sender()"></app-thread>
             </div>
                 <app-input (sent)="send_Thread_Content($event)"></app-input>
             </div>
         </section>
     }
+    </div>
 </main>
 
 
 @if (dialog_mode()) {
-    <app-dialogs [mode]="dialog_mode()" [channelInfo]="channel_info()" [channelCreator]="channel_creator()" [memberProfiles]="channel_member_profiles()" [profileUser]="profile_user()" [ownProfile]="currentUser()" (closed)="dialog_mode.set(null)" (save)="editChannel($event)" (leave)="leaveChannel()" (addMember)="dialog_mode.set('addMember')" (openProfile)="profile_user.set($event)" (closedProfile)="profile_user.set(null)" (message)="openProfileChat($event)" (saveProfileName)="saveProfileName($event)"></app-dialogs>
+    <app-dialogs [mode]="dialog_mode()" [anchorRect]="dialogAnchor()" [channelInfo]="channel_info()" [channelCreator]="channel_creator()" [memberProfiles]="channel_member_profiles()" [profileUser]="profile_user()" [ownProfile]="currentUser()" (closed)="dialog_mode.set(null); dialogAnchor.set(null)" (save)="editChannel($event)" (leave)="leaveChannel()" (addMember)="dialog_mode.set('addMember')" (openProfile)="profile_user.set($event)" (closedProfile)="profile_user.set(null)" (message)="openProfileChat($event)" (saveProfileName)="saveProfileName($event)"></app-dialogs>
 }

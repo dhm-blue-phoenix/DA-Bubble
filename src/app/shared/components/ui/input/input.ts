@@ -21,6 +21,8 @@ export class Input {
   emoji_Dialog = false
   emojiWrapper = viewChild<ElementRef<HTMLElement>>('emojiWrapper')
   emojiButton = viewChild<ElementRef<HTMLElement>>('emojiButton')
+  composerInput = viewChild<ElementRef<HTMLElement>>('composerInput')
+  atButton = viewChild<ElementRef<HTMLElement>>('atButton')
   mention: MentionController = inject(MentionService).createController()
 
   constructor() {
@@ -50,6 +52,15 @@ export class Input {
     if (this.emojiWrapper()?.nativeElement.contains(target)) return
     if (this.emojiButton()?.nativeElement.contains(target)) return
     this.emoji_Dialog = false
+  }
+
+  onComposerBlur() {
+    setTimeout(() => {
+      const active = document.activeElement
+      if (active === this.composerInput()?.nativeElement) return
+      if (active === this.atButton()?.nativeElement) return
+      this.mention.trigger.set(null)
+    }, 150)
   }
 
   trigger_at() {

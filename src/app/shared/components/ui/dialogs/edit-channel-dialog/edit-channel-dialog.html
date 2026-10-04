@@ -1,5 +1,5 @@
 
-<div class="p-10 flex flex-col gap-8">
+<div class=" p-[8px] md:p-10 flex flex-col gap-8">
     <div class="flex justify-between items-center">
         <div class="flex items-center gap-2">
             <span class="text-2xl font-bold">#</span>
@@ -32,12 +32,12 @@
             <button (click)="toggleEditDescription()" class="text-[var(--hover-text)] font-semibold hover:font-bold">{{ editingDescription ? 'Speichern' : 'Bearbeiten' }}</button>
         </div>
         @if (editingDescription) {
-            <div class="border border-black/15 rounded-2xl px-4 py-3">
-                <textarea [(ngModel)]="descriptionDraft" (keydown.enter)="$event.preventDefault(); toggleEditDescription()" name="channelDescription" placeholder="Dein Text hier" class="text-black/70 outline-none w-full resize-none" rows="3"></textarea>
+            <div class="border border-black/15 rounded-2xl text_area scrollbar_Style px-4 py-3">
+                <textarea [(ngModel)]="descriptionDraft" (keydown.enter)="$event.preventDefault(); toggleEditDescription()" name="channelDescription" placeholder="Dein Text hier" class=" text-black/70 outline-none w-full resize-none" rows="3"></textarea>
             </div>
         } @else {
-            <div>
-                <span class="text-black/70">{{ channelInfo?.description }}</span>
+            <div class="text_area scrollbar_Style">
+                <span class="text-black/70 outline-none w-full resize-none">{{ channelInfo?.description }}</span>
             </div>
         }
         <div class="w-full flex justify-center">
@@ -50,7 +50,7 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-b-3xl w-full max-w-[720px] pb-10 flex justify-end">
+    <div class="bg-white w-full flex justify-end">
         <button (click)="leave.emit()" class="btn_raw bg-[var(--highligh-color)] text-white font-bold">Channel verlassen</button>
     </div>
 </div>
