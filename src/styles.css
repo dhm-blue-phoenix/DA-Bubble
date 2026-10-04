@@ -4,6 +4,7 @@
 :root {
     --bg-color:rgba(236, 238, 254, 1);
 
+    --bg-box-color: #FFFFFF;
     --border-aktiv:#535AF1;
     --bg-input:#ECEEFE;
     --hover-text: #535AF1;
@@ -13,8 +14,9 @@
     --btn-disable: #686868;
 
     --hover-border: #686868;
+    --hover-box-shadow: #ADB0D9;
     --active-border: #535AF1;
-    
+
     --link:#797EF3;
     --highligh-color:#444DF2;
 
@@ -40,6 +42,7 @@
 
 *, *::before, *::after {
     font-family: 'Nunito', sans-serif;
+    user-select: none;
 }
 
 input{
@@ -52,7 +55,21 @@ input{
 }
 
 ::selection {
-    background-color: var(--btn-hover);
-    color: white;
+  background-color: var(--btn-hover);
+  color: white;
+}
 
+::-webkit-scrollbar {
+  width: 8px;
+  height: 0px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #989df7b9;
+  border-radius: 24px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--border-aktiv);
+  border-radius: 24px;
 }

@@ -1,8 +1,6 @@
-<section>
-        <div class="content_beg flex justify-center items-start">
-            <div class="flex items-center gap-[30px]">
-                <a class="text-[var(--link)] md:text-xl" href="#">Impressum</a>
-                <a class="text-[var(--link)] md:text-xl" href="#">Datenschutz</a>
-            </div>
-        </div>
+<section class="flex justify-center items-start">
+    <div class="flex items-center gap-[30px] shrink-0">
+        <button type="button" class="btn text-[var(--link)] text-xl" (click)="navigateRoute('imprint')" aria-label="Navigate Impressum">Impressum</button>
+        <button type="button" class="btn text-[var(--link)] text-xl" (click)="navigateRoute('privacy-policy')" aria-label="Navigate Privacy Policy">Datenschutz</button>
+    </div>
 </section>

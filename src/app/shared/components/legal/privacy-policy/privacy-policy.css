@@ -1,0 +1,10 @@
+.box__item_headline,
+.box__item_content {
+  user-select: text;
+}
+
+@media (max-width: 1024px) {
+  main {
+    background-color: var(--bg-box-color);
+  }
+}
