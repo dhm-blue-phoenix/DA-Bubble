@@ -1,10 +1,12 @@
+@import '../../../../app.css';
 .box__item_headline,
 .box__item_content {
   user-select: text;
 }
 
-@media (max-width: 1024px) {
-  main {
-    background-color: var(--bg-box-color);
-  }
+h2 {
+  font-size: clamp(24px, 6vw, 42px) !important;
 }
+
+
+

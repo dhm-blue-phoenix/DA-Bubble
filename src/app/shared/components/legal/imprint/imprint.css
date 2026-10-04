@@ -1,5 +1,25 @@
+@import '../../../../app.css';
 li {
   user-select: text;
+}
+
+h2 {
+  font-size: clamp(24px, 6vw, 42px) !important;
+}
+
+a.back_btn {
+  display: inline-flex;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 200ms ease-in-out;
+}
+
+.legal_title {
+  font-size: clamp(32px, 6vw, 46px) !important;
+}
+
+.legal_subtitle {
+  font-size: clamp(24px, 4.5vw, 32px) !important;
 }
 
 .btn_container {
