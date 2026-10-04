@@ -1,10 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { LoginHeader } from '../../ui/login/login-header/login-header';
 import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-imprint',
-  imports: [LoginHeader],
+  imports: [LoginHeader, RouterLink],
   templateUrl: './imprint.html',
   styleUrl: './imprint.css',
 })

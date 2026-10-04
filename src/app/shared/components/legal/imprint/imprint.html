@@ -12,10 +12,9 @@
 
       <div>
         <!-- Header Bereich für den Button -->
-        <button type="button" class="btn_container group flex justify-center items-center relative rounded-full cursor-pointer transition-all duration-200 ease-in-out scale-100" (click)="navigationBackLogin()" aria-label="Back">
-          <img class="btn_container btn_back absolute opacity-100 group-hover:opacity-0" src="assets/svg/icons/icon_black/arrow_back_black.svg" alt="">
-          <img class="btn_container btn_back--hover opacity-0 group-hover:opacity-100 group-hover:scale-110" src="assets/svg/icons/icon_blue/arrow_back_blue.svg" alt="">
-        </button>
+        <a routerLink="/" class="back_btn justify-self-start">
+            <img class="back_btn" src="assets/svg/icons/icon_black/arrow_back_black.svg" alt="back_arrow">
+        </a>
       </div>
 
       <div class="box__content flex flex-col gap-8 h-full">
