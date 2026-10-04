@@ -3,6 +3,8 @@ import { LoginHeader } from '../../ui/login/login-header/login-header';
 import { LoginFooter } from '../../ui/login/login-footer/login-footer';
 import { Router, RouterOutlet, RouterLink } from '@angular/router';
 
+let introPlayed = false;
+
 @Component({
   selector: 'app-login-component',
   imports: [LoginHeader, LoginFooter, RouterOutlet, RouterLink],
@@ -20,6 +22,8 @@ export class LoginComponent {
   }
 
 ngOnInit(){
+  if (introPlayed) return
+  introPlayed = true
   this.animation = true
   setTimeout(() => this.animation = false, 3000)
 }
