@@ -30,14 +30,14 @@ export class SelectAvatar {
       const profile: Profile | undefined = this.db
         .profiles()
         .find((profile: Profile): boolean => profile['id'] === this.db.getCurrentUserId());
-      if(profile) this.googleProfileName = profile['name'];
+      if (profile) this.googleProfileName = profile['name'];
     }
   }
 
   select_Avatar(avatar: number): void {
     this.sel_avatar = '';
     this.sel_avatar = this.sel_avatar + avatar;
-    if(this.provider === 'google') return;
+    if (this.provider === 'google') return;
     this.signin.data.set({
       ...this.signin.data(),
       avatar: this.sel_avatar,
@@ -45,13 +45,14 @@ export class SelectAvatar {
   }
 
   async singin(): Promise<void> {
-    if(this.provider === 'google') {
-      this.db.editProfileAvatar(this.sel_avatar);
-      this.router.navigate(['/workspace']);
-      return;
-    }
-    const { email, password, name, avatar } = this.signin.data();
-    await this.db.register(email, password, name, avatar);
-    this.show_feedback.set(true);
+      if (this.provider === 'google') {
+        this.db.editProfileAvatar(this.sel_avatar);
+        this.router.navigate(['/workspace']);
+        return;
+      }
+      const { email, password, name, avatar } = this.signin.data();
+      const result: false | void = await this.db.register(email, password, name, avatar);
+      if (result === false) this.router.navigate(['/sign-in']);
+      this.show_feedback.set(true);
   }
 }

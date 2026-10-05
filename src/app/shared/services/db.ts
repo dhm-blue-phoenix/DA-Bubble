@@ -132,8 +132,8 @@ export class Database {
     user_password: string,
     user_name: string,
     user_avatar: string,
-  ): Promise<boolean> {
-    return await this.safeCall((): Promise<boolean> => this.db_auth.signUpNewUser(user_email.trim(), user_password.trim(), user_name.trim(), user_avatar.trim().toLowerCase()), false);
+  ): Promise<false | void> {
+    return await this.safeCall((): Promise<false | void> => this.db_auth.signUpNewUser(user_email.trim(), user_password.trim(), user_name.trim(), user_avatar.trim().toLowerCase()), false);
   }
 
   /**

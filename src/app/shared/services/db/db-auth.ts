@@ -186,7 +186,7 @@ export class DatabaseAuth {
     user_password: string,
     user_name: string,
     user_avatar: string,
-  ): Promise<boolean> {
+  ): Promise<false | void> {
     if (await this.checkEmailExists(user_email)) return false;
     const { error }: DbAuthError = await this.supabase.auth.signUp({
       email: user_email,
@@ -196,7 +196,7 @@ export class DatabaseAuth {
       },
     });
     if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
-    return true;
+    window.location.reload();
   }
 
   /**
@@ -211,6 +211,7 @@ export class DatabaseAuth {
       password: user_password,
     });
     if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
+    window.location.reload();
   }
 
   /**

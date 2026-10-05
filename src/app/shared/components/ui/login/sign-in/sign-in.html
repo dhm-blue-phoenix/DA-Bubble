@@ -10,7 +10,7 @@
 
     <form class="flex justify-center items-center flex-col w-full gap-[8px] md:gap-[12px]" #signInForm="ngForm" (ngSubmit)="setSignInData(signInForm)">
         <div class="w-full">
-            <div class="input_container flex items-center p-2 md:p-4justify-between">
+            <div class="input_container flex items-center p-2 md:p-4 justify-between">
                 <img src="assets/svg/icons/icon_grey/person_grey.svg" alt="user-icon">
                 <input [(ngModel)]="this.register_Data.name" name="name" class="py-2" type="text" placeholder="Name und Nachname" required #name="ngModel" minlength="5" maxlength="40">
 
