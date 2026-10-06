@@ -24,11 +24,13 @@ export class SignIn {
   };
 
   checkbox = '';
+  public existEmail: boolean = false;
   submitted = false;
 
-  setSignInData(ngForm: NgForm) {
+  async setSignInData(ngForm: NgForm) {
+    this.existEmail = await this.db.checkExistEmailForNewUser(this.register_Data.email);
     this.submitted = true;
-    if (ngForm.form.valid) {
+    if (ngForm.form.valid && !this.existEmail) {
       this.signin.data.set({
         email: this.register_Data.email,
         password: this.register_Data.password,

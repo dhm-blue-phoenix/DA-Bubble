@@ -184,6 +184,10 @@ export class Database {
     await this.safeCall((): Promise<void> => this.db_auth.signOut(), undefined);
   }
 
+  public async checkExistEmailForNewUser(email: string): Promise<boolean> {
+    return await this.safeCall((): Promise<boolean> => this.db_auth.checkEmailExists(email), false);
+  }
+
   /** Leert die gespeicherten Nachrichten des aktuellen Threads. */
   public clearThreadMessages(): void {
     this.db_messages._thread_messages.set([]);

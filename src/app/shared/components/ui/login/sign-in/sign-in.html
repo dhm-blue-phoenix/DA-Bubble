@@ -33,6 +33,9 @@
                 @if (!email.valid && email.touched) {
                     <span class="errorMassage">*Diese E-Mail ist leider ungültig.</span>
                 }
+                @if (existEmail) {
+                    <span class="errorMassage">*Diese E-Mail ist leider vergeben.</span>
+                }
             </div>
         </div>
 
