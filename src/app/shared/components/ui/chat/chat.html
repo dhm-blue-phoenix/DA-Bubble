@@ -6,7 +6,7 @@
     </div>
 }
 
-<div class="chat_message group relative flex py-6 gap-2 cursor-pointer hover:bg-[var(--hover-bg)] my-2" [class.flex-row-reverse]="isOwnMessage()">
+<div #messageEl class="chat_message group relative flex py-6 gap-2 cursor-pointer hover:bg-[var(--hover-bg)] pointer-coarse:data-[open=true]:bg-[var(--hover-bg)] my-2" [class.flex-row-reverse]="isOwnMessage()" [attr.data-open]="actionsOpen() ? 'true' : null" (click)="toggleActions()">
     <app-message-actions [isOwnMessage]="isOwnMessage()" [isThread]="isThread()" [isChannel]="context === 'channel'" (react)="react($event)" (openThread)="openThread.emit(message.id)" (edit)="startEdit()"> </app-message-actions>
     
     <img class="size-[70px]" [src]="'assets/svg/avatar/avatar_small/' + (sender?.avatar || '1') + '.svg'" alt="avatar">

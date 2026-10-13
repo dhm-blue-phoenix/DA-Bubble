@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, WritableSignal } from '@angular/core';
 
 @Component({
   selector: 'app-message-actions',
@@ -14,4 +14,17 @@ export class MessageActions {
   @Output() react = new EventEmitter<number>()
   @Output() openThread = new EventEmitter<void>()
   @Output() edit = new EventEmitter<void>()
+
+  quickOpen: WritableSignal<boolean> = signal(false)
+  menuOpen: WritableSignal<boolean> = signal(false)
+
+  toggleQuick(event: MouseEvent) {
+    event.stopPropagation()
+    this.quickOpen.update(open => !open)
+  }
+
+  toggleEditMenu(event: MouseEvent) {
+    event.stopPropagation()
+    this.menuOpen.update(open => !open)
+  }
 }

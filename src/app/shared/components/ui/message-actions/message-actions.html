@@ -1,4 +1,4 @@
-<div [class]="'reaction_bar absolute opacity-0 group-hover:opacity-100 transition bg-white border border-black/10 rounded-full shadow-md flex items-center gap-1 md:gap-3 px-1 md:px-2 py-1 max-w-[calc(100vw-2rem)] ' + (isOwnMessage ? 'left-2 md:left-4' : 'right-2 md:right-4')">
+<div [class]="'reaction_bar absolute opacity-0 invisible group-hover:opacity-100 group-hover:visible pointer-coarse:group-data-[open=true]:opacity-100 pointer-coarse:group-data-[open=true]:visible transition bg-white border border-black/10 rounded-full shadow-md flex items-center gap-1 md:gap-3 px-1 md:px-2 py-1 max-w-[calc(100vw-2rem)] ' + (isOwnMessage ? 'left-2 md:left-4' : 'right-2 md:right-4')">
     @if(!isThread){
         @for (btn of [1,2,3,4]; track btn) {
             <button (click)="react.emit(btn)" class="size-7 md:size-8 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]">
@@ -7,11 +7,11 @@
         }
     }
     @else {
-        <div class="group/quick">
-            <button class="relative size-7 md:size-8 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]">
+        <div class="group/quick" [attr.data-open]="quickOpen() ? 'true' : null">
+            <button (click)="toggleQuick($event)" class="relative size-7 md:size-8 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]">
                 <img src="assets/svg/icons/icon_black/add_reaction.svg" alt="reaction">
             </button>
-            <div class="quick_bubble absolute h-0 overflow-hidden opacity-0 invisible group-hover/quick:h-auto group-hover/quick:overflow-visible group-hover/quick:opacity-100 group-hover/quick:visible transition bg-white border border-black/10 rounded-full shadow-md flex items-center gap-1 px-1 py-1" [class.quick_bubble_own]="isOwnMessage">
+            <div class="quick_bubble absolute h-0 overflow-hidden opacity-0 invisible group-hover/quick:h-auto group-hover/quick:overflow-visible group-hover/quick:opacity-100 group-hover/quick:visible pointer-coarse:group-data-[open=true]/quick:h-auto pointer-coarse:group-data-[open=true]/quick:overflow-visible pointer-coarse:group-data-[open=true]/quick:opacity-100 pointer-coarse:group-data-[open=true]/quick:visible transition bg-white border border-black/10 rounded-full shadow-md flex items-center gap-1 px-1 py-1" [class.quick_bubble_own]="isOwnMessage">
                 @for (btn of [1,2,3,4]; track btn) {
                     <button (click)="react.emit(btn)" class="size-7 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]">
                         <img class="size-[18px]" [src]="'assets/svg/emoji/emoji' + btn + '.svg'" alt="reaction">
@@ -28,9 +28,9 @@
     }
 
     @if (isOwnMessage) {
-        <div class="relative group/menu">
-            <button class="size-8 md:size-10 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]"><img src="assets/svg/icons/icon_black/menu.svg" alt=""></button>
-            <div class="edit_bubble absolute h-0 overflow-hidden opacity-0 invisible group-hover/menu:h-auto group-hover/menu:overflow-visible group-hover/menu:opacity-100 group-hover/menu:visible transition">
+        <div class="relative group/menu" [attr.data-open]="menuOpen() ? 'true' : null">
+            <button (click)="toggleEditMenu($event)" class="size-8 md:size-10 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]"><img src="assets/svg/icons/icon_black/menu.svg" alt=""></button>
+            <div class="edit_bubble absolute h-0 overflow-hidden opacity-0 invisible group-hover/menu:h-auto group-hover/menu:overflow-visible group-hover/menu:opacity-100 group-hover/menu:visible pointer-coarse:group-data-[open=true]/menu:h-auto pointer-coarse:group-data-[open=true]/menu:overflow-visible pointer-coarse:group-data-[open=true]/menu:opacity-100 pointer-coarse:group-data-[open=true]/menu:visible transition">
                 <div class="edit_menu edit_shape bg-white border border-black/10 shadow-md">
                     <button (click)="edit.emit()" class="edit_shape w-full text-left py-2 px-4 py-2 text-xl hover:bg-[var(--hover-bg)] hover:text-[var(--hover-text)] hover:font-bold">Nachricht bearbeiten</button>
                 </div>

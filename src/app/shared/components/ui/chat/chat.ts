@@ -1,4 +1,4 @@
-import { Component, inject, Input, Output, EventEmitter } from '@angular/core';
+import { Component, inject, Input, Output, EventEmitter, signal, WritableSignal, viewChild, ElementRef } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Message } from '../../../interfaces/messages'
@@ -12,6 +12,9 @@ import { MessageReactions } from '../message-reactions/message-reactions';
   imports: [DatePipe, FormsModule, MessageActions, MessageReactions],
   templateUrl: './chat.html',
   styleUrl: './chat.css',
+  host: {
+    '(document:click)': 'onDocumentClick($event)',
+  },
 })
 export class Chat {
   @Input() message!: Message
@@ -26,6 +29,21 @@ export class Chat {
 
   editing = false
   editDraft = ''
+
+  /** Zeigt die Aktionsleiste auch ohne Maus-Hover an – getoggelt per Tap (Touch). */
+  actionsOpen: WritableSignal<boolean> = signal(false)
+  messageEl = viewChild<ElementRef<HTMLElement>>('messageEl')
+
+  toggleActions() {
+    this.actionsOpen.update(open => !open)
+  }
+
+  onDocumentClick(event: MouseEvent) {
+    if (!this.actionsOpen()) return
+    const target = event.target as Node
+    if (this.messageEl()?.nativeElement.contains(target)) return
+    this.actionsOpen.set(false)
+  }
 
   isOwnMessage(): boolean {
     return this.message.sender_id === this.db.getCurrentUserId()
