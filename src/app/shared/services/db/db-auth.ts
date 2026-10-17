@@ -196,6 +196,7 @@ export class DatabaseAuth {
       },
     });
     if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
+    this.setStatus('online');
     window.location.reload();
   }
 
@@ -211,6 +212,7 @@ export class DatabaseAuth {
       password: user_password,
     });
     if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
+    this.setStatus('online');
     window.location.reload();
   }
 
