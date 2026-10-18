@@ -19,6 +19,7 @@ import {
   ChannelMember,
 } from '../../interfaces/db/db-channels';
 import { DbPostgrestError } from '../../interfaces/db-error';
+import { DatabaseAuth } from './db-auth';
 
 @Injectable({
   providedIn: 'root',
@@ -26,6 +27,7 @@ import { DbPostgrestError } from '../../interfaces/db-error';
 export class DatabaseChannels {
   private readonly platformId: Object = inject(PLATFORM_ID);
   private readonly supabase: SupabaseClient = inject(Supabase)['supabase'];
+  private readonly db_auth: DatabaseAuth = inject(DatabaseAuth);
   private readonly channels?: RealtimeChannel;
 
   /** Signal, das alle Kanäle (IDs und Namen) des aktuellen Benutzers hält. */
@@ -115,9 +117,14 @@ export class DatabaseChannels {
   private insertEventMember(payload: RealtimePostgresChangesPayload<object>): void {
     const member = payload.new as ChannelMember;
     const currentChannel: SignalChannel = this._channel();
+    const currentUserId: string = this.db_auth.getCurrentUserId();
+    if (currentUserId === member['user_id']) {
+      this.getChannelIds(member['user_id'])
+    }
     if (currentChannel !== null && currentChannel.id === member.channel_id) {
       const members: { user_id: string }[] = currentChannel.channel_members || [];
       if (!members.some((m: { user_id: string }): boolean => m.user_id === member.user_id)) {
+        console.warn('insert member3')
         this._channel.set({
           ...currentChannel,
           channel_members: [...members, { user_id: member.user_id }],
