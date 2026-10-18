@@ -137,7 +137,6 @@ thread_messages_with_sender = computed(() => {
         this.dialog_mode.set(mode)
     }
 
-    /** Zwischen 1024px und 1250px ist nicht genug Platz für Workspace-Sidebar + Chat + Thread gleichzeitig. */
     isNarrowDesktop(): boolean {
         if (!isPlatformBrowser(this.platformId)) return false
         return window.innerWidth >= 1024 && window.innerWidth < 1250
@@ -200,8 +199,8 @@ thread_messages_with_sender = computed(() => {
         this.db.editChannel(this.channel_id, data.name, data.description)
     }
 
-    leaveChannel() {
-        this.db.removeChannelMember(this.channel_id, this.db.getCurrentUserId())
+    async leaveChannel() {
+        await this.db.removeChannelMember(this.channel_id, this.db.getCurrentUserId())
         this.dialog_mode.set(null)
         this.channel_id = ''
         this.active_type.set(null)
