@@ -242,13 +242,11 @@ export class Database {
    * @param {string} senderId - Die Profil-ID des Absenders.
    * @param {string} content - Der Text der Nachricht.
    */
-  public async newMsg(
-    msgType: MsgType,
-    threadChannelId: string | null,
-    id: string,
-    senderId: string,
-    content: string,
-  ): Promise<void> {
+  public async newMsg( msgType: MsgType, threadChannelId: string | null, id: string, senderId: string, content: string): Promise<void> {
+    if (msgType === 'channel') {
+      const user = this.channel()?.channel_members.find(member => member.user_id === senderId);
+      if (!user) throw new Error(`User is not in this channel.`);
+    }
     await this.safeCall((): Promise<void> => this.db_messages.createNewMessage( msgType, threadChannelId, id.trim(), senderId.trim(), content.trim()), undefined);
   }
 

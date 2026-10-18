@@ -41,11 +41,9 @@ export class DatabaseMessageHelper {
     if (!message) return;
     const currentUserId = this.db_auth.getCurrentUserId();
     if (!currentUserId) {
-      console.log('[Notification] Skipped: No current user logged in.');
       return;
     }
     if (message['sender_id'] === currentUserId) {
-      console.log('[Notification] Skipped: Message was sent by self.');
       return;
     }
 
@@ -76,8 +74,6 @@ export class DatabaseMessageHelper {
       if (isMember) {
         const title: string = message['thread_id'] ? 'Neue Thread-Antwort' : 'Neue Nachricht';
         await this.setBrowserNotification(title, message['content']);
-      } else {
-        console.log('[Notification] Skipped: User is not a member of chat', chatId);
       }
     } else if (channelId) {
       const { data, error }: PostgrestSingleResponse<SenderIds> = await this.supabase
@@ -91,8 +87,6 @@ export class DatabaseMessageHelper {
       if (isMember) {
         const title: string = message['thread_id'] ? 'Neue Thread-Antwort' : 'Neue Kanal-Nachricht';
         await this.setBrowserNotification(title, message['content']);
-      } else {
-        console.log('[Notification] Skipped: User is not a member of channel', channelId);
       }
     }
   }
@@ -108,7 +102,6 @@ export class DatabaseMessageHelper {
     }
     if (Notification.permission === 'default') {
       const permission = await Notification.requestPermission();
-      console.log('[Notification] Requested permission result:', permission);
       return permission;
     }
     return Notification.permission;
@@ -126,7 +119,6 @@ export class DatabaseMessageHelper {
       await Notification.requestPermission();
     }
     if (Notification.permission === 'granted') {
-      console.log(`[Notification] Triggering notification: "${title}" - "${description}"`);
       this.sendPushNotification(title, description);
     } else {
       console.warn(

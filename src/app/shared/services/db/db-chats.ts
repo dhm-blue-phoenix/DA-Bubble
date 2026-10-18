@@ -22,32 +22,13 @@ export class DatabaseChats {
     const { data: chats, error }: PostgrestSingleResponse<ChatId[]> = await this.supabase
       .from('chat_members')
       .select('chat_id')
-      .eq('user_id', currentUserId);
+      .eq('user_id', currentUserId)
+      .eq('shared_user_id', otherUserId);
     if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
     if (chats && chats.length > 0) {
-      const chatIds: string[] = chats.map((chat: ChatId): string => chat.chat_id);
-      const sharedChats: ChatId[] = await this.findSharedChat(otherUserId, chatIds);
-      if (sharedChats && sharedChats.length > 0) {
-        return { success: true, chat_id: sharedChats[0].chat_id };
-      }
+      return { success: true, chat_id: chats[0].chat_id };
     }
     return { success: false, chat_id: null };
-  }
-
-  /**
-   * Sucht in einer Liste von Chat-IDs nach einer, bei der der andere Benutzer Mitglied ist.
-   * @param {string} otherUserId - Die ID des anderen Benutzers.
-   * @param {string[]} chatIds - Liste der Chat-IDs, in denen der aktuelle Benutzer ist.
-   * @returns {Promise<ChatId[]>} Ein Promise mit der Liste der gemeinsamen Chat-IDs.
-   */
-  private async findSharedChat(otherUserId: string, chatIds: string[]): Promise<ChatId[]> {
-    const { data: sharedChats, error }: PostgrestSingleResponse<ChatId[]> = await this.supabase
-      .from('chat_members')
-      .select('chat_id')
-      .eq('user_id', otherUserId)
-      .in('chat_id', chatIds);
-    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
-    return sharedChats ?? [];
   }
 
   /**
@@ -64,8 +45,8 @@ export class DatabaseChats {
       .single();
     if (error || !newChat) throw error;
     const { error: memberError } = await this.supabase.from('chat_members').insert([
-      { chat_id: newChat['id'], user_id: currentUserId },
-      { chat_id: newChat['id'], user_id: otherUserId },
+      { chat_id: newChat['id'], user_id: currentUserId, shared_user_id: otherUserId },
+      { chat_id: newChat['id'], user_id: otherUserId, shared_user_id: currentUserId },
     ]);
     if (memberError) throw new Error(`[ DB_CODE:${memberError['code']} ] MSG: ${memberError['message']}`);
     return newChat['id'];
@@ -80,6 +61,9 @@ export class DatabaseChats {
   public async getChatId(currentUserId: string, otherUserId: string): Promise<string> {
     const existChat: ExistChat = await this.checkExistChat(currentUserId, otherUserId);
     if (!existChat['success']) return this.createNewChat(currentUserId, otherUserId);
+    
+    console.warn('[DatabaseChats] getChatId: Existing chat found. chat_id:', existChat['chat_id']);
+    
     return existChat['chat_id'] as string;
   }
 }
