@@ -97,7 +97,6 @@ export class DatabaseMessageHelper {
    */
   public async requestNotificationPermission(): Promise<NotificationPermission> {
     if (!('Notification' in window)) {
-      console.warn('[Notification] Browser supports no Notifications.');
       return 'denied';
     }
     if (Notification.permission === 'default') {

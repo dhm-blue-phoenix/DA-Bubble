@@ -61,9 +61,6 @@ export class DatabaseChats {
   public async getChatId(currentUserId: string, otherUserId: string): Promise<string> {
     const existChat: ExistChat = await this.checkExistChat(currentUserId, otherUserId);
     if (!existChat['success']) return this.createNewChat(currentUserId, otherUserId);
-    
-    console.warn('[DatabaseChats] getChatId: Existing chat found. chat_id:', existChat['chat_id']);
-    
     return existChat['chat_id'] as string;
   }
 }

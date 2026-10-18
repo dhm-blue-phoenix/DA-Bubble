@@ -124,7 +124,6 @@ export class DatabaseChannels {
     if (currentChannel !== null && currentChannel.id === member.channel_id) {
       const members: { user_id: string }[] = currentChannel.channel_members || [];
       if (!members.some((m: { user_id: string }): boolean => m.user_id === member.user_id)) {
-        console.warn('insert member3')
         this._channel.set({
           ...currentChannel,
           channel_members: [...members, { user_id: member.user_id }],
