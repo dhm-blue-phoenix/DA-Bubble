@@ -14,9 +14,9 @@ export class DatabaseThreads {
   private readonly supabase: SupabaseClient = inject(Supabase)['supabase'];
 
   /**
-   * Prüft, ob zu einer Ursprungsnachricht bereits ein Thread existiert.
-   * @param {string} msgId - Die ID der Ursprungsnachricht.
-   * @returns {Promise<ExistThread>} Ein Promise, das das Vorhandensein und ggf. die thread_id zurückgibt.
+   * Checks whether a thread already exists for a root message.
+   * @param {string} msgId - The root message ID.
+   * @returns {Promise<ExistThread>} A promise indicating whether a thread exists and, if so, its ID.
    */
   private async checkExistThread(msgId: string): Promise<ExistThread> {
     const { data: threads, error }: PostgrestSingleResponse<any> = await this.supabase
@@ -29,9 +29,9 @@ export class DatabaseThreads {
   }
 
   /**
-   * Erstellt einen neuen Thread zu einer gegebenen Nachricht.
-   * @param {string} msgId - Die ID der Ursprungsnachricht.
-   * @returns {Promise<string>} Ein Promise, das die ID des neu erstellten Threads zurückgibt.
+   * Creates a thread for the given message.
+   * @param {string} msgId - The root message ID.
+   * @returns {Promise<string>} A promise that resolves to the new thread ID.
    */
   private async createNewThread(msgId: string): Promise<string> {
     const { data: newThread, error }: PostgrestSingleResponse<any> = await this.supabase
@@ -48,9 +48,9 @@ export class DatabaseThreads {
   }
 
   /**
-   * Aktualisiert eine Nachricht und setzt deren thread_id.
-   * @param {string} threadId - Die ID des erstellten Threads.
-   * @param {string} msgId - Die ID der Nachricht, die aktualisiert werden soll.
+   * Updates a message and sets its `thread_id`.
+   * @param {string} threadId - The ID of the created thread.
+   * @param {string} msgId - The ID of the message to update.
    * @returns {Promise<void>}
    */
   private async updateMessageThreadId(threadId: string, msgId: string): Promise<void> {
@@ -66,9 +66,9 @@ export class DatabaseThreads {
   }
 
   /**
-   * Gibt die Thread-ID zu einer Nachricht zurück. Falls noch keiner existiert, wird ein neuer Thread angelegt.
-   * @param {string} msgId - Die ID der Ursprungsnachricht.
-   * @returns {Promise<string>} Die ID des Threads.
+   * Gets the thread ID for a message, creating a thread if one does not exist.
+   * @param {string} msgId - The root message ID.
+   * @returns {Promise<string>} The thread ID.
    */
   public async getThreadId(msgId: string): Promise<string> {
     const existThread: ExistThread = await this.checkExistThread(msgId);
@@ -77,9 +77,9 @@ export class DatabaseThreads {
   }
 
   /**
-   * Zählt die Antworten (Nachrichten) in einem bestehenden Thread, ohne deren Inhalt zu laden.
-   * @param {string} threadId - Die ID des Threads.
-   * @returns {Promise<number>} Die Anzahl der Nachrichten im Thread.
+   * Counts the messages in an existing thread without loading their content.
+   * @param {string} threadId - The thread ID.
+   * @returns {Promise<number>} The number of messages in the thread.
    */
   public async getThreadMessageCount(threadId: string): Promise<number> {
     const { count, error } = await this.supabase

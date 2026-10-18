@@ -36,25 +36,25 @@ export class Dialogs implements AfterViewInit, OnChanges {
   dialogPanel = viewChild<ElementRef<HTMLDialogElement>>('dialogPanelRef')
   profileDialogPanel = viewChild<ElementRef<HTMLDialogElement>>('profileDialogPanelRef')
 
-  /** Öffnet den Haupt-Dialog nativ, sobald die View bereit ist. */
+  /** Opens the main dialog natively once the view is ready. */
   ngAfterViewInit() {
     this.dialogPanel()?.nativeElement.showModal()
   }
 
-  /** Der Profil-Dialog kommt/geht unabhängig vom Haupt-Dialog (siehe profileUser), daher eigenes showModal() bei jedem Öffnen. */
+  /** The profile dialog opens independently of the main dialog, so call `showModal()` each time it opens. */
   ngOnChanges(changes: SimpleChanges) {
     if (changes['profileUser'] && this.profileUser)
       queueMicrotask(() => this.profileDialogPanel()?.nativeElement.showModal())
   }
 
-  /** Schließt den Dialog, wenn der Klick auf den Dialog selbst (= Backdrop) statt auf ein Kind-Element trifft. */
+  /** Closes the dialog when the click targets the dialog itself (the backdrop), rather than a child element. */
   onBackdropClick(event: MouseEvent, dialog: HTMLDialogElement) {
     if (event.target === dialog) dialog.close()
   }
 
   private static readonly SIDE_DIALOG_WIDTH = 540
 
-  /** Positioniert die Members-/Add-People-Dialoge relativ zum geklickten Button statt fix am Bildschirmrand (nur ab lg, s. dialogs.css). */
+  /** Positions the members/add-people dialogs relative to the clicked button instead of the screen edge (at `lg` and above; see dialogs.css). */
   get sideDialogTop(): number | null {
     if (!this.anchorRect || typeof window === 'undefined') return null
     return Math.min(this.anchorRect.bottom + 8, window.innerHeight - 100)

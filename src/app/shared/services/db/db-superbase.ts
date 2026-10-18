@@ -7,7 +7,7 @@ import { environment } from '../../../../environment/environment';
 })
 export class Supabase {
   /**
-   * Die Instanz des Supabase-Clients für Datenbankoperationen.
+   * The Supabase client instance used for database operations.
    */
   public readonly supabase: SupabaseClient = createClient(environment.supabaseUrl, environment.supabaseKey);
 }
