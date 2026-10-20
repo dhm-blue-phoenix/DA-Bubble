@@ -1,11 +1,4 @@
 @import '../../../../app.css';
-li {
-  user-select: text;
-}
-
-h2 {
-  font-size: clamp(24px, 6vw, 42px) !important;
-}
 
 a.back_btn {
   display: inline-flex;
@@ -15,41 +8,54 @@ a.back_btn {
 }
 
 .legal_title {
-  font-size: clamp(32px, 6vw, 46px) !important;
+  font-size: clamp(24px, 7vw, 46px) !important;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  hyphens: none;
 }
 
-.legal_subtitle {
-  font-size: clamp(24px, 4.5vw, 32px) !important;
+.policy {
+  line-height: 1.6;
 }
 
-.btn_container {
-  position: relative;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 200ms ease-in-out;
-  transform: scale(1);
+.policy h2 {
+  font-size: clamp(20px, 4.5vw, 28px) !important;
+  font-weight: 700;
+  color: var(--btn);
 }
 
-.btn_container .btn_back {
-  position: absolute;
-  opacity: 1;
+.policy a {
+  color: var(--link);
+  text-decoration: underline;
 }
 
-.btn_container:hover .btn_back {
-  opacity: 0;
+.policy a:hover {
+  color: var(--btn);
 }
 
-.btn_back--hover  {
-  opacity: 0;
+.provider-details {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0 16px;
 }
 
-.btn_container:hover .btn_back--hover {
-  opacity: 1;
-  transform: scale(1.1);
+.provider-details > span:nth-child(odd) {
+  margin-top: 8px;
+  font-weight: 600;
+  color: var(--btn-disable);
 }
 
-.box__text > ul > li > span {
-  font-weight: 400;
-  font-size: 20px;
-  line-height: 120%;
+.provider-details > span:nth-child(odd):first-child {
+  margin-top: 0;
+}
+
+@media (min-width: 640px) {
+  .provider-details {
+    grid-template-columns: 150px minmax(0, 1fr);
+    gap: 6px 16px;
+  }
+
+  .provider-details > span:nth-child(odd) {
+    margin-top: 0;
+  }
 }
