@@ -24,7 +24,7 @@ export class DatabaseProfiles implements OnDestroy {
   private readonly db_profile_helper: DatabaseProfilesHelper = inject(DatabaseProfilesHelper);
   private readonly channels?: RealtimeChannel;
 
-  /** Signal, welches die Liste der Benutzerprofile hält. */
+  /** Signal containing the list of user profiles. */
   public readonly _profiles: WritableSignal<Profiles> = signal<Profiles>([]);
 
   constructor() {
@@ -34,8 +34,8 @@ export class DatabaseProfiles implements OnDestroy {
   }
 
   /**
-   * Abonniert die Realtime-Updates für die Profile-Tabelle.
-   * @returns {RealtimeChannel} Der abonnierte Supabase Realtime-Kanal.
+   * Subscribes to Realtime updates for the profiles table.
+   * @returns {RealtimeChannel} The subscribed Supabase Realtime channel.
    */
   private subscribeProfiles(): RealtimeChannel {
     return this.supabase
@@ -51,22 +51,22 @@ export class DatabaseProfiles implements OnDestroy {
   }
 
   /**
-   * Verarbeitet einkommende Realtime-Events für Profile.
-   * @param {any} payload - Das von Supabase übermittelte Event-Objekt.
+   * Processes incoming Realtime events for profiles.
+   * @param {any} payload - The event object sent by Supabase.
    */
   private handleProfileEvent(payload: RealtimePostgresChangesPayload<object>): void {
     if (payload.eventType === 'INSERT') this.insertProfile(payload);
     if (payload.eventType === 'UPDATE') this.updateProfile(payload);
   }
 
-  /** Beendet die Realtime-Verbindung, wenn der Service zerstört wird. */
+  /** Closes the Realtime connection when the service is destroyed. */
   public ngOnDestroy(): void {
     if (this.channels) this.supabase.removeChannel(this.channels);
   }
 
   /**
-   * Fügt ein neues Profil dem lokalen Signal hinzu (ausgelöst durch Realtime-Event).
-   * @param {any} payload - Das Event-Objekt mit den neuen Profildaten.
+   * Adds a new profile to the local signal in response to a Realtime event.
+   * @param {any} payload - The event object containing the new profile data.
    */
   private insertProfile(payload: RealtimePostgresChangesPayload<object>): void {
     const profile = payload.new as Profile;
@@ -77,8 +77,8 @@ export class DatabaseProfiles implements OnDestroy {
   }
 
   /**
-   * Aktualisiert ein bestehendes Profil im lokalen Signal (ausgelöst durch Realtime-Event).
-   * @param {any} payload - Das Event-Objekt mit den aktualisierten Profildaten.
+   * Updates an existing profile in the local signal in response to a Realtime event.
+   * @param {any} payload - The event object containing the updated profile data.
    */
   private updateProfile(payload: RealtimePostgresChangesPayload<object>): void {
     const profile = payload.new as Profile;
@@ -89,7 +89,7 @@ export class DatabaseProfiles implements OnDestroy {
   }
 
   /**
-   * Lädt alle Benutzerprofile aus der Datenbank und aktualisiert das Signal.
+   * Loads all user profiles from the database and updates the signal.
    * @returns {Promise<void>}
    */
   public async getProfiles(): Promise<void> {
@@ -101,9 +101,9 @@ export class DatabaseProfiles implements OnDestroy {
   }
 
   /**
-   * Lädt die Daten eines spezifischen Profils aus der Datenbank.
-   * @param {string} profileId - Die ID des zu ladenden Profils.
-   * @returns {Promise<Profile | null>} Ein Promise mit den Profildaten oder null.
+   * Loads a specific profile from the database.
+   * @param {string} profileId - The ID of the profile to load.
+   * @returns {Promise<Profile | null>} A promise containing the profile data or null.
    */
   public async getProfile(profileId: string): Promise<Profile | null> {
     const { data: profiles, error }: SupabaseResponseProfiles = await this.supabase
@@ -115,9 +115,9 @@ export class DatabaseProfiles implements OnDestroy {
   }
 
   /**
-   * Aktualisiert den Anzeigenamen eines Profils.
-   * @param {string} profileId - Die ID des Profils.
-   * @param {string} value - Der neue Name.
+   * Updates a profile's display name.
+   * @param {string} profileId - The profile ID.
+   * @param {string} value - The new name.
    * @returns {Promise<void>}
    */
   public async updateProfileName(profileId: string, value: string): Promise<void> {
@@ -130,9 +130,9 @@ export class DatabaseProfiles implements OnDestroy {
   }
 
   /**
-   * Aktualisiert den Avatar eines Profils.
-   * @param {string} profileId - Die ID des Profils.
-   * @param {string} value - Der neue Avatar.
+   * Updates a profile's avatar.
+   * @param {string} profileId - The profile ID.
+   * @param {string} value - The new avatar.
    * @returns {Promise<void>}
    */
   public async updateProfileAvatar(profileId: string, value: string): Promise<void> {

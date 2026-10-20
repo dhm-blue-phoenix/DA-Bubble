@@ -26,6 +26,7 @@ Speichert Informationen über öffentliche oder private Kanäle.
 Mapping-Tabelle für Kanal-Mitgliedschaften (M:N Beziehung).
 - `channel_id` (uuid) - Foreign Key auf `channels.id`
 - `user_id` (uuid) - Foreign Key auf `profiles.id`
+- `shared_user_id` (uuid) - Foreign Key auf `profiles.id`
 - `role` (text) - z.B. 'admin' oder 'member'
 - *Primärschlüssel ist meist (channel_id, user_id)*
 

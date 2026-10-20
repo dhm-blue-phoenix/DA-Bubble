@@ -30,19 +30,19 @@ export class Database {
   private readonly db_channels: DatabaseChannels = inject(DatabaseChannels);
   private readonly db_threads: DatabaseThreads = inject(DatabaseThreads);
 
-  /** Ein Read-Only Signal mit allen Benutzerprofilen. */
+  /** A read-only signal containing all user profiles. */
   public readonly profiles: Signal<Profiles> = this.db_profiles._profiles.asReadonly();
-  /** Ein Read-Only Signal, das den Login-Status des aktuellen Benutzers hält (true/false). */
+  /** A read-only signal containing the current user's login status (true/false). */
   public readonly isLogin: Signal<boolean> = this.db_auth._isUserLogin.asReadonly();
-  /** Ein Read-Only Signal mit den direkten Chat-Nachrichten der aktuellen Ansicht. */
+  /** A read-only signal containing the direct messages in the current view. */
   public readonly chatMsg: Signal<Messages> = this.db_messages._chat_messages.asReadonly();
-  /** Ein Read-Only Signal mit den Nachrichten des aktuellen Kanals. */
+  /** A read-only signal containing the messages in the current channel. */
   public readonly channelMsg: Signal<Messages> = this.db_messages._channel_messages.asReadonly();
-  /** Ein Read-Only Signal mit den Nachrichten des aktuellen Threads. */
+  /** A read-only signal containing the messages in the current thread. */
   public readonly threadMsg: Signal<Messages> = this.db_messages._thread_messages.asReadonly();
-  /** Ein Read-Only Signal mit einer Liste der Kanäle (IDs und Namen), in denen der Benutzer Mitglied ist. */
+  /** A read-only signal containing the IDs and names of channels the user belongs to. */
   public readonly channels: Signal<SignalChannels> = this.db_channels._channels.asReadonly();
-  /** Ein Read-Only Signal mit den detaillierten Daten des aktuell geöffneten Kanals. */
+  /** A read-only signal containing details for the currently open channel. */
   public readonly channel: Signal<SignalChannel> = this.db_channels._channel.asReadonly();
 
   constructor() {
@@ -53,7 +53,7 @@ export class Database {
   }
 
   /**
-   * Lauscht auf Änderungen des Authentifizierungsstatus durch Supabase.
+   * Listens for authentication state changes from Supabase.
    */
   private setupAuthListener(): void {
     this.supabase.auth.onAuthStateChange(
@@ -79,7 +79,7 @@ export class Database {
   }
 
   /**
-   * Helper Funktion fürs Anmelden
+   * Handles sign-in.
    */
   private async eventHelperSignedIn(session: Session): Promise<void> {
     const provider: string | undefined = session['user']['app_metadata']['provider'];
@@ -93,7 +93,7 @@ export class Database {
   }
 
   /**
-   * Hilfsmethode für try/catch um code wiederholungen zu vermeiden
+   * Wraps operations in try/catch to avoid repeating error-handling code.
    */
   private async safeCall<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
     try {
@@ -105,27 +105,27 @@ export class Database {
   }
 
   /**
-   * Ladet alle Benutzerprofile
+   * Loads all user profiles.
    */
   private async loadProfiles(): Promise<void> {
     await this.safeCall((): Promise<void> => this.db_profiles.getProfiles(), undefined);
   }
 
   /**
-   * Gibt die ID des aktuell angemeldeten Benutzers zurück.
-   * @returns {string} Die Profil-ID oder ein leerer String.
+   * Returns the ID of the currently signed-in user.
+   * @returns {string} The profile ID, or an empty string.
    */
   public getCurrentUserId(): string {
     return this.db_auth.getCurrentUserId();
   }
 
   /**
-   * Registriert einen neuen Benutzer.
-   * @param {string} user_email - Die E-Mail-Adresse.
-   * @param {string} user_password - Das Passwort.
-   * @param {string} user_name - Der Anzeigename.
-   * @param {string} user_avatar - URL oder Pfad zum Profilbild (Avatar).
-   * @returns {Promise<boolean>} - true bei Erfolg oder false bei einem Duplikat.
+   * Registers a new user.
+   * @param {string} user_email - The email address.
+   * @param {string} user_password - The password.
+   * @param {string} user_name - The display name.
+   * @param {string} user_avatar - The avatar URL or path.
+   * @returns {Promise<boolean>} - `true` on success or `false` if the email is already registered.
    */
   public async register(
     user_email: string,
@@ -137,25 +137,25 @@ export class Database {
   }
 
   /**
-   * Sendet eine E-Mail zum Zurücksetzen des Passworts.
-   * @param {string} email - Die E-Mail-Adresse des Benutzers.
+   * Sends a password reset email.
+   * @param {string} email - The user's email address.
    */
   public async sendEmailForPasswordReset(email: string): Promise<void> {
     await this.safeCall((): Promise<void> => this.db_auth.resetPasswordForEmail(email), undefined);
   }
 
   /**
-   * Aktualisiert das Passwort des aktuell angemeldeten Benutzers.
-   * @param {string} newPassword - Das neue Passwort.
+   * Updates the password of the currently signed-in user.
+   * @param {string} newPassword - The new password.
    */
   public async updatePassword(newPassword: string): Promise<void> {
     await this.safeCall((): Promise<void> => this.db_auth.changePassword(newPassword), undefined);
   }
 
   /**
-   * Meldet einen bestehenden Benutzer an.
-   * @param {string} user_email - Die E-Mail-Adresse.
-   * @param {string} user_password - Das Passwort.
+   * Signs in an existing user.
+   * @param {string} user_email - The email address.
+   * @param {string} user_password - The password.
    */
  public async login(user_email: string, user_password: string): Promise<boolean> {
   return await this.safeCall(async (): Promise<boolean> => {
@@ -165,14 +165,14 @@ export class Database {
 }
 
   /**
-   * Meldet einen bestehenden Benutzer mit seinen Google Account an.
+   * Signs in an existing user with their Google account.
    */
   public async loginWithGoogle(): Promise<void> {
     await this.safeCall((): Promise<void> => this.db_auth.signInWithGoogle(), undefined);
   }
 
   /**
-   * Meldet den aktuellen Benutzer ab und leert alle gespeicherten Signals (Caches).
+   * Signs out the current user and clears all cached signals.
    */
   public async logout(): Promise<void> {
     this.db_profiles._profiles.set([]);
@@ -188,37 +188,37 @@ export class Database {
     return await this.safeCall((): Promise<boolean> => this.db_auth.checkEmailExists(email), false);
   }
 
-  /** Leert die gespeicherten Nachrichten des aktuellen Threads. */
+  /** Clears the cached messages for the current thread. */
   public clearThreadMessages(): void {
     this.db_messages._thread_messages.set([]);
   }
 
-  /** Leert die gespeicherten Nachrichten des aktuellen Chats. */
+  /** Clears the cached messages for the current chat. */
   public clearChatMessages(): void {
     this.db_messages._chat_messages.set([]);
   }
 
   /**
-   * Lädt ein einzelnes Profil asynchron anhand seiner ID.
-   * @param {string} profileId - Die ID des Profils.
-   * @returns {Promise<Profile | null>} Die Profildaten oder null.
+   * Loads a profile asynchronously by its ID.
+   * @param {string} profileId - The profile ID.
+   * @returns {Promise<Profile | null>} The profile data, or null.
    */
   public async getProfile(profileId: string): Promise<Profile | null> {
     return await this.safeCall((): Promise<Profile | null> => this.db_profiles.getProfile(profileId), null);
   }
 
   /**
-   * Aktualisiert den Anzeigenamen eines bestehenden Profils.
-   * @param {string} profileId - Die Profil-ID.
-   * @param {string} value - Der neue Anzeigename.
+   * Updates the display name of an existing profile.
+   * @param {string} profileId - The profile ID.
+   * @param {string} value - The new display name.
    */
   public async editProfileName(profileId: string, value: string): Promise<void> {
     await this.safeCall((): Promise<void> => this.db_profiles.updateProfileName(profileId, value.trim()), undefined);
   }
 
   /**
-   * Aktualisiert den Avatar des aktuellen Userprofils.
-   * @param {string} value - Der neue Avatar.
+   * Updates the avatar of the current user's profile.
+   * @param {string} value - The new avatar.
    * @returns {Promise<void>}
    */
   public async editProfileAvatar(value: string): Promise<void> {
@@ -226,21 +226,21 @@ export class Database {
   }
 
   /**
-   * Gibt die ID des gemeinsamen Chats zwischen dem angemeldeten und einem anderen Benutzer zurück (erstellt bei Bedarf einen neuen).
-   * @param {string} otherUserId - Die Profil-ID des Gesprächspartners.
-   * @returns {Promise<string>} Die ID des Chats oder ein leerer string: "".
+   * Returns the ID of the chat shared with another user, creating one if needed.
+   * @param {string} otherUserId - The other user's profile ID.
+   * @returns {Promise<string>} The chat ID, or an empty string.
    */
   public async getChatId(otherUserId: string): Promise<string> {
     return await this.safeCall((): Promise<string> => this.db_chats.getChatId(this.db_auth.getCurrentUserId(), otherUserId), '');
   }
 
   /**
-   * Erstellt eine neue Nachricht in einem Chat, Channel oder Thread.
-   * @param {MsgType} msgType - Der Ziel-Typ ('chat', 'channel', 'thread').
-   * @param {string | null} threadChannelId - Falls es ein Thread ist, die übergeordnete Channel-ID (sonst null).
-   * @param {string} id - Die Ziel-ID (Chat-, Channel- oder Thread-ID).
-   * @param {string} senderId - Die Profil-ID des Absenders.
-   * @param {string} content - Der Text der Nachricht.
+   * Creates a message in a chat, channel, or thread.
+   * @param {MsgType} msgType - The target type ('chat', 'channel', or 'thread').
+   * @param {string | null} threadChannelId - The parent channel ID for a thread, or null.
+   * @param {string} id - The target chat, channel, or thread ID.
+   * @param {string} senderId - The sender's profile ID.
+   * @param {string} content - The message text.
    */
   public async newMsg( msgType: MsgType, threadChannelId: string | null, id: string, senderId: string, content: string): Promise<void> {
     if (msgType === 'channel') {
@@ -251,38 +251,38 @@ export class Database {
   }
 
   /**
-   * Aktualisiert den Inhalt einer bestehenden Nachricht.
-   * @param {string} msgId - Die Nachrichten-ID.
-   * @param {string} newContent - Der neue Text.
+   * Updates the content of an existing message.
+   * @param {string} msgId - The message ID.
+   * @param {string} newContent - The new text.
    */
   public async editMsg(msgId: string, newContent: string): Promise<void> {
     await this.safeCall((): Promise<void> => this.db_messages.updateMessage(msgId.trim(), newContent.trim()), undefined);
   }
 
   /**
-   * Lädt die Nachrichten für einen spezifischen Chat, Channel oder Thread in das jeweilige Signal.
-   * @param {MsgType} msgType - Der Ziel-Typ.
-   * @param {string} id - Die ID der Quelle.
+   * Loads messages for a specific chat, channel, or thread into its signal.
+   * @param {MsgType} msgType - The target type.
+   * @param {string} id - The source ID.
    */
   public async loadMsg(msgType: MsgType, id: string): Promise<void> {
     await this.safeCall((): Promise<void> => this.db_messages.getMessages(msgType, id.trim()), undefined);
   }
 
   /**
-   * Durchsucht alle Nachrichten nach einem Suchbegriff und gibt die Ergebnisse zurück.
-   * @param {string} value - Der Suchbegriff.
-   * @returns {Promise<SearchMessages>} Liste der gefundenen Nachrichten oder leeres Array.
+   * Searches all messages for a term and returns the results.
+   * @param {string} value - The search term.
+   * @returns {Promise<SearchMessages>} The matching messages, or an empty array.
    */
   public async searchMsg(value: string): Promise<SearchMessages> {
     return await this.safeCall((): Promise<SearchMessages> => this.db_messages.searchMessages(value), []);
   }
 
   /**
-   * Fügt eine Emoji-Reaktion hinzu oder entfernt sie, falls sie vom selben Nutzer bereits gesetzt wurde.
-   * @param {string} msgId - Die Nachrichten-ID.
-   * @param {string} senderId - Die Profil-ID des reagierenden Nutzers.
-   * @param {string} emoji - Das Emoji.
-   * @returns {Promise<ReactionResult>} Das Ergebnis der Aktion ('added' oder 'removed').
+   * Adds an emoji reaction or removes it if the same user has already added it.
+   * @param {string} msgId - The message ID.
+   * @param {string} senderId - The reacting user's profile ID.
+   * @param {string} emoji - The emoji.
+   * @returns {Promise<ReactionResult>} The action result ('added' or 'removed').
    */
   public async toggleReaction(
     msgId: string,
@@ -293,64 +293,64 @@ export class Database {
   }
 
   /**
-   * Erstellt einen neuen Kanal und fügt den Ersteller als 'admin' hinzu.
-   * @param {string} userId - Die Profil-ID des Erstellers.
-   * @param {string} title - Der Name des Kanals.
-   * @param {string} desc - Die Beschreibung des Kanals.
-   * @returns {Promise<boolean>} - true bei Erfolg oder false bei einem Duplikat.
+   * Creates a channel and adds its creator as an 'admin'.
+   * @param {string} userId - The creator's profile ID.
+   * @param {string} title - The channel name.
+   * @param {string} desc - The channel description.
+   * @returns {Promise<boolean>} - `true` on success or `false` if a duplicate exists.
    */
   public async newChannel(userId: string, title: string, desc: string): Promise<boolean> {
     return await this.safeCall((): Promise<boolean> => this.db_channels.createNewChannel(userId.trim(), title.trim(), desc.trim()), false);
   }
 
   /**
-   * Aktualisiert den Namen und die Beschreibung eines bestehenden Kanals.
-   * @param {string} channelId - Die Kanal-ID.
-   * @param {string} title - Der neue Name.
-   * @param {string} desc - Die neue Beschreibung.
+   * Updates the name and description of an existing channel.
+   * @param {string} channelId - The channel ID.
+   * @param {string} title - The new name.
+   * @param {string} desc - The new description.
    */
   public async editChannel(channelId: string, title: string, desc: string): Promise<void> {
     await this.safeCall((): Promise<void> => this.db_channels.updateChannelData(channelId.trim(), title.trim(), desc.trim()), undefined);
   }
 
   /**
-   * Fügt einen Benutzer als Admin-Mitglied zu einem Kanal hinzu.
-   * @param {string} channelId - Die Kanal-ID.
-   * @param {string} userId - Die Profil-ID des Benutzers.
+   * Adds a user to a channel as an admin member.
+   * @param {string} channelId - The channel ID.
+   * @param {string} userId - The user's profile ID.
    */
   public async addChannelMember(channelId: string, userId: string): Promise<void> {
     await this.safeCall((): Promise<void> => this.db_channels.createNewMember(channelId.trim(), userId.trim(), 'admin'), undefined);
   }
 
   /**
-   * Entfernt einen Benutzer aus einem Kanal.
-   * @param {string} channelId - Die Kanal-ID.
-   * @param {string} userId - Die Profil-ID des Benutzers.
+   * Removes a user from a channel.
+   * @param {string} channelId - The channel ID.
+   * @param {string} userId - The user's profile ID.
    */
   public async removeChannelMember(channelId: string, userId: string): Promise<void> {
     await this.safeCall((): Promise<void> => this.db_channels.removeMember(channelId.trim(), userId.trim()), undefined);
   }
 
   /**
-   * Lädt alle Kanäle, in denen ein Benutzer Mitglied ist, in das `channels` Signal.
-   * @param {string} userId - Die Profil-ID des Benutzers.
+   * Loads all channels the user belongs to into the `channels` signal.
+   * @param {string} userId - The user's profile ID.
    */
   public async getChannels(userId: string): Promise<void> {
     await this.safeCall((): Promise<void> => this.db_channels.getChannelIds(userId.trim()), undefined);
   }
 
   /**
-   * Lädt die Detaildaten eines bestimmten Kanals in das `channel` Signal.
-   * @param {string} channelId - Die Kanal-ID.
+   * Loads the details of a channel into the `channel` signal.
+   * @param {string} channelId - The channel ID.
    */
   public async getChannelContent(channelId: string): Promise<void> {
     await this.safeCall((): Promise<void> => this.db_channels.getChannelData(channelId.trim()), undefined);
   }
 
   /**
-   * Ermittelt die Thread-ID für eine Ursprungs-Nachricht. Erstellt bei Bedarf einen neuen Thread.
-   * @param {string} messageId - Die ID der Ursprungs-Nachricht.
-   * @returns {Promise<string>} Die ID des Threads.
+   * Gets the thread ID for a root message, creating a thread if needed.
+   * @param {string} messageId - The root message ID.
+   * @returns {Promise<string>} The thread ID.
    */
   public async getThreadId(messageId: string): Promise<string> {
     return await this.safeCall((): Promise<string> => this.db_threads.getThreadId(messageId), '');

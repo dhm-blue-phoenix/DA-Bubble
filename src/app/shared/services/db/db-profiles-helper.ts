@@ -19,8 +19,8 @@ export class DatabaseProfilesHelper implements OnDestroy {
   private heartbeatInterval?: ReturnType<typeof setInterval>;
 
   /**
-   * Startet das Heartbeat‑Intervall (30s). Bei aktivem User‑Login wird das Feld
-   * `last_seen` des zugehörigen Profils auf die aktuelle ISO‑Zeit gesetzt.
+   * Starts the heartbeat interval (30 seconds). While a user is signed in, the profile's
+   * `last_seen` field is set to the current ISO timestamp.
    *
    * @private
    */
@@ -37,9 +37,8 @@ export class DatabaseProfilesHelper implements OnDestroy {
   }
 
   /**
-   * Wird von `DatabaseProfiles` nach dem Aufbau einer Supabase‑Realtime‑Channel‑
-   * Subscription aufgerufen. Wenn `status` den Wert `'SUBSCRIBED'` hat, wird das
-   * Heartbeat getriggert, andernfalls passiert nichts.
+   * Called by `DatabaseProfiles` after a Supabase Realtime channel subscription is
+   * established. Starts the heartbeat when `status` is `'SUBSCRIBED'`; otherwise, does nothing.
    *
    * @param status Der Status‑String des Supabase‑Channel‑Callbacks (z.B. `'SUBSCRIBED'`).
    */
@@ -50,8 +49,8 @@ export class DatabaseProfilesHelper implements OnDestroy {
   }
 
   /**
-   * Angular‑Lifecycle‑Hook: räumt das Heartbeat‑Timer auf, wenn der Service
-   * zerstört wird. Verhindert Gedächtnis‑Lecks und unnötige Netzwerk‑Aufrufe.
+   * Angular lifecycle hook that clears the heartbeat timer when the service is destroyed.
+   * This prevents memory leaks and unnecessary network requests.
    */
   public ngOnDestroy(): void {
     clearInterval(this.heartbeatInterval);

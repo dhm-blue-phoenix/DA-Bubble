@@ -4,8 +4,9 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "start-hosts": "ng serve --host 0.0.0.0 --allowed-hosts",
+    "start:allowed_hosts": "ng serve --host 0.0.0.0 --allowed-hosts",
     "build": "ng build --configuration production --base-href /",
+    "build:da_server": "ng build --configuration production --base-href /angular-projects/da-bubble/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:da_bubble": "node dist/da_bubble/server/server.mjs"

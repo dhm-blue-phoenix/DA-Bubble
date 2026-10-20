@@ -13,10 +13,10 @@ export class DatabaseChats {
   private readonly supabase: SupabaseClient = inject(Supabase)['supabase'];
 
   /**
-   * Prüft, ob bereits ein gemeinsamer Chat zwischen dem aktuellen und dem anderen Benutzer existiert.
-   * @param {string} currentUserId - Die ID des aktuellen Benutzers.
-   * @param {string} otherUserId - Die ID des anderen Benutzers.
-   * @returns {Promise<ExistChat>} Ein Promise, das ein Objekt mit dem Erfolg und ggf. der chat_id zurückgibt.
+   * Checks whether a chat already exists between the current user and another user.
+   * @param {string} currentUserId - The current user's ID.
+   * @param {string} otherUserId - The other user's ID.
+   * @returns {Promise<ExistChat>} A promise that resolves to an object indicating success and, if available, the chat ID.
    */
   private async checkExistChat(currentUserId: string, otherUserId: string): Promise<ExistChat> {
     const { data: chats, error }: PostgrestSingleResponse<ChatId[]> = await this.supabase
@@ -32,10 +32,10 @@ export class DatabaseChats {
   }
 
   /**
-   * Erstellt einen neuen Chat für zwei Benutzer und fügt diese als Mitglieder hinzu.
-   * @param {string} currentUserId - Die ID des aktuellen Benutzers.
-   * @param {string} otherUserId - Die ID des anderen Benutzers.
-   * @returns {Promise<string>} Ein Promise, das die neue Chat-ID zurückgibt.
+   * Creates a chat for two users and adds them as members.
+   * @param {string} currentUserId - The current user's ID.
+   * @param {string} otherUserId - The other user's ID.
+   * @returns {Promise<string>} A promise that resolves to the new chat ID.
    */
   private async createNewChat(currentUserId: string, otherUserId: string): Promise<string> {
     const { data: newChat, error }: PostgrestSingleResponse<any> = await this.supabase
@@ -53,17 +53,14 @@ export class DatabaseChats {
   }
 
   /**
-   * Ermittelt die Chat-ID für ein Benutzerpaar. Falls kein Chat existiert, wird einer erstellt.
-   * @param {string} currentUserId - Die ID des aktuellen Benutzers.
-   * @param {string} otherUserId - Die ID des anderen Benutzers.
-   * @returns {Promise<string>} Die ID des bestehenden oder neu erstellten Chats.
+   * Gets the chat ID for a pair of users, creating a chat if one does not exist.
+   * @param {string} currentUserId - The current user's ID.
+   * @param {string} otherUserId - The other user's ID.
+   * @returns {Promise<string>} The ID of the existing or newly created chat.
    */
   public async getChatId(currentUserId: string, otherUserId: string): Promise<string> {
     const existChat: ExistChat = await this.checkExistChat(currentUserId, otherUserId);
     if (!existChat['success']) return this.createNewChat(currentUserId, otherUserId);
-    
-    console.warn('[DatabaseChats] getChatId: Existing chat found. chat_id:', existChat['chat_id']);
-    
     return existChat['chat_id'] as string;
   }
 }

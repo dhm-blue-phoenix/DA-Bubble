@@ -16,25 +16,25 @@ export class DatabaseMessageHelper {
   private readonly db_auth: DatabaseAuth = inject(DatabaseAuth);
 
   /**
-   * Prüft, ob eine Nachricht zum aktuell geöffneten Chat gehört.
-   * @param {string} chatId - Die ID des aktuell geöffneten Chats.
-   * @param {Message} message - Die zu prüfende Nachricht.
-   * @returns {boolean} True wenn die Nachricht zum Chat gehört.
+   * Checks whether a message belongs to the currently open chat.
+   * @param {string} chatId - The ID of the currently open chat.
+   * @param {Message} message - The message to check.
+   * @returns {boolean} True if the message belongs to the chat.
    */
   public checkChat(chatId: string, message: Message): boolean {
     return chatId === message['chat_id'];
   }
 
   /**
-   * Prüft, ob der aktuelle Benutzer Empfänger einer Chat-, Kanal- oder Thread-Nachricht ist
-   * und zeigt bei Bedarf eine Browser-Benachrichtigung an.
-   * @param {Message} message - Die eingegangene Nachricht.
+   * Checks whether the current user is a recipient of a chat, channel, or thread message
+   * and displays a browser notification when appropriate.
+   * @param {Message} message - The incoming message.
    * @returns {Promise<void>}
    */
   /**
-   * Prüft, ob der aktuelle Benutzer Empfänger einer Chat-, Kanal- oder Thread-Nachricht ist
-   * und zeigt bei Bedarf eine Browser-Benachrichtigung an.
-   * @param {Message} message - Die eingegangene Nachricht.
+   * Checks whether the current user is a recipient of a chat, channel, or thread message
+   * and displays a browser notification when appropriate.
+   * @param {Message} message - The incoming message.
    * @returns {Promise<void>}
    */
   public async checkCurrentChat(message: Message): Promise<void> {
@@ -92,12 +92,11 @@ export class DatabaseMessageHelper {
   }
 
   /**
-   * Fordert die Browser-Benachrichtigungs-Berechtigung an.
-   * @returns {Promise<NotificationPermission>} Der aktuellen Berechtigungsstatus.
+   * Requests permission to display browser notifications.
+   * @returns {Promise<NotificationPermission>} The current permission status.
    */
   public async requestNotificationPermission(): Promise<NotificationPermission> {
     if (!('Notification' in window)) {
-      console.warn('[Notification] Browser supports no Notifications.');
       return 'denied';
     }
     if (Notification.permission === 'default') {
@@ -108,9 +107,9 @@ export class DatabaseMessageHelper {
   }
 
   /**
-   * Prüft die Benachrichtigungs-Berechtigung und zeigt eine Browser-Notification an.
-   * @param {string} title - Der Titel der Benachrichtigung.
-   * @param {string} description - Der Inhalt der Benachrichtigung.
+   * Checks notification permission and displays a browser notification.
+   * @param {string} title - The notification title.
+   * @param {string} description - The notification body.
    * @returns {Promise<void>}
    */
   public async setBrowserNotification(title: string, description: string): Promise<void> {
@@ -128,10 +127,10 @@ export class DatabaseMessageHelper {
   }
 
   /**
-   * Erstellt und zeigt eine Browser Push-Notification an.
-   * Bei Klick auf die Notification wird das Browser-Fenster fokussiert.
-   * @param {string} title - Der Titel der Benachrichtigung.
-   * @param {string} description - Der Inhalt der Benachrichtigung.
+   * Creates and displays a browser push notification.
+   * Clicking the notification focuses the browser window.
+   * @param {string} title - The notification title.
+   * @param {string} description - The notification body.
    * @returns {void}
    */
   private sendPushNotification(title: string, description: string): void {

@@ -30,10 +30,10 @@ export class DatabaseChannels {
   private readonly db_auth: DatabaseAuth = inject(DatabaseAuth);
   private readonly channels?: RealtimeChannel;
 
-  /** Signal, das alle Kanäle (IDs und Namen) des aktuellen Benutzers hält. */
+  /** Signal containing all channels (IDs and names) for the current user. */
   public readonly _channels: WritableSignal<SignalChannels> = signal<SignalChannels>([]);
 
-  /** Signal, das die Detaildaten des aktuell geöffneten Kanals hält. */
+  /** Signal containing details for the currently open channel. */
   public readonly _channel: WritableSignal<SignalChannel> = signal<SignalChannel>(null);
 
   constructor() {
@@ -43,8 +43,8 @@ export class DatabaseChannels {
   }
 
   /**
-   * Abonnierte Realtime-Events für die Kanäle und deren Mitglieder.
-   * @returns {RealtimeChannel} Der abonnierte Realtime-Kanal.
+   * Subscribes to Realtime events for channels and their members.
+   * @returns {RealtimeChannel} The subscribed Realtime channel.
    */
   private subscribeChannels(): RealtimeChannel {
     return this.supabase
@@ -65,8 +65,8 @@ export class DatabaseChannels {
   }
 
   /**
-   * Verteilt einkommende Realtime-Events an die zuständigen Insert/Update/Delete Funktionen.
-   * @param {RealtimePostgresChangesPayload<object>} payload - Das Event-Payload von Supabase.
+   * Routes incoming Realtime events to the relevant insert, update, or delete handlers.
+   * @param {RealtimePostgresChangesPayload<object>} payload - The Supabase event payload.
    */
   private handleChannelsEvent(payload: RealtimePostgresChangesPayload<object>): void {
     const { table, eventType }: { table: string; eventType: string } = payload;
@@ -81,8 +81,8 @@ export class DatabaseChannels {
   }
 
   /**
-   * Behandelt ein INSERT-Event für einen Kanal und aktualisiert das _channel Signal, falls zutreffend.
-   * @param {RealtimePostgresChangesPayload<object>} payload - Das Event-Payload.
+   * Handles a channel INSERT event and updates the `_channel` signal when applicable.
+   * @param {RealtimePostgresChangesPayload<object>} payload - The event payload.
    */
   private insertEventChannel(payload: RealtimePostgresChangesPayload<object>): void {
     const channel = payload.new as Channel;
@@ -93,8 +93,8 @@ export class DatabaseChannels {
   }
 
   /**
-   * Behandelt ein UPDATE-Event für einen Kanal und aktualisiert sowohl _channel als auch _channels.
-   * @param {RealtimePostgresChangesPayload<object>} payload - Das Event-Payload.
+   * Handles a channel UPDATE event and updates both `_channel` and `_channels`.
+   * @param {RealtimePostgresChangesPayload<object>} payload - The event payload.
    */
   private updateEventChannel(payload: RealtimePostgresChangesPayload<object>): void {
     const channel = payload.new as Channel;
@@ -111,8 +111,8 @@ export class DatabaseChannels {
   }
 
   /**
-   * Behandelt ein INSERT-Event für Kanal-Mitglieder und aktualisiert das _channel Signal.
-   * @param {RealtimePostgresChangesPayload<object>} payload - Das Event-Payload.
+   * Handles a channel member INSERT event and updates the `_channel` signal.
+   * @param {RealtimePostgresChangesPayload<object>} payload - The event payload.
    */
   private insertEventMember(payload: RealtimePostgresChangesPayload<object>): void {
     const member = payload.new as ChannelMember;
@@ -124,7 +124,6 @@ export class DatabaseChannels {
     if (currentChannel !== null && currentChannel.id === member.channel_id) {
       const members: { user_id: string }[] = currentChannel.channel_members || [];
       if (!members.some((m: { user_id: string }): boolean => m.user_id === member.user_id)) {
-        console.warn('insert member3')
         this._channel.set({
           ...currentChannel,
           channel_members: [...members, { user_id: member.user_id }],
@@ -134,9 +133,9 @@ export class DatabaseChannels {
   }
 
   /**
-   * Behandelt ein DELETE-Event für Kanal-Mitglieder und aktualisiert das _channel Signal.
-   * zusätzlich löscht es einen channel, sofern er nur noch 0 Mitglieder hat
-   * @param {RealtimePostgresChangesPayload<object>} payload - Das Event-Payload.
+   * Handles a channel member DELETE event and updates the `_channel` signal.
+   * Also deletes the channel if it has no members left.
+   * @param {RealtimePostgresChangesPayload<object>} payload - The event payload.
    */
   private deleteEventMembers(payload: RealtimePostgresChangesPayload<object>): void {
     const member = payload.old as Partial<ChannelMember>;
@@ -153,14 +152,14 @@ export class DatabaseChannels {
     }
   }
 
-  /** Beendet die Realtime-Verbindung beim Zerstören des Services. */
+  /** Closes the Realtime connection when the service is destroyed. */
   public ngOnDestroy(): void {
     if (this.channels) this.supabase.removeChannel(this.channels);
   }
 
   /**
-   * Lädt alle IDs und Namen der Kanäle, in denen ein bestimmter Benutzer Mitglied ist.
-   * @param {string} userId - Die ID des Benutzers.
+   * Loads the IDs and names of all channels a user belongs to.
+   * @param {string} userId - The user ID.
    * @returns {Promise<void>}
    */
   public async getChannelIds(userId: string): Promise<void> {
@@ -179,8 +178,8 @@ export class DatabaseChannels {
   }
 
   /**
-   * Lädt detaillierte Daten (inkl. Mitgliedern) eines spezifischen Kanals.
-   * @param {string} channelId - Die ID des Kanals.
+   * Loads detailed data, including members, for a specific channel.
+   * @param {string} channelId - The channel ID.
    * @returns {Promise<void>}
    */
   public async getChannelData(channelId: string): Promise<void> {
@@ -195,11 +194,11 @@ export class DatabaseChannels {
   }
 
   /**
-   * Erstellt einen neuen Kanal in der Datenbank und fügt den Ersteller als 'admin' hinzu.
-   * @param {string} userId - Die ID des erstellenden Benutzers.
-   * @param {string} name - Der Name des neuen Kanals.
-   * @param {string} description - Die Beschreibung des Kanals.
-   * @returns {Promise<boolean>} - Gibt ein false zurück wenn ein Duplikat vorliegt ansonsten true.
+   * Creates a channel in the database and adds its creator as an 'admin'.
+   * @param {string} userId - The ID of the user creating the channel.
+   * @param {string} name - The name of the new channel.
+   * @param {string} description - The channel description.
+   * @returns {Promise<boolean>} - Returns false if a duplicate exists; otherwise, true.
    */
   public async createNewChannel(
     userId: string,
@@ -221,9 +220,9 @@ export class DatabaseChannels {
   }
 
   /**
-   * Prüft, ob ein Kanal mit dem gleichen Namen bereits existiert.
-   * @param {string} name - Der zu prüfende Kanal-Name.
-   * @returns {Promise<boolean>} True, wenn der Name existiert, sonst false.
+   * Checks whether a channel with the same name already exists.
+   * @param {string} name - The channel name to check.
+   * @returns {Promise<boolean>} True if the name exists; otherwise, false.
    */
   private async checkDuplicateChannelName(name: string): Promise<boolean> {
     const { data, error }: PostgrestSingleResponse<Object[]> = await this.supabase
@@ -235,10 +234,10 @@ export class DatabaseChannels {
   }
 
   /**
-   * Fügt ein neues Mitglied zu einem Kanal hinzu.
-   * @param {string} channelId - Die ID des Kanals.
-   * @param {string} userId - Die ID des Benutzers.
-   * @param {'admin' | 'member'} role - Die Rolle des Benutzers im Kanal.
+   * Adds a new member to a channel.
+   * @param {string} channelId - The channel ID.
+   * @param {string} userId - The user ID.
+   * @param {'admin' | 'member'} role - The user's role in the channel.
    * @returns {Promise<void>}
    */
   public async createNewMember(
@@ -258,9 +257,9 @@ export class DatabaseChannels {
   }
 
   /**
-   * Entfernt ein Mitglied aus einem Kanal.
-   * @param {string} channelId - Die ID des Kanals.
-   * @param {string} userId - Die ID des Benutzers.
+   * Removes a member from a channel.
+   * @param {string} channelId - The channel ID.
+   * @param {string} userId - The user ID.
    * @returns {Promise<void>}
    */
   public async removeMember(channelId: string, userId: string): Promise<void> {
@@ -273,10 +272,10 @@ export class DatabaseChannels {
   }
 
   /**
-   * Aktualisiert den Namen und die Beschreibung eines Kanals.
-   * @param {string} channelId - Die ID des Kanals.
-   * @param {string} name - Der neue Name.
-   * @param {string} description - Die neue Beschreibung.
+   * Updates a channel's name and description.
+   * @param {string} channelId - The channel ID.
+   * @param {string} name - The new name.
+   * @param {string} description - The new description.
    * @returns {Promise<void>}
    */
   public async updateChannelData(
@@ -297,9 +296,9 @@ export class DatabaseChannels {
   }
 
   /**
-   * Löscht einen Kanal.
-   * @param {string} channelId - Die ID des Kanals.
-   * @param {string} name - Der neue Name.
+   * Deletes a channel.
+   * @param {string} channelId - The channel ID.
+   * @param {string} name - The new name.
    * @returns {Promise<void>}
    */
   private async deleteChannel(channelId: string): Promise<void> {

@@ -15,10 +15,10 @@ export class DatabaseAuth {
   private readonly supabase: SupabaseClient = inject(Supabase)['supabase'];
   private readonly router: Router = inject(Router);
 
-  /** Signal, das den aktuellen Anmeldestatus des Benutzers hält. */
+  /** Signal containing the user's current sign-in status. */
   public readonly _isUserLogin: WritableSignal<boolean> = signal<boolean>(false);
 
-  /** Speichert die Profil-ID des aktuell angemeldeten Benutzers */
+  /** Stores the profile ID of the currently signed-in user. */
   private currentUserId: string = '';
 
   constructor() {
@@ -28,8 +28,8 @@ export class DatabaseAuth {
   }
 
   /**
-   * Navigiert zu einer Route und fängt dabei mögliche Navigations‑Fehler ab.
-   * @param {string[]} commands – Die Router‑Kommandos
+   * Navigates to a route and handles any navigation errors.
+   * @param {string[]} commands - The router commands.
    * @returns {Promise<void>}
    */
   private async safeNavigate(commands: string[]): Promise<void> {
@@ -49,8 +49,7 @@ export class DatabaseAuth {
   }
 
   /**
-   * Leitet den Nutzer sicher auf die Startseite ('/select-avatar') weiter wo er dan als
-   * Google User seinen Avatar wehlen kann.
+   * Redirects a Google user without an avatar to `/select-avatar`.
    */
   public async eventHelperSignedInIsGoogle(profile: Profile): Promise<void> {
     if (!profile['avatar']) {
@@ -59,9 +58,9 @@ export class DatabaseAuth {
   }
 
   /**
-   * Handhabt den Abmeldevorgang (Logout).
-   * Setzt die lokale Benutzer-ID zurück, aktualisiert den Login-Status auf 'false'
-   * und leitet den Nutzer sicher auf die Startseite ('/') weiter.
+   * Handles sign-out.
+   * Resets the local user ID, sets the login status to `false`,
+   * and redirects the user to the home page (`/`).
    */
   public async eventHelperSignedOut(): Promise<void> {
     this.currentUserId = '';
@@ -70,19 +69,19 @@ export class DatabaseAuth {
   }
 
   /**
-   * Reagiert auf das Password-Recovery-Event.
-   * Leitet den Nutzer direkt auf die Seite zur Passwort-Wiederherstellung ('/reset-password') weiter.
+   * Handles the password recovery event.
+   * Redirects the user to the password reset page (`/reset-password`).
    */
   public async eventHelperPasswordRecovery(): Promise<void> {
     await this.safeNavigate(['/reset-password']);
   }
 
   /**
-   * Führt das Haupt-Setup für eine aktive Benutzersitzung aus.
-   * Speichert die aktuelle User-ID, setzt den Login-Status auf 'true'
-   * und leitet den Nutzer in seinen Hauptarbeitsbereich ('/workspace') weiter.
+   * Sets up an active user session.
+   * Stores the current user ID, sets the login status to `true`,
+   * and redirects the user to the workspace (`/workspace`).
    *
-   * @param session Die aktuelle Supabase-Sitzung oder null
+   * @param session The current Supabase session or null.
    */
   public async eventHelperMainSetup(session: Session): Promise<void> {
     this.currentUserId = session['user']['id'];
@@ -91,15 +90,15 @@ export class DatabaseAuth {
   }
 
   /**
-   * Führt spezifische Aktionen beim allerersten Laden der Session aus (Initial Session).
-   * Setzt den Systemstatus des Benutzers auf 'online'.
+   * Performs initial-session setup.
+   * Sets the user's status to `online`.
    */
   public async eventHelperInitialSession(): Promise<void> {
     this.setStatus('online');
   }
 
   /**
-   * Verfolgt den Fensterfokus, um den Status auf 'away' oder 'online' zu setzen.
+   * Tracks window focus to set the user's status to `away` or `online`.
    */
   private setupWindowFocusListener(): void {
     window.addEventListener('focus', async (): Promise<void> => {
@@ -115,16 +114,16 @@ export class DatabaseAuth {
   }
 
   /**
-   * Gibt die Profil-ID des aktuell angemeldeten Benutzers zurück.
-   * @returns {string} Die Profil-ID oder ein leerer String.
+   * Returns the profile ID of the currently signed-in user.
+   * @returns {string} The profile ID, or an empty string.
    */
   public getCurrentUserId(): string {
     return this.currentUserId;
   }
 
   /**
-   * Aktualisiert den Online-Status des aktuellen Profils.
-   * @param {'offline' | 'online' | 'away'} status - Der neue Status.
+   * Updates the current profile's status.
+   * @param {'offline' | 'online' | 'away'} status - The new status.
    * @returns {Promise<void>}
    */
   private async setStatus(status: 'offline' | 'online' | 'away'): Promise<void> {
@@ -135,9 +134,9 @@ export class DatabaseAuth {
   }
 
   /**
-   * Führt das Datenbank-Update für den Status eines bestimmten Profils aus.
-   * @param {string} profileId - Die Profil-ID.
-   * @param {'offline' | 'online' | 'away'} value - Der neue Status.
+   * Updates the status of a specific profile in the database.
+   * @param {string} profileId - The profile ID.
+   * @param {'offline' | 'online' | 'away'} value - The new status.
    * @returns {Promise<void>}
    */
   private async updateProfileStatus(
@@ -156,9 +155,9 @@ export class DatabaseAuth {
   }
 
   /**
-   * Prüft, ob eine E-Mail-Adresse bereits registriert ist.
-   * @param {string} email - Die zu prüfende E-Mail-Adresse.
-   * @returns {Promise<boolean>} True, wenn die E-Mail existiert, sonst false.
+   * Checks whether an email address is already registered.
+   * @param {string} email - The email address to check.
+   * @returns {Promise<boolean>} True if the email exists; otherwise, false.
    */
   public async checkEmailExists(email: string): Promise<boolean> {
     const { data, error }: PostgrestSingleResponse<any> = await this.supabase
@@ -174,12 +173,12 @@ export class DatabaseAuth {
   }
 
   /**
-   * Registriert einen neuen Benutzer und loggt ihn bei Erfolg direkt ein.
-   * @param {string} user_email - E-Mail-Adresse.
-   * @param {string} user_password - Passwort.
-   * @param {string} user_name - Anzeigename.
-   * @param {string} user_avatar - Avatar-URL oder -Name.
-   * @returns {Promise<boolean>} - Gibt ein false zurück, wenn ein Duplikat vorliegt ansonsten true.
+   * Registers a new user and signs them in on success.
+   * @param {string} user_email - The email address.
+   * @param {string} user_password - The password.
+   * @param {string} user_name - The display name.
+   * @param {string} user_avatar - The avatar URL or name.
+   * @returns {Promise<boolean>} - Returns `false` if the email is already registered.
    */
   public async signUpNewUser(
     user_email: string,
@@ -201,9 +200,9 @@ export class DatabaseAuth {
   }
 
   /**
-   * Meldet einen bestehenden Benutzer mit E-Mail und Passwort an.
-   * @param {string} user_email - E-Mail-Adresse.
-   * @param {string} user_password - Passwort.
+   * Signs in an existing user with an email and password.
+   * @param {string} user_email - The email address.
+   * @param {string} user_password - The password.
    * @returns {Promise<void>}
    */
   public async signInWithEmail(user_email: string, user_password: string): Promise<void> {
@@ -217,7 +216,7 @@ export class DatabaseAuth {
   }
 
   /**
-   * Registriert einen neuen Benutzer mit Google und leitet einen danach zur hauptseite zurück.
+   * Signs in a user with Google and redirects them to the workspace.
    * @returns {Promise<void>}
    */
   public async signInWithGoogle(): Promise<void> {
@@ -231,8 +230,8 @@ export class DatabaseAuth {
   }
 
   /**
-   * Fordert eine E-Mail zum Zurücksetzen des Passworts an.
-   * @param {string} email - Die E-Mail-Adresse des Benutzers.
+   * Requests a password reset email.
+   * @param {string} email - The user's email address.
    * @returns {Promise<void>}
    */
   public async resetPasswordForEmail(email: string): Promise<void> {
@@ -243,8 +242,8 @@ export class DatabaseAuth {
   }
 
   /**
-   * Ändert das Passwort des aktuell angemeldeten Benutzers.
-   * @param {string} newPassword - Das neue Passwort.
+   * Changes the password of the currently signed-in user.
+   * @param {string} newPassword - The new password.
    * @returns {Promise<void>}
    */
   public async changePassword(newPassword: string): Promise<void> {
@@ -253,7 +252,7 @@ export class DatabaseAuth {
   }
 
   /**
-   * Meldet den aktuellen Benutzer ab und setzt seinen Status auf 'offline'.
+   * Signs out the current user and sets their status to `offline`.
    * @returns {Promise<void>}
    */
   public async signOut(): Promise<void> {
