@@ -13,7 +13,6 @@ import { Message } from '../../../interfaces/messages';
 import { Dialogs } from '../../ui/dialogs/dialogs';
 import { ChatPlaceholder } from '../../ui/chat-placeholder/chat-placeholder';
 
-
 @Component({
   selector: 'app-main-component',
   imports: [Workspace, Channels, Chat, Input, Thread, ChatHeader, Dialogs, ChatPlaceholder],
@@ -22,44 +21,42 @@ import { ChatPlaceholder } from '../../ui/chat-placeholder/chat-placeholder';
 })
 export class MainComponent {
 
+    db = inject(Database)
+    dateSeparator = inject(DateSeparatorService)
+    platformId = inject(PLATFORM_ID)
+    
+    mobileShowMenu: WritableSignal<boolean> = signal(true)
+    active_type: WritableSignal<'channel' | 'chat' | 'search' | null> = signal(null)
+    dm_partner: WritableSignal<Profile | null> = signal<Profile | null>(null)
+    dialog_mode: WritableSignal<'editChannel' | 'addChannel' | 'addMember' | 'members' | 'userProfile' | null> = signal(null)
+    dialogAnchor: WritableSignal<DOMRect | null> = signal(null)
+    profile_user: WritableSignal<Profile | null> = signal(null)
+    thread_root_id: WritableSignal<string | null> = signal(null)
+    
+    chatHistory = viewChild<ElementRef<HTMLDivElement>>('chatHistory')
+    
 channelOpen = true
 dmOpen = true
 workspace_Open = true
 thread_Open = false
-mobileShowMenu: WritableSignal<boolean> = signal(true)
+    
+thread_id = ''
+thread_channel_name = ''
+all_user = this.db.profiles
+all_channels = this.db.channels
+all_channel_members = ""
+chat_content = this.db.chatMsg
+channel_id = ''
+chat_id = ''
+channel_info = this.db.channel
+channel_content = this.db.channelMsg
+scrollToMessageId: string | null = null
 
-db = inject(Database)
-dateSeparator = inject(DateSeparatorService)
-platformId = inject(PLATFORM_ID)
-
-active_type: WritableSignal<'channel' | 'chat' | 'search' | null> = signal(null)
-dm_partner: WritableSignal<Profile | null> = signal<Profile | null>(null)
-dialog_mode: WritableSignal<'editChannel' | 'addChannel' | 'addMember' | 'members' | 'userProfile' | null> = signal(null)
-dialogAnchor: WritableSignal<DOMRect | null> = signal(null)
-profile_user: WritableSignal<Profile | null> = signal(null)
-thread_root_id: WritableSignal<string | null> = signal(null)
 thread_root = computed(() => {
     const id = this.thread_root_id()
     if (!id) return null
     return this.active_content().find(m => m.id === id) ?? null
 })
-thread_id = ''
-thread_channel_name = ''
-
-all_user = this.db.profiles
-all_channels = this.db.channels
-all_channel_members = ""
-
-chat_content = this.db.chatMsg
-
-channel_id = ''
-chat_id = ''
-channel_info = this.db.channel
-channel_content = this.db.channelMsg
-
-scrollToMessageId: string | null = null
-
-chatHistory = viewChild<ElementRef<HTMLDivElement>>('chatHistory')
 
 constructor(){
     effect(() => {
@@ -71,7 +68,6 @@ constructor(){
     queueMicrotask(() => {
         const el = this.chatHistory()?.nativeElement
         if (!el) return
-
         if (this.scrollToMessageId) {
             const target = document.getElementById('msg-' + this.scrollToMessageId)
             if (target) {
@@ -80,11 +76,9 @@ constructor(){
                 return
             }
         }
-
         el.scrollTop = el.scrollHeight
     })
 })
-    
 }
 active_content = computed(() => {
     if (this.active_type() === 'chat') return this.chat_content()
@@ -174,6 +168,9 @@ thread_messages_with_sender = computed(() => {
     }
 
     async open_Chat_By_Id(chatId: string, messageId:string) {
+        const currentUserId = this.db.getCurrentUserId()
+        const partnerId = this.chat_content().find(message => message.sender_id !== currentUserId)?.sender_id ?? currentUserId
+
         this.db.clearChatMessages()
         this.active_type.set('chat')
         this.scrollToMessageId = messageId
@@ -181,8 +178,6 @@ thread_messages_with_sender = computed(() => {
         this.mobileShowMenu.set(false)
         await this.db.loadMsg('chat', chatId)
 
-        const currentUserId = this.db.getCurrentUserId()
-        const partnerId = this.chat_content().find(message => message.sender_id !== currentUserId)?.sender_id ?? currentUserId
         this.dm_partner.set(this.all_user().find(user => user.id === partnerId) ?? null)
     }
 
@@ -209,6 +204,8 @@ thread_messages_with_sender = computed(() => {
     }
 
     async openThread(messageId: string) {
+        const type = this.active_type()
+
         this.db.clearThreadMessages()
         this.thread_root_id.set(messageId)
         this.thread_channel_name = this.channel_info()?.name ?? ''
@@ -217,7 +214,6 @@ thread_messages_with_sender = computed(() => {
         this.thread_id = await this.db.getThreadId(messageId)
         await this.db.loadMsg('thread', this.thread_id)
 
-        const type = this.active_type()
         if (type === 'channel') await this.db.loadMsg('channel', this.channel_id)
         else if (type === 'chat') await this.db.loadMsg('chat', this.chat_id)
     }
@@ -246,10 +242,11 @@ thread_messages_with_sender = computed(() => {
 
     send_Content(content:string){
         const type = this.active_type()
-        if (!type || type === 'search') return
-
         const senderId = this.db.getCurrentUserId()
         const id = type === 'chat' ? this.chat_id : this.channel_id
+        
+        if (!type || type === 'search') return
+
         if (senderId)
             this.db.newMsg(type, null, id, senderId, content)
         else

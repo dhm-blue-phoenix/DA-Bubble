@@ -30,7 +30,7 @@ export class Chat {
   editing = false
   editDraft = ''
 
-  /** Keeps the action bar visible without mouse hover; toggled by tapping on touch devices. */
+
   actionsOpen: WritableSignal<boolean> = signal(false)
   messageEl = viewChild<ElementRef<HTMLElement>>('messageEl')
 

@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { Database } from '../../../services/db';
 import { FormsModule, NgModel } from '@angular/forms';
 import { ActiveService } from '../../../services/set_aktiv_service';
-
 import { Profile } from '../../../interfaces/profile';
 import { SignalChannel, ChannelIdAndName } from '../../../interfaces/db/db-channels';
 import { MentionService, MentionController } from '../../../services/mention';
