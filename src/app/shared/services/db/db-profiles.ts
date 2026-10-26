@@ -95,7 +95,8 @@ export class DatabaseProfiles implements OnDestroy {
   public async getProfiles(): Promise<void> {
     const { data: profiles, error }: SupabaseResponseProfiles = await this.supabase
       .from('profiles')
-      .select('id, name, email, avatar, status, created_at');
+      .select('id, name, email, avatar, status, created_at')
+      .order('name');
     if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
     if (profiles) this._profiles.set(profiles);
   }
