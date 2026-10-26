@@ -10,6 +10,9 @@ A real-time team chat application with channels, direct messages and threads.
 
 DA-Bubble is a Slack-style communication app built as a group project at the Developer Akademie. Users sign up, pick an avatar and join a shared workspace where they can talk in channels, write private direct messages and discuss individual messages in threads. Everything is synchronized live through Supabase Realtime, so new messages, reactions and status changes show up without reloading the page.
 
+<img width="1909" height="911" alt="Mockup_1" src="https://github.com/user-attachments/assets/6401735e-19f1-4e0a-8f04-2f7fd1253ae7" />
+<img width="1914" height="910" alt="Mockup_2" src="https://github.com/user-attachments/assets/936dc6ca-2a6f-4df3-a490-45e8065f237e" />
+
 ---
 
 ## ✨ Features
