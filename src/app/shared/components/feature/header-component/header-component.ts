@@ -30,6 +30,7 @@ export class HeaderComponent {
   active = inject(ActiveService);
 
   currentUser = computed(() => this.db.profiles().find(p => p.id === this.db.getCurrentUserId()) ?? null)
+  
 
   toggle_Dialog() {
     this.dialog_open = ! this.dialog_open
@@ -104,26 +105,34 @@ export class HeaderComponent {
       if (message.channel_id) {
         const channel = this.db.channels().find(channel => channel.id === message.channel_id)
         if (channel === undefined) continue
-        views.push({
-          id: message.id,
-          content: message.content,
-          label: channel ? `# ${channel.name}` : 'Unbekannt',
-          date,
-          type: 'channel',
-          targetId: message.channel_id,
-        })
-      } else if (message.chat_id) {
-        views.push({
-          id: message.id,
-          content: message.content,
-          label: 'Direktnachricht',
-          date,
-          type: 'chat',
-          targetId: message.chat_id,
-        })
-      }
+          this.push_to_channel(views , message, date, channel)
+      } else if (message.chat_id) 
+          this.push_to_chat(views , message, date)
+      
     }
     return views
   }
+
+  push_to_channel(views: SearchResultView[] , message: SearchMessages[number], date:string, channel:ChannelIdAndName) {
+      views.push({
+        id: message.id,
+        content: message.content,
+        label: `# ${channel.name}`,
+        date,
+        type: 'channel',
+        targetId: channel.id,
+    })
+  }
+
+  push_to_chat(views: SearchResultView[], message: SearchMessages[number], date: string) {
+    views.push({
+        id: message.id,
+        content: message.content,
+        label: 'Direktnachricht',
+        date,
+        type: 'chat',
+        targetId: message.chat_id!,
+    })
+}
 
 }
