@@ -26,8 +26,8 @@ export class Login {
   }
 
 async login(){
-const login = await this.db.login(this.login_Data.email, this.login_Data.password);
-this.error_Massage.set(!login)
+  const login = await this.db.login(this.login_Data.email, this.login_Data.password);
+  this.error_Massage.set(!login)
 
 }
 async login_as_guest(){

@@ -30,7 +30,6 @@ export class Chat {
   editing = false
   editDraft = ''
 
-
   actionsOpen: WritableSignal<boolean> = signal(false)
   messageEl = viewChild<ElementRef<HTMLElement>>('messageEl')
 

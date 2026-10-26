@@ -117,7 +117,6 @@ thread_root_date_label = computed(() => {
     return root ? this.dateSeparator.label(root.created_at) : ''
 })
 
-
 thread_messages_with_sender = computed(() => {
     const replies = this.db.threadMsg().filter(message => message.id !== this.thread_root()?.id)
     return this.dateSeparator.withSeparators(replies).map(item => ({
@@ -126,132 +125,132 @@ thread_messages_with_sender = computed(() => {
     }))
 });
 
-    openDialogNear(anchor: HTMLElement, mode: 'editChannel' | 'addChannel' | 'addMember' | 'members' | 'userProfile') {
-        this.dialogAnchor.set(anchor.getBoundingClientRect())
-        this.dialog_mode.set(mode)
+openDialogNear(anchor: HTMLElement, mode: 'editChannel' | 'addChannel' | 'addMember' | 'members' | 'userProfile') {
+    this.dialogAnchor.set(anchor.getBoundingClientRect())
+    this.dialog_mode.set(mode)
+}
+
+isNarrowDesktop(): boolean {
+    if (!isPlatformBrowser(this.platformId)) return false
+    return window.innerWidth >= 1024 && window.innerWidth < 1250
+}
+
+toggleMenu(menu: 'dmOpen' | 'channelOpen' | 'workspace' | 'thread') {
+    if (menu === 'dmOpen') this.dmOpen = !this.dmOpen;
+    if (menu === 'channelOpen') this.channelOpen = !this.channelOpen;
+    if (menu === 'workspace') {
+        this.workspace_Open = !this.workspace_Open;
+        if (this.workspace_Open && this.isNarrowDesktop()) this.thread_Open = false;
     }
+    if (menu === 'thread') this.thread_Open = !this.thread_Open;
+}
 
-    isNarrowDesktop(): boolean {
-        if (!isPlatformBrowser(this.platformId)) return false
-        return window.innerWidth >= 1024 && window.innerWidth < 1250
-    }
+async open_Dm(id:string){
+    this.db.clearChatMessages()
+    this.scrollToMessageId = null
+    this.active_type.set('chat')
+    this.dm_partner.set(this.all_user().find(user => user.id === id) ?? null)
+    this.mobileShowMenu.set(false)
 
-    toggleMenu(menu: 'dmOpen' | 'channelOpen' | 'workspace' | 'thread') {
-        if (menu === 'dmOpen') this.dmOpen = !this.dmOpen;
-        if (menu === 'channelOpen') this.channelOpen = !this.channelOpen;
-        if (menu === 'workspace') {
-            this.workspace_Open = !this.workspace_Open;
-            if (this.workspace_Open && this.isNarrowDesktop()) this.thread_Open = false;
-        }
-        if (menu === 'thread') this.thread_Open = !this.thread_Open;
-    }
+    const dm = await this.db.getChatId(id)
+    this.chat_id = dm
+    this.db.loadMsg('chat', dm)
+}
 
-    async open_Dm(id:string){
-        this.db.clearChatMessages()
-        this.scrollToMessageId = null
-        this.active_type.set('chat')
-        this.dm_partner.set(this.all_user().find(user => user.id === id) ?? null)
-        this.mobileShowMenu.set(false)
+backToMenu() {
+    this.mobileShowMenu.set(true)
+}
 
-        const dm = await this.db.getChatId(id)
-        this.chat_id = dm
-        this.db.loadMsg('chat', dm)
-    }
+onOpenSelection(selection: { type: 'chat' | 'channel'; id: string ; messageId?: string }) {
+    if (selection.type === 'chat') this.open_Dm(selection.id)
+    else this.open_Chat(selection.id, selection.messageId)
+}
 
-    backToMenu() {
-        this.mobileShowMenu.set(true)
-    }
+async open_Chat_By_Id(chatId: string, messageId:string) {
+    const currentUserId = this.db.getCurrentUserId()
+    const partnerId = this.chat_content().find(message => message.sender_id !== currentUserId)?.sender_id ?? currentUserId
 
-    onOpenSelection(selection: { type: 'chat' | 'channel'; id: string ; messageId?: string }) {
-        if (selection.type === 'chat') this.open_Dm(selection.id)
-        else this.open_Chat(selection.id, selection.messageId)
-    }
+    this.db.clearChatMessages()
+    this.active_type.set('chat')
+    this.scrollToMessageId = messageId
+    this.chat_id = chatId
+    this.mobileShowMenu.set(false)
+    await this.db.loadMsg('chat', chatId)
 
-    async open_Chat_By_Id(chatId: string, messageId:string) {
-        const currentUserId = this.db.getCurrentUserId()
-        const partnerId = this.chat_content().find(message => message.sender_id !== currentUserId)?.sender_id ?? currentUserId
+    this.dm_partner.set(this.all_user().find(user => user.id === partnerId) ?? null)
+}
 
-        this.db.clearChatMessages()
-        this.active_type.set('chat')
-        this.scrollToMessageId = messageId
-        this.chat_id = chatId
-        this.mobileShowMenu.set(false)
-        await this.db.loadMsg('chat', chatId)
+async open_Chat(id: string, messageId?:string) {
+    this.active_type.set('channel')
+    this.channel_id = id
+    this.db.loadMsg('channel', id)
+    this.scrollToMessageId = messageId ?? null
+    this.mobileShowMenu.set(false)
+    await this.db.getChannelContent(id)
+}
 
-        this.dm_partner.set(this.all_user().find(user => user.id === partnerId) ?? null)
-    }
+editChannel(data: { name: string; description: string }) {
+    this.db.editChannel(this.channel_id, data.name, data.description)
+}
 
-    async open_Chat(id: string, messageId?:string) {
-        this.active_type.set('channel')
-        this.channel_id = id
-        this.db.loadMsg('channel', id)
-        this.scrollToMessageId = messageId ?? null
-        this.mobileShowMenu.set(false)
-        await this.db.getChannelContent(id)
-    }
+async leaveChannel() {
+    await this.db.removeChannelMember(this.channel_id, this.db.getCurrentUserId())
+    this.dialog_mode.set(null)
+    this.channel_id = ''
+    this.active_type.set(null)
+    this.mobileShowMenu.set(true)
+    this.db.getChannels(this.db.getCurrentUserId())
+}
 
-    editChannel(data: { name: string; description: string }) {
-        this.db.editChannel(this.channel_id, data.name, data.description)
-    }
+async openThread(messageId: string) {
+    const type = this.active_type()
 
-    async leaveChannel() {
-        await this.db.removeChannelMember(this.channel_id, this.db.getCurrentUserId())
-        this.dialog_mode.set(null)
-        this.channel_id = ''
-        this.active_type.set(null)
-        this.mobileShowMenu.set(true)
-        this.db.getChannels(this.db.getCurrentUserId())
-    }
+    this.db.clearThreadMessages()
+    this.thread_root_id.set(messageId)
+    this.thread_channel_name = this.channel_info()?.name ?? ''
+    this.thread_Open = true
+    if (this.isNarrowDesktop()) this.workspace_Open = false
+    this.thread_id = await this.db.getThreadId(messageId)
+    await this.db.loadMsg('thread', this.thread_id)
 
-    async openThread(messageId: string) {
-        const type = this.active_type()
+    if (type === 'channel') await this.db.loadMsg('channel', this.channel_id)
+    else if (type === 'chat') await this.db.loadMsg('chat', this.chat_id)
+}
 
-        this.db.clearThreadMessages()
-        this.thread_root_id.set(messageId)
-        this.thread_channel_name = this.channel_info()?.name ?? ''
-        this.thread_Open = true
-        if (this.isNarrowDesktop()) this.workspace_Open = false
-        this.thread_id = await this.db.getThreadId(messageId)
-        await this.db.loadMsg('thread', this.thread_id)
+send_Thread_Content(content: string) {
+    const senderId = this.db.getCurrentUserId()
+    if (senderId && this.thread_id)
+        this.db.newMsg('thread', this.channel_id, this.thread_id, senderId, content)
+}
 
-        if (type === 'channel') await this.db.loadMsg('channel', this.channel_id)
-        else if (type === 'chat') await this.db.loadMsg('chat', this.chat_id)
-    }
+openProfileChat(id: string) {
+    this.profile_user.set(null)
+    this.dialog_mode.set(null)
+    this.open_Dm(id)
+}
 
-    send_Thread_Content(content: string) {
-        const senderId = this.db.getCurrentUserId()
-        if (senderId && this.thread_id)
-            this.db.newMsg('thread', this.channel_id, this.thread_id, senderId, content)
-    }
+openUserProfileDialog() {
+    this.dialog_mode.set('userProfile')
+}
 
-    openProfileChat(id: string) {
-        this.profile_user.set(null)
-        this.dialog_mode.set(null)
-        this.open_Dm(id)
-    }
+saveProfileName(name: string) {
+    const profile = this.currentUser()
+    if (profile) this.db.editProfileName(profile.id, name)
+    this.dialog_mode.set(null)
+}
 
-    openUserProfileDialog() {
-        this.dialog_mode.set('userProfile')
-    }
+send_Content(content:string){
+    const type = this.active_type()
+    const senderId = this.db.getCurrentUserId()
+    const id = type === 'chat' ? this.chat_id : this.channel_id
+    
+    if (!type || type === 'search') return
 
-    saveProfileName(name: string) {
-        const profile = this.currentUser()
-        if (profile) this.db.editProfileName(profile.id, name)
-        this.dialog_mode.set(null)
-    }
-
-    send_Content(content:string){
-        const type = this.active_type()
-        const senderId = this.db.getCurrentUserId()
-        const id = type === 'chat' ? this.chat_id : this.channel_id
-        
-        if (!type || type === 'search') return
-
-        if (senderId)
-            this.db.newMsg(type, null, id, senderId, content)
-        else
-            console.error('not sending')
-    }
+    if (senderId)
+        this.db.newMsg(type, null, id, senderId, content)
+    else
+        console.error('not sending')
+}
 }
 
 
