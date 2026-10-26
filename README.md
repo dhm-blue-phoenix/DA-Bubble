@@ -1,122 +1,167 @@
 # DA-Bubble
 
-DA-Bubble is a real-time chat application built with Angular and Supabase. It supports direct messages, channels, threads, emoji reactions, and user profiles with online status. Messages and other updates are synchronized through Supabase Realtime.
+[![Angular](https://img.shields.io/badge/Angular-21-DD0031?logo=angular&logoColor=white)](https://angular.dev/) [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![Supabase](https://img.shields.io/badge/Supabase-Realtime-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/) [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 
-## Technology
+A real-time team chat application with channels, direct messages and threads.
 
-- Angular 21 with TypeScript
-- Supabase for authentication, PostgreSQL, and Realtime
-- Tailwind CSS 4
-- Vitest for unit tests
+---
 
-## Prerequisites
+## 💬 About The Project
 
-- Git (installation guides for [Windows](https://git-scm.com/install/windows), [macOS](https://git-scm.com/install/mac), and [Linux](https://git-scm.com/install/linux))
-- Node.js and npm in a version supported by Angular 21. Installers and instructions for [Windows](https://nodejs.org/en/download), [macOS](https://nodejs.org/en/download), and [Linux](https://nodejs.org/en/download) are available on the official Node.js website. Check the [Angular compatibility table](https://angular.dev/reference/versions) for supported versions.
-- Access to a Supabase project
+DA-Bubble is a Slack-style communication app built as a group project at the Developer Akademie. Users sign up, pick an avatar and join a shared workspace where they can talk in channels, write private direct messages and discuss individual messages in threads. Everything is synchronized live through Supabase Realtime, so new messages, reactions and status changes show up without reloading the page.
 
-## Step-by-step setup
+<img width="1909" height="911" alt="Mockup_1" src="https://github.com/user-attachments/assets/6401735e-19f1-4e0a-8f04-2f7fd1253ae7" />
+<img width="1914" height="910" alt="Mockup_2" src="https://github.com/user-attachments/assets/936dc6ca-2a6f-4df3-a490-45e8065f237e" />
 
-Run the commands from your project directory. On Windows, use PowerShell or Windows Terminal; on macOS, use Terminal; on Linux, use your preferred terminal. Git and npm commands are the same on all three operating systems. Replace `<repository-url>` with the repository's clone URL.
+---
 
-1. Clone the repository and enter the project directory:
+## ✨ Features
 
-   ```sh
+* 🔐 **Authentication**: Sign up, log in, guest login, password reset and avatar selection
+* 📢 **Channels**: Create, edit and browse channels, add members and view the member list
+* ✉️ **Direct Messages**: One-to-one chats, including a chat with yourself
+* 🧵 **Threads**: Reply to any message in a separate thread view
+* 😀 **Emoji Reactions**: React to messages with an emoji picker
+* 🏷️ **Mentions**: Mention people with `@` and channels with `#` while typing
+* 🔍 **Search**: Find people, channels and messages from the header and jump straight to the result
+* 👤 **User Profiles**: Profile dialogs with avatar and online / away / offline status
+* ⚡ **Real-time Updates**: Live synchronization via Supabase Realtime
+* 📄 **Legal Pages**: Imprint and privacy policy
+
+---
+
+## 🛠️ Built With
+
+### Frontend
+
+* [Angular](https://angular.dev/) 21 - standalone components, signals, zoneless change detection, SSR
+* [TypeScript](https://www.typescriptlang.org/) - language
+* [Tailwind CSS](https://tailwindcss.com/) 4 - styling
+* [emoji-picker-element](https://github.com/nolanlawson/emoji-picker-element) - emoji picker
+
+### Backend & Services
+
+* [Supabase](https://supabase.com/) - authentication, PostgreSQL database and Realtime
+
+### Tooling
+
+* [Vitest](https://vitest.dev/) - unit tests for the database services
+* [Express](https://expressjs.com/) - server for the SSR build
+
+---
+
+## 📁 Project Structure
+
+```
+DA-Bubble/
+│
+├── .doc/                          # Database structure and API documentation
+├── public/                        # Static assets (avatars, icons, ...)
+├── src/
+│   ├── app/
+│   │   └── shared/
+│   │       ├── components/
+│   │       │   ├── feature/       # Container components that hold state
+│   │       │   ├── ui/            # Presentational components and dialogs
+│   │       │   └── legal/         # Imprint and privacy policy
+│   │       ├── services/          # Supabase services (db/), mentions, sign-in, ...
+│   │       └── interfaces/        # TypeScript models
+│   ├── environment/               # Environment configuration (gitignored)
+│   └── server.ts                  # SSR server
+├── angular.json                   # Angular CLI configuration
+├── package.json                   # Dependencies and scripts
+└── README.md                      # This file
+```
+
+---
+
+## 🚀 Getting Started
+
+Follow these steps to run the project locally.
+
+### Prerequisites
+
+* **Git**
+  ```
+  git --version
+  ```
+* **Node.js and npm** in a version supported by Angular 21 (see the [compatibility table](https://angular.dev/reference/versions))
+  ```
+  node --version
+  npm --version
+  ```
+* **A Supabase project** with the tables, row-level security policies and Realtime subscriptions the app uses. See [`.doc/db-structure.md`](.doc/db-structure.md) and [`.doc/db-api.md`](.doc/db-api.md).
+
+### Installation
+
+1. **Clone the repository**
+   ```
    git clone <repository-url> DA-Bubble
    cd DA-Bubble
    ```
-
-   If you already have a local copy, open a terminal in the project directory or use `cd` to navigate there.
-
-2. Install dependencies:
-
-   ```sh
+2. **Install dependencies**
+   ```
    npm install
    ```
-
-3. Create the local Supabase configuration file. The copy command differs by operating system:
-
-   **Windows PowerShell:**
-   ```powershell
-   Copy-Item src\environment\environment.ts.example src\environment\environment.ts
+3. **Set up the environment file** (see [Environment Variables](#-environment-variables))
+4. **Start the development server**
    ```
-
-   **Windows Command Prompt (cmd.exe):**
-   ```bat
-   copy src\environment\environment.ts.example src\environment\environment.ts
-   ```
-
-   **macOS or Linux:**
-   ```sh
-   cp src/environment/environment.ts.example src/environment/environment.ts
-   ```
-
-4. Open `src/environment/environment.ts` in an editor. Replace the empty values with your Supabase project URL and publishable key:
-
-   ```ts
-   supabaseUrl: 'https://<project-ref>.supabase.co',
-   supabaseKey: '<publishable-key>',
-   ```
-
-   The other fields can initially remain empty for local development. The local file `src/environment/environment.ts` is not tracked by Git. Do not put a `service_role` key or other secrets in it: client configuration is visible in the browser. Optional guest-login and debug-user credentials can also be configured in this file.
-
-5. Start the development server:
-
-   ```sh
    npm start
    ```
+5. **Open your browser** at <http://localhost:4200/>
 
-6. Open <http://localhost:4200/> in your browser. The server watches source files and reloads the application when they change.
+---
 
-   To access the server from other devices on your local network, you can optionally run `npm run start:allowed_hosts`. This binds the development server to all network interfaces and allows all host names. Use it only on trusted networks, and never as a production server.
+## 🔐 Environment Variables
 
-The Supabase project must also provide the tables, row-level security (RLS) policies, and Realtime subscriptions used by the application. See [`.doc/db-structure.md`](.doc/db-structure.md) for an overview of the tables and [`.doc/db-api.md`](.doc/db-api.md) for details about the database services.
+The local environment file contains your Supabase configuration and is not committed to Git.
 
-## Build and deployment
+### Setup Instructions
 
-Create a production build for deployment at the domain root:
+1. **Create the environment file** from the template
 
-```bash
-npm run build
+   macOS / Linux:
+   ```
+   cp src/environment/environment.ts.example src/environment/environment.ts
+   ```
+   Windows PowerShell:
+   ```
+   Copy-Item src\environment\environment.ts.example src\environment\environment.ts
+   ```
+2. **Fill in the values** in `src/environment/environment.ts`
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `supabaseUrl` | yes | Supabase project URL, e.g. `https://<project-ref>.supabase.co` |
+| `supabaseKey` | yes | Supabase publishable (anon) key |
+| `guest_email`, `guest_password` | no | Credentials of the account used for the guest login |
+| `debug_user*` | no | Optional test users for development |
+| `debug_logs` | no | Enables debug logging |
+
+3. **How to get these values**
+   * **Supabase**: Create a project, open *Settings > API* and copy the project URL and the publishable key.
+
+> Never put a `service_role` key or other secrets in this file. Client configuration is visible in the browser.
+
+---
+
+## 💡 Usage
+
+1. **Sign up or log in**, or use the guest login
+2. **Choose an avatar** after signing up
+3. **Open a channel or start a direct message** from the workspace sidebar
+4. **Write messages** and mention people with `@` or channels with `#`
+5. **React with emojis** or open a **thread** on any message
+6. **Search** for people, channels and messages in the header
+
+---
+
+## 🧪 Tests & Build
+
+```
+npm test                  # run unit tests (Vitest)
+npm run build             # production build with SSR
+npm run serve:ssr:da_bubble   # start the generated SSR server
 ```
 
-The output is written to `dist/da_bubble/`. The Angular configuration creates a Node.js server build and prerenders the configured routes. After building, start the generated SSR server locally with:
-
-```bash
-npm run serve:ssr:da_bubble
-```
-
-By default, the application is available at <http://localhost:4000/>. The server uses the `PORT` environment variable if it is set.
-
-To build for deployment under a subpath, use:
-
-```bash
-npm run build:da_server
-```
-
-This sets the base href to `/angular-projects/da-bubble/`. Change the path to match the actual hosting URL. SSR deployment requires a Node.js hosting environment that runs the generated server; prerendered pages and browser assets are served by the server build.
-
-## Tests
-
-Run unit tests with Vitest:
-
-```bash
-npm test
-```
-
-The database service tests mock Supabase queries and Realtime events, so they do not require a connection to a live Supabase project. To run a specific test file:
-
-```bash
-npx ng test --include="src/app/shared/services/db/db-messages.spec.ts"
-```
-
-## Angular CLI
-
-Generate Angular components and other artifacts with the CLI:
-
-```bash
-npx ng generate component component-name
-npx ng generate --help
-```
-
-For more information, see the [Angular CLI documentation](https://angular.dev/tools/cli).
+The database service tests mock Supabase, so no live project is needed. To build for a subpath, use `npm run build:da_server` and adjust the base href in `package.json` to your hosting URL.
