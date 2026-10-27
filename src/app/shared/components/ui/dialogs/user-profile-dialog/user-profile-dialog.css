@@ -15,6 +15,12 @@
     border-radius: 30px;
     border: 1px solid #ADB0D9
 }
+
+.btn_editing:disabled {
+  border-radius: 4px;
+  padding: 4px;
+}
+
 @media (max-width: 1024px ){
 
     .profile_Dialog{

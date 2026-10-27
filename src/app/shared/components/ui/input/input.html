@@ -1,5 +1,5 @@
     <div class="chat_input border-2 border-black/20 rounded-2xl relative min-h-[120px] p-4">
-        <input #composerInput type="text" [(ngModel)]="mention.text" (input)="mention.onInput(composerInput)" (keyup)="mention.onInput(composerInput)" (click)="mention.onInput(composerInput)" (keydown.enter)="send()" (blur)="onComposerBlur()" placeholder="Nachricht an # Entwicklerteam" class="absolute inset-0 w-full h-full outline-none bg-transparent px-4 pt-4 pb-14">
+        <input #composerInput type="text" [(ngModel)]="mention.text" (input)="mention.onInput(composerInput)" (keyup)="mention.onInput(composerInput)" (click)="mention.onInput(composerInput)" (keydown.enter)="$event.preventDefault(); send()" (blur)="onComposerBlur()" placeholder="Nachricht an # Entwicklerteam" class="absolute inset-0 w-full h-full outline-none bg-transparent px-4 pt-4 pb-14">
         <div class="absolute bottom-4 left-4 right-4 flex justify-between items-center pointer-events-none">
             <div class="flex gap-3 items-center pointer-events-auto">
                 <button #emojiButton class="relative hover_btn" (click)="toggle_Emoji()"><img class="size-[24px]" src="assets/svg/icons/icon_grey/sentiment_satisfied_grey.svg" alt="emoji"></button>
@@ -25,4 +25,3 @@
             </app-selection-suggestions>
         }
     </div>
-

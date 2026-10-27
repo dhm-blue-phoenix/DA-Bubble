@@ -35,6 +35,9 @@ export class Input {
     if (!this.mention.text.trim()) return
     this.sent.emit(this.mention.text)
     this.mention.text = ''
+    this.mention.trigger.set(null)
+    this.mention.selectedProfile = null
+    this.mention.selectedChannel = null
   }
 
   toggle_Emoji() {
