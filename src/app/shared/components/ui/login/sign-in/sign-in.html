@@ -26,7 +26,7 @@
             <div class="input_container flex items-center p-2 md:p-4 justify-between">
                 <img src="assets/svg/icons/icon_grey/mail_grey.svg" alt="mail-icon">
                 <input [(ngModel)]="this.register_Data.email" name="email" class="py-2" type="text" placeholder="beispielname@email.com" required #email="ngModel"
-                pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}">
+                pattern="[^\s@]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}">
 
             </div>
             <div class="errorContainer">
