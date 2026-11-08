@@ -1,11 +1,11 @@
 <div class="flex flex-col gap-[8px] md:gap-[30px] items-center">
-    <div class="grid items-center w-full">
-      <a routerLink="/sign-in" class="back_btn justify-self-start">
-        @if (!this.provider) {
-            <img class="back_btn" src="assets/svg/icons/icon_black/arrow_back_black.svg" alt="back_arrow">
-        }
-      </a>
-        <h2 class="justify-self-center text-center">Wähle deinen Avatar</h2>
+    <div class="relative flex flex-col items-center w-full sm:flex-row">
+        <a routerLink="/sign-in" class="static sm:absolute sm:left-0 back_btn">
+            @if (!this.provider) {
+                <img class="back_btn" src="assets/svg/icons/icon_black/arrow_back_black.svg" alt="back_arrow">
+            }
+        </a>
+        <h2 class="w-full text-center">Wähle deinen Avatar</h2>
     </div>
 
     <div class="flex flex-col items-center text-center gap-[30px]">
@@ -14,13 +14,13 @@
         }@else {
             <img class="size-24 md:size-32 lg:size-[168px]" [src]="'assets/svg/avatar/avatar_small/' + sel_avatar + '.svg'" alt="select_avatar">
         }
-      @if(signin.data().name) {
+    @if(signin.data().name) {
         <h2>{{signin.data().name}}</h2>
-      } @else if (googleProfileName) {
+    } @else if (googleProfileName) {
         <h2>{{ this.googleProfileName }}</h2>
-      } @else {
+    } @else {
         <h2>Unbekannt</h2>
-      }
+    }
     </div>
 
     <div class="flex w-full gap-[8px] flex-col" action="">

@@ -1,14 +1,14 @@
 
 <div class="flex flex-col gap-[8px] md:gap-[30px] items-center">
-    <div class="relative flex items-center w-full">
-        <a routerLink="/" class="absolute left-0 back_btn">
+    <div class="relative flex flex-col items-center w-full sm:flex-row">
+        <a routerLink="/" class="static sm:absolute sm:left-0 back_btn">
             <img class="back_btn" src="assets/svg/icons/icon_black/arrow_back_black.svg" alt="back_arrow">
         </a>
         <h2 class="w-full text-center">Konto erstellen</h2>
     </div>
-    <span class="text-base md:text-base md:text-xl text-center">Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.</span>
+    <span class="text-base md:text-base md:text-xl p-2 text-center">Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.</span>
 
-    <form class="flex justify-center items-center flex-col w-full gap-[8px] md:gap-[12px]" #signInForm="ngForm" (ngSubmit)="setSignInData(signInForm)">
+    <form class="flex justify-center items-center flex-col w-full gap-[4px] md:gap-[12px]" #signInForm="ngForm" (ngSubmit)="setSignInData(signInForm)">
         <div class="w-full">
             <div class="input_container flex items-center p-2 md:p-4 justify-between">
                 <img src="assets/svg/icons/icon_grey/person_grey.svg" alt="user-icon">
