@@ -218,7 +218,6 @@ async openThread(messageId: string) {
 
     if (type === 'channel') await this.db.loadMsg('channel', this.channel_id)
     else if (type === 'chat') await this.db.loadMsg('chat', this.chat_id)
-    this.chatInput()?.focus()
 }
 
 send_Thread_Content(content: string) {

@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, CUSTOM_ELEMENTS_SCHEMA, inject, PLATFORM_ID, viewChild, ElementRef } from '@angular/core';
+import { Component, Output, EventEmitter, CUSTOM_ELEMENTS_SCHEMA, inject, PLATFORM_ID, viewChild, ElementRef, afterNextRender  } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import type { EmojiClickEvent } from 'emoji-picker-element/shared';
@@ -26,6 +26,7 @@ export class Input {
   mention: MentionController = inject(MentionService).createController()
 
   constructor() {
+    afterNextRender(() => this.focus()) 
     if (isPlatformBrowser(inject(PLATFORM_ID))) {
       import('emoji-picker-element')
     }
