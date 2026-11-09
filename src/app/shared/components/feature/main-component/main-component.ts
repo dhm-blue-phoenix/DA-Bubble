@@ -1,4 +1,4 @@
-import { Component, inject, signal, WritableSignal, computed, effect, viewChild, ElementRef, PLATFORM_ID } from '@angular/core';
+import { Component, inject, signal, WritableSignal, computed, effect, viewChild, ElementRef, PLATFORM_ID, input } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Workspace } from '../../ui/workspace/workspace'
 import { Channels } from '../../ui/channels/channels'
@@ -33,6 +33,7 @@ export class MainComponent {
     profile_user: WritableSignal<Profile | null> = signal(null)
     thread_root_id: WritableSignal<string | null> = signal(null)
     
+    chatInput = viewChild(Input)
     chatHistory = viewChild<ElementRef<HTMLDivElement>>('chatHistory')
     
 channelOpen = true
@@ -155,6 +156,7 @@ async open_Dm(id:string){
     const dm = await this.db.getChatId(id)
     this.chat_id = dm
     this.db.loadMsg('chat', dm)
+    this.chatInput()?.focus()
 }
 
 backToMenu() {
@@ -187,6 +189,7 @@ async open_Chat(id: string, messageId?:string) {
     this.scrollToMessageId = messageId ?? null
     this.mobileShowMenu.set(false)
     await this.db.getChannelContent(id)
+    this.chatInput()?.focus()
 }
 
 editChannel(data: { name: string; description: string }) {
@@ -215,6 +218,7 @@ async openThread(messageId: string) {
 
     if (type === 'channel') await this.db.loadMsg('channel', this.channel_id)
     else if (type === 'chat') await this.db.loadMsg('chat', this.chat_id)
+    this.chatInput()?.focus()
 }
 
 send_Thread_Content(content: string) {

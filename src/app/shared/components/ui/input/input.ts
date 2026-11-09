@@ -73,4 +73,8 @@ export class Input {
       this.mention.trigger.set({ trigger: '@', query: '', start: this.mention.text.length })
     }
   }
+
+  focus() {
+  this.composerInput()?.nativeElement.focus()
+}
 }
