@@ -10,7 +10,7 @@
     <div class="flex gap-2" [class.flex-row-reverse]="isOwnMessage()">
         <app-message-actions [isOwnMessage]="isOwnMessage()" [isThread]="isThread()" [isChannel]="context === 'channel'" (react)="react($event)" (openThread)="openThread.emit(message.id)" (edit)="startEdit()"> </app-message-actions>
         <img class="size-[70px]" [src]="'assets/svg/avatar/avatar_small/' + (sender?.avatar || '1') + '.svg'" alt="avatar">
-        <div class="flex flex-col gap-2">
+        <div class="flex flex-col gap-2 min-w-0" [class.flex-1]="editing">
             <div class="flex items-center gap-6" [class.flex-row-reverse]="isOwnMessage()">
                 <span class="chat_name">{{sender?.name}}</span>
                 <span class="timestamp">{{message.created_at | date:'HH:mm'}}</span>
@@ -26,10 +26,10 @@
                 </div>
             } @else {
                 <div class="flex flex-col gap-2">
-                    <input [(ngModel)]="editDraft" name="editDraft" type="text" class="edit_input outline-none w-full px-4 py-3">
-                    <div class="flex gap-2 justify-end">
-                        <button (click)="cancelEdit()" class="btn_raw bg-white text-[var(--highligh-color)] border font-bold">Abbrechen</button>
-                        <button (click)="saveEdit()" [disabled]="!editDraft.trim()" class="btn_raw bg-[var(--highligh-color)] text-white font-bold">Editieren</button>
+                    <input [(ngModel)]="editDraft" name="editDraft" type="text" class="edit_input outline-none w-full min-w-0 px-4 py-3">
+                    <div class="flex flex-nowrap gap-2 justify-end">
+                        <button (click)="cancelEdit()" class="btn_raw edit_action_btn bg-white text-[var(--highligh-color)] border font-bold">Abbrechen</button>
+                        <button (click)="saveEdit()" [disabled]="!editDraft.trim()" class="btn_raw edit_action_btn bg-[var(--highligh-color)] text-white font-bold">Editieren</button>
                     </div>
                 </div>
             }
