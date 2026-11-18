@@ -63,3 +63,11 @@ color: rgba(104, 104, 104, 1);
     border-radius: 16px;
     border: 1px solid rgba(83, 90, 241, 0.3);
 }
+
+@media (max-width: 1024px){
+    .edit_action_btn{
+        padding: 6px 8px;
+        font-size: 14px;
+        white-space: nowrap;
+    }
+}

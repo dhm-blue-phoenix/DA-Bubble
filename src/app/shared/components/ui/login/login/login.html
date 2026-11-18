@@ -30,7 +30,7 @@
             <span>Anmelden mit Google</span>
         </button>
         
-        <div class="flex gap-[16px] md:gap-[32px]">
+        <div class="flex gap-[16px] md:gap-[32px] flex-col sm:flex-row sm:flex-row pt-6">
             <button type="submit" class="btn_raw bg-[var(--highligh-color)] text-white font-bold" [disabled]="email.invalid || password.invalid">Anmelden</button>
             <button type="button" (click)="login_as_guest()" class="btn_raw text-[var(--highligh-color)] border font-bold">Gäste-Login</button>
         </div>
