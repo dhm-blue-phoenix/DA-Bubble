@@ -21,7 +21,19 @@
   padding: 4px;
 }
 
+.btn_editing_icon {
+  display: none;
+}
+
 @media (max-width: 1024px ){
+
+    .btn_editing {
+    display: none;
+    }
+
+    .btn_editing_icon {
+    display: flex;
+    }
 
     .profile_Dialog{
     top: 50%;

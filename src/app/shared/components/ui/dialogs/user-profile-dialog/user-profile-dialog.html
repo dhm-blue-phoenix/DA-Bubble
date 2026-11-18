@@ -17,6 +17,9 @@
         <div class="w-full flex justify-between items-center lg:items-center gap-2 lg:gap-0">
             <span class="text-3xl font-bold text-center lg:text-left">{{ profile?.name }}</span>
             <button class="btn_editing text-[20px] text-[var(--hover-text)] hover:font-bold" (click)="toggleEdit()" [disabled]="profile?.name == 'Guest'" [title]="profile?.name == 'Guest' && 'Das Bearbeiten des Guest ist gesperrt!'">Bearbeiten</button>
+            <button class="btn_editing_icon rounded-full p-2 justify-center items-center hover:bg-[var(--hover-bg)] disabled:opacity-50 disabled:hover:bg-transparent" (click)="toggleEdit()" aria-label="Bearbeiten" [disabled]="profile?.name == 'Guest'" [title]="profile?.name == 'Guest' ? 'Das Bearbeiten des Guest ist gesperrt!' : 'Bearbeiten'">
+                <img class="size-[24px]" src="assets/svg/icons/icon_grey/edit_grey.svg" alt="">
+            </button>
         </div>
 
         <div class=" lg:justify-start w-full flex items-start gap-[16px]">
