@@ -1,4 +1,4 @@
-<div class="flex flex-col justify-start bg-white profile_Dialog justify-center gap-[32px] p-[16px] lg:p-[42px]">
+<div class="flex flex-col justify-start bg-white profile_Dialog justify-center gap-[16px] lg:gap-[32px] p-[24px] lg:p-[42px]">
 
     <div class="flex items-center justify-between w-full">
         @if (!editing) {
@@ -14,23 +14,23 @@
     </div>
 
     @if (!editing) {
-        <div class="w-full flex flex-col lg:flex-row lg:justify-between items-center lg:items-center gap-2 lg:gap-0">
+        <div class="w-full flex justify-between items-center lg:items-center gap-2 lg:gap-0">
             <span class="text-3xl font-bold text-center lg:text-left">{{ profile?.name }}</span>
             <button class="btn_editing text-[20px] text-[var(--hover-text)] hover:font-bold" (click)="toggleEdit()" [disabled]="profile?.name == 'Guest'" [title]="profile?.name == 'Guest' && 'Das Bearbeiten des Guest ist gesperrt!'">Bearbeiten</button>
         </div>
 
-        <div class="justify-center lg:justify-start w-full flex items-center gap-[16px]">
-            <div class="flex items-center justify-center lg:justify-start gap-4 w-full">
+        <div class=" lg:justify-start w-full flex items-start gap-[16px]">
+            <div class="flex items-center lg:justify-start gap-4 w-full">
                 <div class="status_dot" [class]="profile?.status"></div>
                 <span class="text-xl capitalize" [style.color]="'var(--status-' + (profile?.status) + ')'">{{ profile?.status }}</span>
             </div>
         </div>
 
-        <div class="w-full flex items-center gap-[16px] justify-center lg:justify-start">
+        <div class="w-full flex items-center gap-[16px] lg:justify-start">
             <img class="size-[32px]" src="assets/svg/icons/icon_black/mail_black.svg" alt="email_icon">
             <span class="font-bold text-xl">E-Mail-Adresse</span>
         </div>
-        <div class="w-full text-center lg:text-left">
+        <div class="w-full lg:text-left">
             <span class="px-[48px] text-[20px] text-[var(--link-profile)]">{{ profile?.email }}</span>
         </div>
     } @else {

@@ -24,20 +24,15 @@
 @media (max-width: 1024px ){
 
     .profile_Dialog{
-        width: 320px;
-        border-radius: 0px;
-        top: 0px;
-        height: 100vh;
+    top: 50%;
+    left: 50%;
+    transform: translate( -50%, -50%);
+    border-radius: 30px;
+    width: 95%;
 
     }
 }
 
-@media (max-width: 420px ){
+/* @media (max-width: 420px ){
 
-    .profile_Dialog{
-        width: 100vw;
-        height: 100vh;
-
-
-    }
-}
+} */
