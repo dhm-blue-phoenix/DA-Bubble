@@ -1,6 +1,7 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Profile } from '../../../../interfaces/profile';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-profile-dialog',
@@ -9,24 +10,32 @@ import { Profile } from '../../../../interfaces/profile';
   styleUrl: './user-profile-dialog.css',
 })
 export class UserProfileDialog {
-  @Input() profile: Profile | null = null
-  @Output() closed = new EventEmitter<void>()
-  @Output() save = new EventEmitter<string>()
+  private readonly router: Router = inject(Router);
 
-  editing = false
-  nameDraft = ''
+  @Input() profile: Profile | null = null;
+  @Output() closed = new EventEmitter<void>();
+  @Output() save = new EventEmitter<string>();
+
+  editing = false;
+  nameDraft = '';
 
   toggleEdit() {
-    this.nameDraft = this.profile?.name ?? ''
-    this.editing = true
+    this.nameDraft = this.profile?.name ?? '';
+    this.editing = true;
   }
 
   cancelEdit() {
-    this.editing = false
+    this.editing = false;
   }
 
   saveEdit() {
-    this.save.emit(this.nameDraft)
-    this.editing = false
+    this.save.emit(this.nameDraft);
+    this.editing = false;
+  }
+
+  public openAvatarDialog(): void {
+    this.router.navigate(['select-avatar'], {
+      state: { type: 'edit_avatar' },
+    });
   }
 }

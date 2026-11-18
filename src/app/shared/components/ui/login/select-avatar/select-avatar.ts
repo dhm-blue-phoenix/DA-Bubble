@@ -6,6 +6,13 @@ import { UserFeedback } from '../user-feedback/user-feedback';
 import { isPlatformBrowser } from '@angular/common';
 import { Profile } from '../../../../interfaces/profile';
 
+interface RouterState {
+  readonly type: RouterStateType;
+  readonly provider?: 'google';
+}
+
+type RouterStateType = 'set_avatar' | 'edit_avatar';
+
 @Component({
   selector: 'app-select-avatar',
   imports: [RouterLink, UserFeedback],
@@ -19,14 +26,15 @@ export class SelectAvatar {
   router: Router = inject(Router);
   show_feedback: WritableSignal<boolean> = signal(false);
   avatars: number[] = [1, 2, 3, 4, 5, 6];
-  sel_avatar: string = '';
-  public provider: string | undefined = undefined;
+  set_avatar: string = '';
   public googleProfileName: string | null = null;
   private newGoogleProfileAvatar: string | null = null;
+  protected routerState: RouterState | undefined = undefined;
+  public set_google_avatar: boolean = this.routerState?.type === 'set_avatar' && this.routerState?.provider === 'google';
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      this.provider = history.state['provider'];
+      this.routerState = history.state;
       const profile: Profile | undefined = this.db
         .profiles()
         .find((profile: Profile): boolean => profile['id'] === this.db.getCurrentUserId());
@@ -35,24 +43,24 @@ export class SelectAvatar {
   }
 
   select_Avatar(avatar: number): void {
-    this.sel_avatar = '';
-    this.sel_avatar = this.sel_avatar + avatar;
-    if (this.provider === 'google') return;
+    this.set_avatar = '';
+    this.set_avatar = this.set_avatar + avatar;
+    if (this.set_google_avatar) return;
     this.signin.data.set({
       ...this.signin.data(),
-      avatar: this.sel_avatar,
+      avatar: this.set_avatar,
     });
   }
 
   async singin(): Promise<void> {
-      if (this.provider === 'google') {
-        this.db.editProfileAvatar(this.sel_avatar);
-        this.router.navigate(['/workspace']);
-        return;
-      }
-      const { email, password, name, avatar } = this.signin.data();
-      const result: false | void = await this.db.register(email, password, name, avatar);
-      if (result === false) this.router.navigate(['/sign-in']);
-      this.show_feedback.set(true);
+    if (this.routerState?.type) {
+      this.db.editProfileAvatar(this.set_avatar);
+      this.router.navigate(['/workspace']);
+      return;
+    }
+    const { email, password, name, avatar } = this.signin.data();
+    const result: false | void = await this.db.register(email, password, name, avatar);
+    if (result === false) this.router.navigate(['/sign-in']);
+    this.show_feedback.set(true);
   }
 }

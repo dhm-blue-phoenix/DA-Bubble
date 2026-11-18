@@ -37,7 +37,10 @@ export class DatabaseAuth {
       try {
         if (commands[0] === 'select-avatar') {
           await this.router.navigate(commands, {
-            state: { provider: 'google' },
+            state: {
+              type: 'set_avatar',
+              provider: 'google'
+            },
           });
         } else {
           await this.router.navigate(commands);

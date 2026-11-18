@@ -1,45 +1,55 @@
 <div class="flex flex-col gap-[8px] md:gap-[30px] items-center">
-    <div class="grid items-center w-full">
+  <div class="grid items-center w-full">
+    @if (!this.routerState) {
       <a routerLink="/sign-in" class="back_btn justify-self-start">
-        @if (!this.provider) {
-            <img class="back_btn" src="assets/svg/icons/icon_black/arrow_back_black.svg" alt="back_arrow">
-        }
+        <img class="back_btn" src="assets/svg/icons/icon_black/arrow_back_black.svg" alt="back_arrow">
       </a>
-        <h2 class="justify-self-center text-center">Wähle deinen Avatar</h2>
-    </div>
+    } @else if (this.routerState.type === 'edit_avatar') {
+      <a routerLink="/workspace" class="back_btn justify-self-start">
+        <img class="back_btn" src="assets/svg/icons/icon_black/arrow_back_black.svg" alt="back_arrow">
+      </a>
+    }
+    <h2 class="justify-self-center text-center">Wähle deinen Avatar</h2>
+  </div>
 
-    <div class="flex flex-col items-center text-center gap-[30px]">
-        @if (sel_avatar === '') {
-            <img class="size-24 md:size-32 lg:size-[168px]" src='assets/svg/avatar/avatar_default/default.svg' alt="default-avatar">
-        }@else {
-            <img class="size-24 md:size-32 lg:size-[168px]" [src]="'assets/svg/avatar/avatar_small/' + sel_avatar + '.svg'" alt="select_avatar">
-        }
-      @if(signin.data().name) {
-        <h2>{{signin.data().name}}</h2>
-      } @else if (googleProfileName) {
-        <h2>{{ this.googleProfileName }}</h2>
-      } @else {
-        <h2>Unbekannt</h2>
+  <div class="flex flex-col items-center text-center gap-[30px]">
+    @if (set_avatar === '') {
+      <img class="size-24 md:size-32 lg:size-[168px]" src='assets/svg/avatar/avatar_default/default.svg'
+           alt="default-avatar">
+    } @else {
+      <img class="size-24 md:size-32 lg:size-[168px]" [src]="'assets/svg/avatar/avatar_small/' + set_avatar + '.svg'"
+           alt="select_avatar">
+    }
+    @if (signin.data().name) {
+      <h2>{{ signin.data().name }}</h2>
+    } @else if (googleProfileName) {
+      <h2>{{ this.googleProfileName }}</h2>
+    } @else {
+      <h2>Unbekannt</h2>
+    }
+  </div>
+
+  <div class="flex w-full gap-[8px] flex-col" action="">
+    <div class="w-full flex justify-start">
+      <span class="text-base md:text-base md:text-xl">Aus der Liste wählen</span>
+    </div>
+    <div class="flex w-full flex-wrap items-center justify-center md:justify-between gap-3">
+      @for (avatar of avatars; track avatar) {
+        <button class="selecet_avatar" [class.active]="set_avatar === '' + avatar" (click)="select_Avatar(avatar)">
+          <img class="size-10 md:size-14 lg:size-[72px]" [src]="'assets/svg/avatar/avatar_small/' + avatar + '.svg'"
+               alt="avatar">
+        </button>
       }
     </div>
-
-    <div class="flex w-full gap-[8px] flex-col" action="">
-        <div class="w-full flex justify-start">
-            <span class="text-base md:text-base md:text-xl">Aus der Liste wählen</span>
-        </div>
-        <div class="flex w-full flex-wrap items-center justify-center md:justify-between gap-3">
-            @for (avatar of avatars; track avatar) {
-                <button class="selecet_avatar" [class.active]="sel_avatar === '' + avatar" (click)="select_Avatar(avatar)">
-                    <img class="size-10 md:size-14 lg:size-[72px]" [src]="'assets/svg/avatar/avatar_small/' + avatar + '.svg'" alt="avatar">
-                </button>
-            }
-        </div>
-    </div>
+  </div>
 
 
-    <div class="flex w-full justify-end">
-        <button class="btn_raw" (click)="singin()" [disabled]="sel_avatar === ''" [class]="sel_avatar === '' ? 'btn_disable font-bold' : 'btn_raw bg-[var(--btn)] text-white font-bold'">Weiter</button>
-    </div>
+  <div class="flex w-full justify-end">
+    <button class="btn_raw" (click)="singin()" [disabled]="set_avatar === ''"
+            [class]="set_avatar === '' ? 'btn_disable font-bold' : 'btn_raw bg-[var(--btn)] text-white font-bold'">
+      Weiter
+    </button>
+  </div>
 </div>
 
 <app-user-feedback [show]="show_feedback()">Konto erfolgreich erstellt</app-user-feedback>
