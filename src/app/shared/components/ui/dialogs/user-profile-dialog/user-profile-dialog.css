@@ -16,6 +16,15 @@
     border: 1px solid #ADB0D9
 }
 
+#edit-username:disabled {
+  padding: 4px;
+  border-radius: 8px;
+}
+
+#edit-avatar:hover {
+  cursor: pointer;
+}
+
 .btn_editing:disabled {
   border-radius: 4px;
   padding: 4px;
