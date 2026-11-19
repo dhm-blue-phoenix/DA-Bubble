@@ -9,19 +9,16 @@
     top: 96px;
 }
 
-.edit_name {
+.edit_name{
     width: 100%;
     height: 48px;
     border-radius: 30px;
     border: 1px solid #ADB0D9
 }
-#edit-username:disabled {
-  padding: 4px;
-  border-radius: 8px;
-}
 
-#edit-avatar:hover {
-  cursor: pointer;
+.btn_editing:disabled {
+  border-radius: 4px;
+  padding: 4px;
 }
 
 @media (max-width: 1024px ){
