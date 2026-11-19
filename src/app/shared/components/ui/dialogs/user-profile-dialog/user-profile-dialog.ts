@@ -35,7 +35,7 @@ export class UserProfileDialog {
 
   public openAvatarDialog(): void {
     this.router.navigate(['select-avatar'], {
-      state: { type: 'edit_avatar' },
+      state: { event: 'change_avatar' },
     });
   }
 }

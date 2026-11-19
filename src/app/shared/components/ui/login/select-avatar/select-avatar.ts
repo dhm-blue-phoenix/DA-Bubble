@@ -7,11 +7,11 @@ import { isPlatformBrowser } from '@angular/common';
 import { Profile } from '../../../../interfaces/profile';
 
 interface RouterState {
-  readonly type: RouterStateType;
+  readonly event: RouterStateEvent;
   readonly provider?: 'google';
 }
 
-type RouterStateType = 'set_avatar' | 'edit_avatar';
+type RouterStateEvent = 'change_avatar' | 'set_avatar';
 
 @Component({
   selector: 'app-select-avatar',
@@ -28,9 +28,7 @@ export class SelectAvatar {
   avatars: number[] = [1, 2, 3, 4, 5, 6];
   set_avatar: string = '';
   public googleProfileName: string | null = null;
-  private newGoogleProfileAvatar: string | null = null;
   protected routerState: RouterState | undefined = undefined;
-  public set_google_avatar: boolean = this.routerState?.type === 'set_avatar' && this.routerState?.provider === 'google';
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -45,17 +43,25 @@ export class SelectAvatar {
   select_Avatar(avatar: number): void {
     this.set_avatar = '';
     this.set_avatar = this.set_avatar + avatar;
-    if (this.set_google_avatar) return;
+    if (this.routerState?.event === 'set_avatar' && this.routerState?.provider === 'google') return;
     this.signin.data.set({
       ...this.signin.data(),
       avatar: this.set_avatar,
     });
   }
 
+  public backToWorkspace(): void {
+    this.router.navigate(['/workspace'], {
+      state: { event: 'change_avatar' },
+    });
+  }
+
   async singin(): Promise<void> {
-    if (this.routerState?.type) {
+    if (this.routerState?.event) {
       this.db.editProfileAvatar(this.set_avatar);
-      this.router.navigate(['/workspace']);
+      this.routerState?.event === 'change_avatar'
+        ? this.backToWorkspace()
+        : this.router.navigate(['/workspace']);
       return;
     }
     const { email, password, name, avatar } = this.signin.data();

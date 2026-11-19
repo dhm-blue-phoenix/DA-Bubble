@@ -38,8 +38,8 @@ export class DatabaseAuth {
         if (commands[0] === 'select-avatar') {
           await this.router.navigate(commands, {
             state: {
-              type: 'set_avatar',
-              provider: 'google'
+              event: 'set_avatar',
+              provider: 'google',
             },
           });
         } else {
