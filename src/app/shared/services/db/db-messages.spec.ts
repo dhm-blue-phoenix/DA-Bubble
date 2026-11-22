@@ -10,6 +10,7 @@ describe('DatabaseMessages', () => {
   let mockChannelInstance: any;
   let mockSupabaseClient: any;
   let messagesChain: any;
+  let threadsChain: any;
   let reactionsChain: any;
   let defaultChain: any;
   let mockSupabaseService: any;
@@ -29,7 +30,10 @@ describe('DatabaseMessages', () => {
       insert: vi.fn().mockImplementation((...args) => { logCall('insert', args); return chain; }),
       delete: vi.fn().mockImplementation((...args) => { logCall('delete', args); return chain; }),
       eq: vi.fn().mockImplementation((...args) => { logCall('eq', args); return chain; }),
+      in: vi.fn().mockImplementation((...args) => { logCall('in', args); return chain; }),
+      ilike: vi.fn().mockImplementation((...args) => { logCall('ilike', args); return chain; }),
       is: vi.fn().mockImplementation((...args) => { logCall('is', args); return chain; }),
+      limit: vi.fn().mockImplementation((...args) => { logCall('limit', args); return chain; }),
       order: vi.fn().mockImplementation((...args) => { logCall('order', args); return chain; }),
       single: vi.fn().mockImplementation((...args) => { logCall('single', args); return chain; }),
       maybeSingle: vi.fn().mockImplementation((...args) => { logCall('maybeSingle', args); return chain; }),
@@ -62,6 +66,7 @@ describe('DatabaseMessages', () => {
     };
 
     messagesChain = createMockChain('messages', { data: [], error: null });
+    threadsChain = createMockChain('threads', { data: [], error: null });
     reactionsChain = createMockChain('reactions', { data: [], error: null });
     defaultChain = createMockChain('default', { data: null, error: null });
 
@@ -70,6 +75,7 @@ describe('DatabaseMessages', () => {
       removeChannel: vi.fn(),
       from: vi.fn().mockImplementation((table: string) => {
         if (table === 'messages') return messagesChain;
+        if (table === 'threads') return threadsChain;
         if (table === 'reactions') return reactionsChain;
         return defaultChain;
       }),
@@ -97,6 +103,33 @@ describe('DatabaseMessages', () => {
       expect(mockSupabaseClient.channel).toHaveBeenCalledWith('realtime:messages');
       expect(mockChannelInstance.on).toHaveBeenCalledTimes(2);
       expect(mockChannelInstance.subscribe).toHaveBeenCalled();
+    });
+
+    it('adds the parent context to search results from a thread', async () => {
+      messagesChain.then.mockImplementation((onfulfilled: any) =>
+        Promise.resolve({
+          data: [{
+            id: 'reply_1',
+            content: 'search match',
+            created_at: '2026-06-28T12:00:00Z',
+            chat_id: null,
+            channel_id: null,
+            thread_id: 'thread_1',
+          }],
+          error: null,
+        }).then(onfulfilled),
+      );
+      threadsChain.then.mockImplementation((onfulfilled: any) =>
+        Promise.resolve({
+          data: [{ id: 'thread_1', channel_id: null, chat_id: 'chat_1' }],
+          error: null,
+        }).then(onfulfilled),
+      );
+
+      const results = await service.searchMessages('match');
+
+      expect(results[0]).toMatchObject({ chat_id: 'chat_1', thread_id: 'thread_1' });
+      expect(threadsChain.in).toHaveBeenCalledWith('id', ['thread_1']);
     });
 
     describe('realtime events', () => {

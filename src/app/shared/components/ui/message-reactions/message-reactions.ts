@@ -18,6 +18,7 @@ interface ReactionGroup {
   styleUrl: './message-reactions.css',
 })
 export class MessageReactions {
+  @Input() messageId!: string
   @Input() reactions: Reaction[] = []
   @Input() reverse = false
 
@@ -33,6 +34,16 @@ export class MessageReactions {
       return'hat reagiert' 
     else
       return 'haben reagiert'
+  }
+
+  hasReacted(emoji: string): boolean {
+    const userId = this.db.getCurrentUserId()
+    return this.reactions.some(reaction => reaction.emoji === emoji && reaction.user_id === userId)
+  }
+
+  async toggleReaction(emoji: string, event: MouseEvent): Promise<void> {
+    event.stopPropagation()
+    await this.db.toggleReaction(this.messageId, this.db.getCurrentUserId(), emoji)
   }
 
   private getUsedEmojis(): string[] {

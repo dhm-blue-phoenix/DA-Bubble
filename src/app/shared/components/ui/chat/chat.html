@@ -6,7 +6,7 @@
     </div>
 }
 
-<div #messageEl class="chat_message group relative flex py-6 gap-2 cursor-pointer hover:bg-[var(--hover-bg)] pointer-coarse:data-[open=true]:bg-[var(--hover-bg)] my-2" [class.flex-row-reverse]="isOwnMessage()" [attr.data-open]="actionsOpen() ? 'true' : null" (click)="toggleActions()">
+<div #messageEl tabindex="0" class="chat_message group relative flex py-6 gap-2 cursor-pointer hover:bg-[var(--hover-bg)] pointer-coarse:data-[open=true]:bg-[var(--hover-bg)] my-2" [class.flex-row-reverse]="isOwnMessage()" [attr.aria-label]="'Nachricht von ' + (sender?.name || 'Unbekannt') + ': ' + message.content" [attr.data-open]="actionsOpen() ? 'true' : null" (click)="toggleActions()">
     <app-message-actions [isOwnMessage]="isOwnMessage()" [isThread]="isThread()" [isChannel]="context === 'channel'" (react)="react($event)" (openThread)="openThread.emit(message.id)" (edit)="startEdit()"> </app-message-actions>
     
     <img class="size-[70px]" [src]="'assets/svg/avatar/avatar_small/' + (sender?.avatar || '1') + '.svg'" alt="avatar">
@@ -26,7 +26,9 @@
             </div>
         } @else {
             <div class="flex flex-col gap-2">
-                <input [(ngModel)]="editDraft" name="editDraft" type="text" class="edit_input outline-none w-full px-4 py-3">
+                <div class="edit_input w-full">
+                    <input [(ngModel)]="editDraft" name="editDraft" type="text" class="outline-none bg-transparent w-full px-4 py-3">
+                </div>
                 <div class="flex gap-2 justify-end">
                     <button (click)="cancelEdit()" class="btn_raw bg-white text-[var(--highligh-color)] border font-bold">Abbrechen</button>
                     <button (click)="saveEdit()" [disabled]="!editDraft.trim()" class="btn_raw bg-[var(--highligh-color)] text-white font-bold">Editieren</button>
@@ -42,6 +44,6 @@
             </div>
         }
 
-        <app-message-reactions [reactions]="message.reactions" [reverse]="isOwnMessage()"></app-message-reactions>
+        <app-message-reactions [messageId]="message.id" [reactions]="message.reactions" [reverse]="isOwnMessage()"></app-message-reactions>
     </div>
 </div>

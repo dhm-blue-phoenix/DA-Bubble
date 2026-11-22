@@ -36,6 +36,7 @@ export interface SearchResultView {
   date: string;
   type: 'chat' | 'channel';
   targetId: string;
+  threadId: string | null;
 }
 
 export type Messages = Message[];

@@ -3,6 +3,13 @@
 .reaction_Bubble{
     border: 1px solid rgba(83, 90, 241, 0.3);
     border-radius: 16px;
+    background: white;
+    cursor: pointer;
+}
+
+.reaction_Bubble_active{
+    background-color: var(--hover-bg);
+    border-color: var(--active-border);
 }
 
 .reaction_Dialog{

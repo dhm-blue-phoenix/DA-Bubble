@@ -2,11 +2,11 @@
     <div class="flex gap-1 md:gap-2 items-center" [class.flex-row-reverse]="reverse">
         @for (reaction of groupedReactions(); track reaction.emoji) {
             <div class="relative group/reaction">
-                <div class="reaction_Bubble flex items-center gap-1 px-2 py-0.5 md:px-3 md:py-1">
+                <button type="button" class="reaction_Bubble flex items-center gap-1 px-2 py-0.5 md:px-3 md:py-1" [class.reaction_Bubble_active]="hasReacted(reaction.emoji)" [attr.aria-pressed]="hasReacted(reaction.emoji)" [attr.aria-label]="'Reaktion ' + reaction.emoji + (hasReacted(reaction.emoji) ? ' entfernen' : ' hinzufügen')" (click)="toggleReaction(reaction.emoji, $event)">
                     <span>{{ reaction.count }}</span>
                     <img class="size-5 md:size-6" [src]="'assets/svg/emoji/emoji' + reaction.emoji + '.svg'" alt="reaction">
-                </div>
-                <div class="reaction_Dialog absolute h-0 overflow-hidden opacity-0 invisible group-hover/reaction:h-auto group-hover/reaction:overflow-visible group-hover/reaction:opacity-100 group-hover/reaction:visible transition bg-[var(--highligh-color)] text-white text-center" [class.reaction_Dialog_own]="reverse">
+                </button>
+                <div class="reaction_Dialog absolute h-0 overflow-hidden opacity-0 invisible group-hover/reaction:h-auto group-hover/reaction:overflow-visible group-hover/reaction:opacity-100 group-hover/reaction:visible group-focus-within/reaction:h-auto group-focus-within/reaction:overflow-visible group-focus-within/reaction:opacity-100 group-focus-within/reaction:visible transition bg-[var(--highligh-color)] text-white text-center" [class.reaction_Dialog_own]="reverse">
                     <div class="reaction_Dialog_icon absolute bg-white rounded-full flex items-center justify-center">
                         <img class="size-5" [src]="'assets/svg/emoji/emoji' + reaction.emoji + '.svg'" alt="reaction">
                     </div>

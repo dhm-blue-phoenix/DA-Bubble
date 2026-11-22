@@ -1,5 +1,11 @@
 @import '../../../../app.css';
 
+.chat_message:focus,
+.chat_message:hover{
+    background-color: var(--hover-bg);
+    border-radius: 16px;
+}
+
 .date_bubble{
     padding: 4px 16px;
     white-space: nowrap;

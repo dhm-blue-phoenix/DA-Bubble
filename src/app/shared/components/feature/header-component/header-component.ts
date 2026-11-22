@@ -71,8 +71,9 @@ export class HeaderComponent {
     type: 'chat' | 'channel';
     id: string;
     messageId?: string;
+    threadId?: string;
   }>();
-  @Output() openChatById = new EventEmitter<{ chatId: string; messageId: string }>();
+  @Output() openChatById = new EventEmitter<{ chatId: string; messageId: string; threadId?: string }>();
 
   mention: MentionController = inject(MentionService).createController(true);
 
@@ -94,8 +95,9 @@ export class HeaderComponent {
     this.openSelection.emit({ type: 'channel', id: channel.id });
   }
 
-  closeSearchDropdown() {
+  closeSearchDropdown(searchWrapper: HTMLElement) {
     setTimeout(() => {
+      if (searchWrapper.contains(document.activeElement)) return;
       this.mention.trigger.set(null);
       this.searchResults.set([]);
     }, 150);
@@ -104,9 +106,9 @@ export class HeaderComponent {
   onSelectSearchResult(result: SearchResultView) {
     this.searchResults.set([]);
     if (result.type === 'channel') {
-      this.openSelection.emit({ type: 'channel', id: result.targetId, messageId: result.id });
+      this.openSelection.emit({ type: 'channel', id: result.targetId, messageId: result.id, threadId: result.threadId ?? undefined });
     } else {
-      this.openChatById.emit({ chatId: result.targetId, messageId: result.id });
+      this.openChatById.emit({ chatId: result.targetId, messageId: result.id, threadId: result.threadId ?? undefined });
     }
   }
 
@@ -138,6 +140,7 @@ export class HeaderComponent {
       date,
       type: 'channel',
       targetId: channel.id,
+      threadId: message.thread_id,
     });
   }
 
@@ -149,6 +152,7 @@ export class HeaderComponent {
       date,
       type: 'chat',
       targetId: message.chat_id!,
+      threadId: message.thread_id,
     });
   }
 }

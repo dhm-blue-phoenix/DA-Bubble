@@ -235,6 +235,15 @@ export class Database {
   }
 
   /**
+   * Gets the root message ID for an existing thread.
+   * @param {string} threadId - The thread ID.
+   * @returns {Promise<string | null>} The root message ID, or null if the lookup fails.
+   */
+  public async getThreadRootMessageId(threadId: string): Promise<string | null> {
+    return await this.safeCall((): Promise<string> => this.db_threads.getThreadRootMessageId(threadId), null);
+  }
+
+  /**
    * Creates a message in a chat, channel, or thread.
    * @param {MsgType} msgType - The target type ('chat', 'channel', or 'thread').
    * @param {string | null} threadChannelId - The parent channel ID for a thread, or null.

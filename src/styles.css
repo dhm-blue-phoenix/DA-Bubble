@@ -57,6 +57,20 @@ input{
     }
 }
 
+:where(input, textarea, select):focus{
+    outline: none;
+}
+
+:where(div, label, fieldset):has(> input:focus, > textarea:focus, > select:focus){
+    outline: 2px solid var(--active-border);
+    outline-offset: 2px;
+}
+
+:where(a, button, [tabindex]):focus-visible{
+    outline: 2px solid var(--active-border);
+    outline-offset: 2px;
+}
+
 ::selection {
   background-color: var(--btn-hover);
   color: white;
@@ -75,4 +89,5 @@ input{
 ::-webkit-scrollbar-thumb {
   background-color: var(--border-aktiv);
   border-radius: 24px;
+  cursor: pointer;
 }

@@ -32,6 +32,8 @@ export class MainComponent {
     dialogAnchor: WritableSignal<DOMRect | null> = signal(null)
     profile_user: WritableSignal<Profile | null> = signal(null)
     thread_root_id: WritableSignal<string | null> = signal(null)
+    threadFocusMessageId: WritableSignal<string | null> = signal(null)
+    threadScrollToMessageId: string | null = null
     
     chatInput = viewChild(Input)
     chatHistory = viewChild<ElementRef<HTMLDivElement>>('chatHistory')
@@ -73,11 +75,27 @@ constructor(){
             const target = document.getElementById('msg-' + this.scrollToMessageId)
             if (target) {
                 target.scrollIntoView({ block: 'center' })
+                target.querySelector<HTMLElement>('.chat_message')?.focus({ preventScroll: true })
                 this.scrollToMessageId = null
                 return
             }
         }
         el.scrollTop = el.scrollHeight
+    })
+})
+
+effect(() => {
+    this.thread_messages_with_sender()
+    this.thread_root()
+    const messageId = this.threadFocusMessageId()
+    if (!messageId) return
+    if (this.threadScrollToMessageId !== messageId) return
+    queueMicrotask(() => {
+        const target = document.getElementById('thread-msg-' + messageId)
+        if (!target) return
+        target.scrollIntoView({ block: 'center' })
+        target.querySelector<HTMLElement>('.chat_message')?.focus({ preventScroll: true })
+        this.threadScrollToMessageId = null
     })
 })
 }
@@ -149,6 +167,7 @@ toggleMenu(menu: 'dmOpen' | 'channelOpen' | 'workspace' | 'thread') {
 async open_Dm(id:string){
     this.db.clearChatMessages()
     this.scrollToMessageId = null
+    this.thread_Open = false
     this.active_type.set('chat')
     this.dm_partner.set(this.all_user().find(user => user.id === id) ?? null)
     this.mobileShowMenu.set(false)
@@ -163,32 +182,58 @@ backToMenu() {
     this.mobileShowMenu.set(true)
 }
 
-onOpenSelection(selection: { type: 'chat' | 'channel'; id: string ; messageId?: string }) {
+onOpenSelection(selection: { type: 'chat' | 'channel'; id: string ; messageId?: string; threadId?: string }) {
     if (selection.type === 'chat') this.open_Dm(selection.id)
-    else this.open_Chat(selection.id, selection.messageId)
+    else this.open_Chat(selection.id, selection.messageId, selection.threadId)
 }
 
-async open_Chat_By_Id(chatId: string, messageId:string) {
+async open_Chat_By_Id(chatId: string, messageId: string, threadId?: string) {
     const currentUserId = this.db.getCurrentUserId()
-    const partnerId = this.chat_content().find(message => message.sender_id !== currentUserId)?.sender_id ?? currentUserId
 
     this.db.clearChatMessages()
     this.active_type.set('chat')
-    this.scrollToMessageId = messageId
+    this.scrollToMessageId = threadId ? null : messageId
+    this.thread_Open = !!threadId
+    if (threadId) {
+        this.db.clearThreadMessages()
+        this.thread_root_id.set(null)
+        this.threadFocusMessageId.set(messageId)
+        this.threadScrollToMessageId = messageId
+    }
     this.chat_id = chatId
     this.mobileShowMenu.set(false)
     await this.db.loadMsg('chat', chatId)
 
+    const partnerId = this.chat_content().find(message => message.sender_id !== currentUserId)?.sender_id ?? currentUserId
     this.dm_partner.set(this.all_user().find(user => user.id === partnerId) ?? null)
+    if (threadId) {
+        const rootMessageId = await this.db.getThreadRootMessageId(threadId)
+        if (rootMessageId) {
+            await this.openThread(rootMessageId, messageId, { clearMessages: false, reloadParent: false })
+        }
+    }
 }
 
-async open_Chat(id: string, messageId?:string) {
+async open_Chat(id: string, messageId?: string, threadId?: string) {
     this.active_type.set('channel')
     this.channel_id = id
-    this.db.loadMsg('channel', id)
-    this.scrollToMessageId = messageId ?? null
+    this.scrollToMessageId = threadId ? null : messageId ?? null
     this.mobileShowMenu.set(false)
+    this.thread_Open = !!threadId
+    if (threadId) {
+        this.db.clearThreadMessages()
+        this.thread_root_id.set(null)
+        this.threadFocusMessageId.set(messageId ?? null)
+        this.threadScrollToMessageId = messageId ?? null
+    }
+    await this.db.loadMsg('channel', id)
     await this.db.getChannelContent(id)
+    if (threadId) {
+        const rootMessageId = await this.db.getThreadRootMessageId(threadId)
+        if (rootMessageId) {
+            await this.openThread(rootMessageId, messageId, { clearMessages: false, reloadParent: false })
+        }
+    }
     this.chatInput()?.focus()
 }
 
@@ -205,19 +250,26 @@ async leaveChannel() {
     this.db.getChannels(this.db.getCurrentUserId())
 }
 
-async openThread(messageId: string) {
+async openThread(
+    messageId: string,
+    focusMessageId?: string,
+    options: { clearMessages?: boolean; reloadParent?: boolean } = {},
+) {
     const type = this.active_type()
+    const { clearMessages = true, reloadParent = true } = options
 
-    this.db.clearThreadMessages()
+    if (clearMessages) this.db.clearThreadMessages()
     this.thread_root_id.set(messageId)
+    this.threadFocusMessageId.set(focusMessageId ?? null)
+    this.threadScrollToMessageId = focusMessageId ?? null
     this.thread_channel_name = this.channel_info()?.name ?? ''
     this.thread_Open = true
     if (this.isNarrowDesktop()) this.workspace_Open = false
     this.thread_id = await this.db.getThreadId(messageId)
     await this.db.loadMsg('thread', this.thread_id)
 
-    if (type === 'channel') await this.db.loadMsg('channel', this.channel_id)
-    else if (type === 'chat') await this.db.loadMsg('chat', this.chat_id)
+    if (reloadParent && type === 'channel') await this.db.loadMsg('channel', this.channel_id)
+    else if (reloadParent && type === 'chat') await this.db.loadMsg('chat', this.chat_id)
 }
 
 send_Thread_Content(content: string) {

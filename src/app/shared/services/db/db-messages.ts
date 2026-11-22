@@ -391,6 +391,31 @@ export class DatabaseMessages implements OnDestroy {
       .order('created_at', { ascending: false })
       .limit(100);
     if (error) throw new Error(`[ DB_CODE:${error.code} ] MSG: ${error.message}`);
-    return data;
+    if (!data) return [];
+
+    const threadIds = [...new Set(data.flatMap((message) =>
+      !message.channel_id && !message.chat_id && message.thread_id ? [message.thread_id] : [],
+    ))];
+    if (threadIds.length === 0) return data;
+
+    const { data: threadContexts, error: threadError } = await this.supabase
+      .from('threads')
+      .select('id, channel_id, chat_id')
+      .in('id', threadIds);
+    if (threadError) throw new Error(`[ DB_CODE:${threadError.code} ] MSG: ${threadError.message}`);
+
+    const contextByThreadId = new Map(
+      (threadContexts ?? []).map((context) => [context.id, context]),
+    );
+    return data.map((message) => {
+      const context = message.thread_id ? contextByThreadId.get(message.thread_id) : undefined;
+      return context
+        ? {
+            ...message,
+            channel_id: message.channel_id || context.channel_id,
+            chat_id: message.chat_id || context.chat_id,
+          }
+        : message;
+    });
   }
 }

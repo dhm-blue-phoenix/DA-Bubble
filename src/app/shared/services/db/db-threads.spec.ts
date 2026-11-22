@@ -116,4 +116,15 @@ describe('Databasethreads', () => {
       expect(result).toBe('new_thread_1');
     });
   });
+
+  it('gets the root message ID for an existing thread', async () => {
+    threadsChain.then.mockImplementation((onfulfilled: any) =>
+      Promise.resolve({ data: { root_message_id: 'root_msg_1' }, error: null }).then(onfulfilled),
+    );
+
+    await expect(service.getThreadRootMessageId('thread_1')).resolves.toBe('root_msg_1');
+    expect(threadsChain.select).toHaveBeenCalledWith('root_message_id');
+    expect(threadsChain.eq).toHaveBeenCalledWith('id', 'thread_1');
+    expect(threadsChain.single).toHaveBeenCalled();
+  });
 });

@@ -77,6 +77,21 @@ export class DatabaseThreads {
   }
 
   /**
+   * Gets the root message ID for an existing thread.
+   * @param {string} threadId - The thread ID.
+   * @returns {Promise<string>} The root message ID.
+   */
+  public async getThreadRootMessageId(threadId: string): Promise<string> {
+    const { data, error }: PostgrestSingleResponse<{ root_message_id: string }> = await this.supabase
+      .from('threads')
+      .select('root_message_id')
+      .eq('id', threadId)
+      .single();
+    if (error) throw new Error(`[ DB_CODE:${error['code']} ] MSG: ${error['message']}`);
+    return data.root_message_id;
+  }
+
+  /**
    * Counts the messages in an existing thread without loading their content.
    * @param {string} threadId - The thread ID.
    * @returns {Promise<number>} The number of messages in the thread.
