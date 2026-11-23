@@ -139,6 +139,7 @@ border: solid 2px var(--hover-border);
 }
 &:focus-within{
 border: solid 2px var(--active-border);
+outline: none;
 }
 &:has(input:not(:placeholder-shown)) {
   border: solid 2px var(--border-aktiv);
