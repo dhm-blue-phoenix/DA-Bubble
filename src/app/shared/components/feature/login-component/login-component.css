@@ -46,7 +46,7 @@
 section{
   background-color: var(--bg-color);
   width: 100%;
-  min-height: calc(100vh - 86px - 56px - 16px);
+  min-height: calc(100vh - 86px - 56px - 10px);
 }
 
 
