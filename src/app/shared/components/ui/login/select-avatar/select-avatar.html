@@ -1,11 +1,11 @@
 <div class="flex flex-col gap-[8px] md:gap-[30px] items-center">
-    <div class="relative flex flex-col items-center w-full sm:flex-row">
+    <div #backControlContainer class="relative flex flex-col items-center w-full sm:flex-row">
       @if (this.routerState?.event === 'change_avatar') {
-        <button type="button" (click)="this.backToWorkspace()" class="back_btn justify-self-start" aria-label="Zurück zum Workspace">
+        <button type="button" (click)="this.backToWorkspace()" class="avatar_back_control back_btn justify-self-start" aria-label="Zurück zum Workspace">
           <img class="back_btn" src="assets/svg/icons/icon_black/arrow_back_black.svg" alt="">
         </button>
       } @else if (!this.routerState?.event) {
-        <a routerLink="/sign-in" class="static sm:absolute sm:left-0 back_btn" aria-label="Zurück zur Anmeldung">
+        <a routerLink="/sign-in" tabindex="0" class="avatar_back_control static sm:absolute sm:left-0 back_btn" aria-label="Zurück zur Anmeldung">
             <img class="back_btn" src="assets/svg/icons/icon_black/arrow_back_black.svg" alt="">
         </a>
       }

@@ -34,3 +34,8 @@
         transform: translate(-50%, -50%) rotate(45deg);
     }
 }
+
+.registration_back_btn:focus {
+    outline: 2px solid var(--active-border);
+    outline-offset: 2px;
+}

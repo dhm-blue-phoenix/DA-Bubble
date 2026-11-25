@@ -1,2 +1,7 @@
 @import '../../../../../app.css';
 @import '../../../feature/login-component/login-component.css';
+
+.avatar_back_control:focus {
+    outline: 2px solid var(--active-border);
+    outline-offset: 2px;
+}

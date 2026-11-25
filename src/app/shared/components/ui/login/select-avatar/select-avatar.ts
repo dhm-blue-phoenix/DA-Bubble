@@ -1,4 +1,4 @@
-import { Component, effect, inject, PLATFORM_ID, signal, WritableSignal } from '@angular/core';
+import { afterNextRender, Component, effect, ElementRef, inject, Injector, PLATFORM_ID, signal, viewChild, WritableSignal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { SignInService } from '../../../../services/singin_service';
 import { Database } from '../../../../services/db';
@@ -25,6 +25,8 @@ export class SelectAvatar {
   db: Database = inject(Database);
   router: Router = inject(Router);
   private readonly location = inject(Location);
+  private readonly injector: Injector = inject(Injector);
+  private readonly backControlContainer = viewChild<ElementRef<HTMLElement>>('backControlContainer');
   show_feedback: WritableSignal<boolean> = signal(false);
   avatars: number[] = [1, 2, 3, 4, 5, 6];
   set_avatar: string = '';
@@ -48,6 +50,10 @@ export class SelectAvatar {
         .find((profile: Profile): boolean => profile['id'] === this.db.getCurrentUserId());
       if (profile) this.googleProfileName = profile['name'];
     }
+
+    afterNextRender(() => {
+      this.backControlContainer()?.nativeElement.querySelector<HTMLElement>('.avatar_back_control')?.focus();
+    }, { injector: this.injector });
   }
 
   select_Avatar(avatar: number): void {
