@@ -6,10 +6,10 @@
             
         </div>
 
-        <div #searchWrapper class="relative flex-1 min-w-0 hidden lg:block">
+        <div #searchWrapper class="relative flex-1 min-w-0 hidden lg:block" role="search" aria-label="Nachrichten durchsuchen" (keydown)="onSearchKeydown($event, searchWrapper)">
             <div class="input_container w-full flex items-center justify-between px-12 py-2">
-                <input #searchMsgInput type="text" [(ngModel)]="mention.text" (input)="mention.onInput(searchMsgInput)" (keyup)="onSearchFieldClick(searchMsgInput)" (click)="onSearchFieldClick(searchMsgInput)" (blur)="closeSearchDropdown(searchWrapper)" name="searchMsg" placeholder="Devspace durchsuchen" class="w-full" id="">
-                <button class="hover_btn"><img class="size-[32px]" src="assets/svg/icons/icon_grey/search_grey.svg" alt=""></button>
+                <input #searchMsgInput type="text" [(ngModel)]="mention.text" (input)="mention.onInput(searchMsgInput)" (keyup)="onSearchFieldClick(searchMsgInput)" (click)="onSearchFieldClick(searchMsgInput)" name="searchMsg" placeholder="Devspace durchsuchen" class="w-full" aria-label="Nachrichten suchen">
+                <button type="button" class="hover_btn" aria-label="Suche ausführen" (click)="onSearchFieldClick(searchMsgInput)"><img class="size-[32px]" src="assets/svg/icons/icon_grey/search_grey.svg" alt=""></button>
 
             </div>
             @if (mention.trigger()) {
@@ -35,7 +35,7 @@
                 <img class="size-[70px]" [src]='"assets/svg/avatar/avatar_small/" + (currentUser()?.avatar || "assets/svg/avatar/avatar_small/1") + ".svg"' alt="avatar">
                 <div class="status_User" [class]="currentUser()?.status"></div>
             </div>
-            <button (click)="toggle_Dialog()" class="hover_btn">
+            <button type="button" (click)="toggle_Dialog()" class="hover_btn" aria-label="Profilmenü öffnen" [attr.aria-expanded]="dialog_open">
                 <img class="size-[30px]" src="assets/svg/icons/icon_black/dropdown_black.svg" alt="">
             </button>
         </div>
@@ -44,8 +44,8 @@
 </section>
 
     <div class="search_Mobile p-4 w-full flex lg:hidden justify-center">
-        <div #searchWrapperMobile class="relative search_mobile_wrap">
-            <input #searchMsgInputMobile type="text" autofocus [(ngModel)]="mention.text" (input)="mention.onInput(searchMsgInputMobile)" (keyup)="onSearchFieldClick(searchMsgInputMobile)" (click)="onSearchFieldClick(searchMsgInputMobile)" (blur)="closeSearchDropdown(searchWrapperMobile)" name="searchMsgMobile" placeholder="Devspace durchsuchen" class="search_mobile_Input" id="">
+        <div #searchWrapperMobile class="relative search_mobile_wrap" role="search" aria-label="Nachrichten durchsuchen" (keydown)="onSearchKeydown($event, searchWrapperMobile)">
+            <input #searchMsgInputMobile type="text" autofocus [(ngModel)]="mention.text" (input)="mention.onInput(searchMsgInputMobile)" (keyup)="onSearchFieldClick(searchMsgInputMobile)" (click)="onSearchFieldClick(searchMsgInputMobile)" name="searchMsgMobile" placeholder="Devspace durchsuchen" class="search_mobile_Input" aria-label="Nachrichten suchen">
             @if (mention.trigger()) {
                 <app-selection-suggestions
                     [type]="mention.trigger()?.trigger === '#' ? 'channel' : 'member'"
@@ -70,8 +70,8 @@
         <div class="profil_overlay" (click)="toggle_Dialog()">
             <div class="content_beg relative h-full">
                 <div (click)="$event.stopPropagation()" class="flex flex-col items-center bg-color-white profil_content justify-center gap-4">
-                    <button class="w-5/6" (click)="openProfile()"><span class="font-semibold text-2xl">Profil</span></button>
-                    <button class="w-5/6" (click)="logout()"><span class="font-semibold text-2xl" >Log out</span></button>
+                    <button type="button" class="w-5/6" (click)="openProfile()"><span class="font-semibold text-2xl">Profil</span></button>
+                    <button type="button" class="w-5/6" (click)="logout()"><span class="font-semibold text-2xl">Abmelden</span></button>
                 </div>
             </div>
         </div>

@@ -23,7 +23,7 @@ export class SignIn {
     password: '',
   };
 
-  checkbox = '';
+  checkbox = false;
   public existEmail: boolean = false;
   submitted = false;
 

@@ -3,7 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { SignInService } from '../../../../services/singin_service';
 import { Database } from '../../../../services/db';
 import { UserFeedback } from '../user-feedback/user-feedback';
-import { isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser, Location } from '@angular/common';
 import { Profile } from '../../../../interfaces/profile';
 
 interface RouterState {
@@ -24,6 +24,7 @@ export class SelectAvatar {
   signin: SignInService = inject(SignInService);
   db: Database = inject(Database);
   router: Router = inject(Router);
+  private readonly location = inject(Location);
   show_feedback: WritableSignal<boolean> = signal(false);
   avatars: number[] = [1, 2, 3, 4, 5, 6];
   set_avatar: string = '';
@@ -31,8 +32,17 @@ export class SelectAvatar {
   protected routerState: RouterState | undefined = undefined;
 
   ngOnInit(): void {
+    const state: unknown = this.location.getState();
+    if (
+      state &&
+      typeof state === 'object' &&
+      'event' in state &&
+      (state.event === 'change_avatar' || state.event === 'set_avatar')
+    ) {
+      this.routerState = state as RouterState;
+    }
+
     if (isPlatformBrowser(this.platformId)) {
-      this.routerState = history.state;
       const profile: Profile | undefined = this.db
         .profiles()
         .find((profile: Profile): boolean => profile['id'] === this.db.getCurrentUserId());

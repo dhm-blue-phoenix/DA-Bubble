@@ -4,7 +4,7 @@
         <div class="flex items-center gap-2">
             <span class="text-2xl font-bold">Channel erstellen</span>
         </div>
-        <button (click)="closed.emit()" class="size-[40px] rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]"><img class="size-5" src="assets/svg/icons/icon_black/close.svg" alt=""></button>
+        <button type="button" (click)="closed.emit()" class="size-[40px] rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]" aria-label="Dialog schließen"><img class="size-5" src="assets/svg/icons/icon_black/close.svg" alt=""></button>
     </div>
 
     <div class="w-full flex justify-start">
@@ -15,11 +15,11 @@
 
     <form class="flex flex-col gap-3">
         <div>
-            <span class="font-bold text-lg">Channel-Name</span>
+            <label class="font-bold text-lg" for="new-channel-name">Channel-Name</label>
         </div>
             <div class="border border-black/15 rounded-2xl px-4 py-3 flex items-center gap-2">
                 <span class="text-lg font-bold text text-black/50">#</span>
-                <input [(ngModel)]="channel_name" (ngModelChange)="channel_exist = false" #channelname="ngModel" name="channelName" minlength="1" max="30" type="text" placeholder="z.B. Kooperationsprojekte" placeholder="Channel-Name" class="text-lg outline-none w-full" required>
+                <input id="new-channel-name" [(ngModel)]="channel_name" (ngModelChange)="channel_exist = false" #channelname="ngModel" name="channelName" minlength="1" maxlength="30" type="text" placeholder="z.B. Kooperationsprojekte" class="text-lg outline-none w-full" required>
             </div>
             <div class="errorContainer px-4">
                 @if (channel_exist) {
@@ -28,16 +28,16 @@
             </div>
 
             <div class="flex gap-2 items-center">
-                <span class="font-bold text-lg">Beschreibung</span>
+                <label class="font-bold text-lg" for="new-channel-description">Beschreibung</label>
                 <span class="text-black/50 text-lg font-semibold">(optional)</span>
             </div>
 
             <div class="border border-black/15 rounded-2xl px-4 py-3 flex items-center gap-2">
-                <input [(ngModel)]="channel_descritpion" name="channeldescroption" type="text" placeholder="Dein Text hier" class="text-lg outline-none w-full">
+                <input id="new-channel-description" [(ngModel)]="channel_descritpion" name="channeldescroption" type="text" placeholder="Dein Text hier" class="text-lg outline-none w-full">
             </div>
             
             <div class="bg-white rounded-b-3xl w-full max-w-[720px] pb-10 flex justify-end">
-                <button (click)="add_new_Channel ()"[disabled]="channelname.invalid" class="btn_raw bg-[var(--highligh-color)] text-white font-bold">Erstellen</button>
+                <button type="button" (click)="add_new_Channel ()" [disabled]="channelname.invalid" class="btn_raw bg-[var(--highligh-color)] text-white font-bold">Erstellen</button>
             </div>
     </form>
 </div>

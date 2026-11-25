@@ -37,6 +37,13 @@ export class Chat {
     this.actionsOpen.update(open => !open)
   }
 
+  onMessageKeydown(event: KeyboardEvent) {
+    if (event.target !== this.messageEl()?.nativeElement) return
+    if (event.key !== 'Enter' && event.key !== ' ') return
+    event.preventDefault()
+    this.toggleActions()
+  }
+
   onDocumentClick(event: MouseEvent) {
     if (!this.actionsOpen()) return
     const target = event.target as Node

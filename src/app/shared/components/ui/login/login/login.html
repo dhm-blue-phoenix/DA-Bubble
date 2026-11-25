@@ -6,13 +6,15 @@
     <form class="flex justify-center items-center flex-col w-full" (ngSubmit)="login()">
             <div class="input_container flex items-center p-4 justify-between mb-[8px] md:mb-[32px]">
                 <img src="assets/svg/icons/icon_grey/mail_grey.svg" alt="mail-icon">
-                <input name="email" #email="ngModel" class="py-2" (keyup)="error_Massage.set(false)" [(ngModel)]="login_Data.email" type="email" autocomplete="email" placeholder="beispielname@email.com" required
+                <label class="sr-only" for="login-email">E-Mail-Adresse</label>
+                <input id="login-email" name="email" #email="ngModel" class="py-2" (keyup)="error_Massage.set(false)" [(ngModel)]="login_Data.email" type="email" autocomplete="email" placeholder="beispielname@email.com" required
                 pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}">
             </div>
 
             <div class="input_container flex items-center p-4 justify-between">
                 <img src="assets/svg/icons/icon_grey/lock_grey.svg" alt="lock-icon">
-                <input name="password" #password="ngModel" (keyup)="error_Massage.set(false)" [(ngModel)]="login_Data.password" class="py-2" type="password" autocomplete="current-password" placeholder="Passwort" required>
+                <label class="sr-only" for="login-password">Passwort</label>
+                <input id="login-password" name="password" #password="ngModel" (keyup)="error_Massage.set(false)" [(ngModel)]="login_Data.password" class="py-2" type="password" autocomplete="current-password" placeholder="Passwort" required>
             </div>
         <div class="errorContainer w-full flex justify-center">
             @if (error_Massage()) {

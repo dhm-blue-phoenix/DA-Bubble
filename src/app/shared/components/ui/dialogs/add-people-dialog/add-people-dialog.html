@@ -4,7 +4,7 @@
         <div class="flex items-center gap-4 min-w-0">
             <span class="text-xl md:text-2xl font-bold">Leute hinzufügen</span>
         </div>
-        <button (click)="closed.emit()" class="size-9 md:size-[40px] shrink-0 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]"><img class="size-5" src="assets/svg/icons/icon_black/close.svg" alt=""></button>
+        <button type="button" (click)="closed.emit()" class="size-9 md:size-[40px] shrink-0 rounded-full flex items-center justify-center hover:bg-[var(--hover-bg)]" aria-label="Dialog schließen"><img class="size-5" src="assets/svg/icons/icon_black/close.svg" alt=""></button>
     </div>
 
     <div class="flex items-center gap-2 min-w-0">
@@ -24,14 +24,14 @@
                         </button>
                     </span>
                 }
-                <input [ngModel]="searchText()" (ngModelChange)="onSearchTextChange($event)" (keydown)="onKeydown($event)" (focus)="onSearchFocus()" (blur)="onSearchBlur()" name="memberName" type="text" placeholder="Name eingeben" class="text-lg outline-none flex-1 min-w-[120px]">
+                <input aria-label="Person suchen" [ngModel]="searchText()" (ngModelChange)="onSearchTextChange($event)" (keydown)="onKeydown($event)" (focus)="onSearchFocus()" (blur)="onSearchBlur()" name="memberName" type="text" placeholder="Name eingeben" class="text-lg outline-none flex-1 min-w-[120px]">
             </div>
 
             <app-selection-suggestions [profiles]="searchFocused() ? suggestions() : []" (selectProfile)="selectProfile($event)"></app-selection-suggestions>
         </div>
 
         <div class="bg-white rounded-b-3xl w-full pb-4 md:pb-10 flex justify-end">
-            <button (click)="addMembers()" [disabled]="selectedProfiles().length === 0" class="btn_raw bg-[var(--highligh-color)] text-white font-bold">Hinzufügen</button>
+            <button type="button" (click)="addMembers()" [disabled]="selectedProfiles().length === 0" class="btn_raw bg-[var(--highligh-color)] text-white font-bold">Hinzufügen</button>
         </div>
     </form>
 </div>

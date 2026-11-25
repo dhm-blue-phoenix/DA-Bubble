@@ -57,7 +57,7 @@
 
         <section class="chat flex flex-col bg-white flex-1 min-w-0" [class.mobile_active]="!mobileShowMenu()">
             <div class="mobile_devspace_bar flex items-center gap-1 lg:hidden">
-                <button (click)="backToMenu()" class="back_btn"><img class="size-6" src="assets/svg/icons/icon_black/keyboard_arrow_down_black.svg" alt="Zurück zur Auswahl"></button>
+                <button type="button" (click)="backToMenu()" class="back_btn" aria-label="Zurück zur Auswahl"><img class="size-6" src="assets/svg/icons/icon_black/keyboard_arrow_down_black.svg" alt=""></button>
                 <img class="size-8" src="assets/svg/devspace/Workspace logo.svg" alt="workspace">
                 <h2>Devspace</h2>
             </div>
@@ -86,7 +86,7 @@
     @if(thread_Open){
         <section class="thread bg-white flex flex-col" [class.mobile_active]="!mobileShowMenu()">
                 <div class="mobile_devspace_bar flex items-center gap-2 lg:hidden">
-                    <button (click)="backToMenu()" class="back_btn"><img class="size-6" src="assets/svg/icons/icon_black/arrow_back_black.svg" alt="Zurück zur Auswahl"></button>
+                    <button type="button" (click)="backToMenu()" class="back_btn" aria-label="Zurück zur Auswahl"><img class="size-6" src="assets/svg/icons/icon_black/arrow_back_black.svg" alt=""></button>
                     <img class="size-8" src="assets/svg/devspace/Workspace logo.svg" alt="workspace">
                     <h2>Devspace</h2>
                 </div>
@@ -95,7 +95,7 @@
                         <h2>Thread</h2>
                         <span class="text-xl text-[var(--highligh-color)]">#{{ thread_channel_name }}</span>
                     </div>
-                    <button (click)="toggleMenu('thread')" class="size-[40px]"><img src="assets/svg/icons/icon_black/close.svg" alt=""></button>
+                    <button type="button" (click)="toggleMenu('thread')" class="size-[40px]" aria-label="Thread schließen"><img src="assets/svg/icons/icon_black/close.svg" alt=""></button>
                 </div>
             <div class="chat_container w-full p-[16px] flex flex-col ">
 

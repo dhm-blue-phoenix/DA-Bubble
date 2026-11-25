@@ -40,13 +40,21 @@ z-index: 10;
 }
 .search_mobile_wrap{
 width: 80%;
+box-sizing: border-box;
+border-radius: 32px;
 }
 
 .search_mobile_Input{
 width: 100%;
+box-sizing: border-box;
 border-radius: 32px;
 border: solid 1px var(--btn);
 padding: 8px 24px;
+}
+
+.search_mobile_wrap:focus-within{
+    outline: 2px solid var(--active-border);
+    outline-offset: 2px;
 }
 
 .status_currentUser{

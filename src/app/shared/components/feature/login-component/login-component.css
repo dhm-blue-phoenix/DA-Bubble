@@ -137,6 +137,10 @@ border: solid 2px white;
 &:hover{
 border: solid 2px var(--hover-border);
 }
+
+.input_container:focus-within{
+  outline: none;
+}
 &:focus-within{
 border: solid 2px var(--active-border);
 outline: none;

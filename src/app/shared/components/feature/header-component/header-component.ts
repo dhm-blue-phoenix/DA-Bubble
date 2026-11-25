@@ -1,5 +1,6 @@
-import { Component, computed, inject, signal, WritableSignal, Output, EventEmitter, Input } from '@angular/core';
+import { afterNextRender, Component, computed, inject, Injector, signal, WritableSignal, Output, EventEmitter, Input, ElementRef, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { Database } from '../../../services/db';
 import { FormsModule, NgModel } from '@angular/forms';
 import { ActiveService } from '../../../services/set_aktiv_service';
@@ -10,23 +11,26 @@ import { SelectionSuggestions } from '../../ui/selection-suggestions/selection-s
 import { SearchSuggestions } from '../../ui/search-suggestions/search-suggestions';
 import { SearchMessages, SearchResultView } from '../../../interfaces/messages'
 
-interface RouterState {
-  event: 'change_avatar';
-  navigationId: number;
-}
-
 @Component({
   selector: 'app-header-component',
   imports: [FormsModule, SelectionSuggestions, SearchSuggestions],
   templateUrl: './header-component.html',
   styleUrl: './header-component.css',
+  host: {
+    '(document:click)': 'onDocumentClick($event)',
+    '(document:focusin)': 'onDocumentFocus($event)',
+  },
 })
 export class HeaderComponent {
   private readonly router: Router = inject(Router);
+  private readonly location: Location = inject(Location);
+  private readonly injector: Injector = inject(Injector);
+  private readonly searchWrapper = viewChild<ElementRef<HTMLElement>>('searchWrapper');
+  private readonly searchWrapperMobile = viewChild<ElementRef<HTMLElement>>('searchWrapperMobile');
 
   ngOnInit() {
-    const state: RouterState = history.state;
-    if (state.event === 'change_avatar') {
+    const state: unknown = this.location.getState();
+    if (state && typeof state === 'object' && 'event' in state && state.event === 'change_avatar') {
       this.openProfile();
     }
   }
@@ -36,6 +40,9 @@ export class HeaderComponent {
   @Output() openUserProfile = new EventEmitter<void>();
 
   searchResults: WritableSignal<SearchResultView[]> = signal([]);
+  private searchRequestId = 0;
+  private searchPending = false;
+  private pendingTabToResults = false;
 
   db = inject(Database);
   active = inject(ActiveService);
@@ -78,11 +85,45 @@ export class HeaderComponent {
   mention: MentionController = inject(MentionService).createController(true);
 
   async onSearchFieldClick(input: HTMLInputElement) {
+    const requestId = ++this.searchRequestId;
     this.mention.onInput(input);
-    if (this.mention.trigger() === null && this.mention.text.length > 0) {
+    if (this.mention.trigger() === null && this.mention.text.trim().length > 0) {
+      this.searchPending = true;
       const result = await this.db.searchMsg(this.mention.text);
+      if (requestId !== this.searchRequestId) return;
+      this.searchPending = false;
       this.searchResults.set(result ? this.search_content(result) : []);
-    } else this.searchResults.set([]);
+      if (this.pendingTabToResults) {
+        this.pendingTabToResults = false;
+        afterNextRender(() => this.focusSearchResult(input), { injector: this.injector });
+      }
+    } else {
+      this.searchPending = false;
+      this.pendingTabToResults = false;
+      this.searchResults.set([]);
+    }
+  }
+
+  onSearchKeydown(event: KeyboardEvent, searchWrapper: HTMLElement) {
+    if (event.key !== 'Tab' || event.shiftKey || !this.searchPending || this.searchResults().length > 0) return;
+
+    const target = event.target;
+    const input = searchWrapper.querySelector('input');
+    const searchButton = searchWrapper.querySelector('button[aria-label="Suche ausführen"]');
+    if (target !== input && target !== searchButton) return;
+
+    event.preventDefault();
+    this.pendingTabToResults = true;
+  }
+
+  private focusSearchResult(input: HTMLInputElement) {
+    const wrapper = input.closest<HTMLElement>('[role="search"]');
+    const firstResult = wrapper?.querySelector<HTMLButtonElement>('.search_result_button');
+    if (firstResult) {
+      firstResult.focus();
+      return;
+    }
+    wrapper?.querySelector<HTMLButtonElement>('[aria-label="Suche ausführen"]')?.focus();
   }
 
   onSelectProfile(profile: Profile) {
@@ -95,16 +136,32 @@ export class HeaderComponent {
     this.openSelection.emit({ type: 'channel', id: channel.id });
   }
 
-  closeSearchDropdown(searchWrapper: HTMLElement) {
-    setTimeout(() => {
-      if (searchWrapper.contains(document.activeElement)) return;
-      this.mention.trigger.set(null);
-      this.searchResults.set([]);
-    }, 150);
+  onDocumentFocus(event: FocusEvent) {
+    if (this.isWithinSearchWrapper(event.target)) return;
+    this.clearSearchDropdown();
+  }
+
+  onDocumentClick(event: MouseEvent) {
+    if (this.isWithinSearchWrapper(event.target)) return;
+    this.clearSearchDropdown();
+  }
+
+  private isWithinSearchWrapper(target: EventTarget | null): boolean {
+    if (!(target instanceof Node)) return false;
+    return this.searchWrapper()?.nativeElement.contains(target) === true
+      || this.searchWrapperMobile()?.nativeElement.contains(target) === true;
+  }
+
+  private clearSearchDropdown() {
+    this.searchRequestId++;
+    this.searchPending = false;
+    this.pendingTabToResults = false;
+    this.mention.trigger.set(null);
+    this.searchResults.set([]);
   }
 
   onSelectSearchResult(result: SearchResultView) {
-    this.searchResults.set([]);
+    this.clearSearchDropdown();
     if (result.type === 'channel') {
       this.openSelection.emit({ type: 'channel', id: result.targetId, messageId: result.id, threadId: result.threadId ?? undefined });
     } else {
