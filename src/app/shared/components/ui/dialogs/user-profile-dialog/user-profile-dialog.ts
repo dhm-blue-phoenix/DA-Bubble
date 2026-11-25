@@ -18,6 +18,7 @@ export class UserProfileDialog {
 
   editing = false;
   nameDraft = '';
+  submitted = false;
 
   toggleEdit() {
     this.nameDraft = this.profile?.name ?? '';

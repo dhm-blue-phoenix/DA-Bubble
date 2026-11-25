@@ -9,16 +9,25 @@
     </div>
 
     <div class="flex flex-col gap-4" [class.border]="!editingName" [class.border-black/15]="!editingName" [class.rounded-2xl]="!editingName" [class.p-6]="!editingName">
-        <div class="flex justify-between items-center">
-            <span class="font-bold text-lg">Channel-Name</span>
-            <button (click)="toggleEditName()" class="text-[var(--hover-text)] font-semibold hover:font-bold">{{ editingName ? 'Speichern' : 'Bearbeiten' }}</button>
-        </div>
         @if (editingName) {
+            <div class="flex justify-between items-center">
+                <span class="font-bold text-lg">Channel-Name</span>
+                <button (click)="toggleEditName()" [disabled]="name.invalid" class="text-[var(--hover-text)] font-semibold hover:font-bold disabled:opacity-50 disabled:hover:font-semibold">Speichern</button>
+            </div>
             <div class="border border-black/15 rounded-2xl px-4 py-3 flex items-center gap-2">
                 <span class="text-lg">#</span>
-                <input [(ngModel)]="nameDraft" (keydown.enter)="toggleEditName()" name="channelName" type="text" placeholder="Channel-Name" class="text-lg outline-none w-full">
+                <input [(ngModel)]="nameDraft" (keydown.enter)="name.valid && toggleEditName()" name="channelName" #name="ngModel" required pattern="\S(.*\S)?" type="text" placeholder="Channel-Name" class="text-lg outline-none w-full">
+            </div>
+            <div class="errorContainer px-4">
+                @if (!name.valid && name.touched) {
+                    <span class="errorMassage">Der Name konnte nicht gespeichert werden.</span>
+                }
             </div>
         } @else {
+            <div class="flex justify-between items-center">
+                <span class="font-bold text-lg">Channel-Name</span>
+                <button (click)="toggleEditName()" class="text-[var(--hover-text)] font-semibold hover:font-bold">Bearbeiten</button>
+            </div>
             <div class="flex items-center gap-2">
                 <span class="text-lg">#</span>
                 <span class="text-lg">{{ channelInfo?.name }}</span>
