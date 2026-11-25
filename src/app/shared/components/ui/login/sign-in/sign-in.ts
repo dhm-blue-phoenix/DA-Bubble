@@ -1,4 +1,4 @@
-import { afterNextRender, Component, ElementRef, inject, Injector, viewChild } from '@angular/core';
+import { Component, ElementRef, inject, Injector, viewChild } from '@angular/core';
 import { Router, RouterLink } from "@angular/router";
 import { Database } from '../../../../services/db';
 import { FormsModule, NgForm} from '@angular/forms';
@@ -13,8 +13,6 @@ import { SignInService } from '../../../../services/singin_service'
 })
 export class SignIn {
   private router: Router = inject(Router);
-  private readonly injector: Injector = inject(Injector);
-  private readonly backLink = viewChild.required<ElementRef<HTMLAnchorElement>>('backLink');
 
   db = inject(Database);
   signin = inject(SignInService);
@@ -28,10 +26,6 @@ export class SignIn {
   checkbox = false;
   public existEmail: boolean = false;
   submitted = false;
-
-  ngOnInit() {
-    afterNextRender(() => this.backLink().nativeElement.focus(), { injector: this.injector });
-  }
 
   async setSignInData(ngForm: NgForm) {
     this.existEmail = await this.db.checkExistEmailForNewUser(this.register_Data.email);
